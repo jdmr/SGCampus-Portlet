@@ -1,0 +1,13 @@
+.DS_Store
+stacktrace.log
+target
+*.class
+.idea
+web-app/WEB-INF/classes
+*.orig
+eliseo-test.log*
+eliseo.log*
+eliseo-portlet.*
+es.log*
+es-test.log*
+/.settings/
