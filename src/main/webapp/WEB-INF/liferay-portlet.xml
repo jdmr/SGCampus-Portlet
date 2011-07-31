@@ -3,9 +3,8 @@
 
 <liferay-portlet-app>
 	<portlet>
-		<portlet-name>sgcampus-portlet</portlet-name>
-		<icon>/icon.png</icon>
-		<instanceable>true</instanceable>
+		<portlet-name>cursos</portlet-name>
+		<instanceable>false</instanceable>
 		<header-portlet-css>/css/main.css</header-portlet-css>
 		<footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
 	</portlet>

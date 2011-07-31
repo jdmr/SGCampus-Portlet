@@ -18,4 +18,4 @@
 
 <portlet:defineObjects />
 
-This is the <b>sgcampus-portlet</b>.
+This is the <b>cursos</b> portlet.
