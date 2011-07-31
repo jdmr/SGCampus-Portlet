@@ -46,7 +46,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
             cursoDao.crea(curso);
         }
 
@@ -55,7 +55,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
             cursoDao.crea(curso);
         }
 
@@ -86,7 +86,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
             cursoDao.crea(curso);
         }
 
@@ -95,7 +95,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
             cursoDao.crea(curso);
         }
 
@@ -121,11 +121,11 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         cursoDao.crea(curso);
         
         // prueba
-        Curso curso2 = new Curso("TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         cursoDao.crea(curso2);
         Assert.fail("Debio de lanzar excepcion de curso duplicado");
     }
@@ -135,11 +135,11 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         cursoDao.crea(curso);
         
         // prueba
-        Curso curso2 = new Curso("TEST-1", "TEST-1", 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         curso = cursoDao.crea(curso2);
         Assert.assertNotNull(curso2);
         Assert.assertNotNull(curso2.getId());
@@ -150,7 +150,7 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         curso = cursoDao.crea(curso);
 
         // prueba
@@ -170,7 +170,7 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         curso = cursoDao.crea(curso);
         
         // prueba

@@ -7,7 +7,6 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.UniqueConstraint;
@@ -20,7 +19,6 @@ import javax.persistence.Version;
 @Entity
 @Table(name = "sg_cursos", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"codigo", "comunidad_id"})})
-@NamedQuery(name = "buscaPorFiltro", query = "select c from Curso c where upper(c.codigo) like :filtro or upper(c.nombre) like :filtro")
 public class Curso implements Serializable {
 
     private static final long serialVersionUID = -7693918750910761286L;
@@ -33,6 +31,8 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
+    @Column(length = 500, nullable = false)
+    private String descripcion;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
@@ -50,9 +50,10 @@ public class Curso implements Serializable {
     public Curso() {
     }
 
-    public Curso(String codigo, String nombre, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url) {
+    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url) {
         this.codigo = codigo;
         this.nombre = nombre;
+        this.descripcion = descripcion;
         this.comunidadId = comunidadId;
         this.comunidadNombre = comunidadNombre;
         this.maestroId = maestroId;
@@ -117,6 +118,14 @@ public class Curso implements Serializable {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    public String getDescripcion() {
+        return descripcion;
+    }
+
+    public void setDescripcion(String descripcion) {
+        this.descripcion = descripcion;
     }
 
     public Long getComunidadId() {
