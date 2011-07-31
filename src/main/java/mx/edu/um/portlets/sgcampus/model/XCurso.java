@@ -9,22 +9,20 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.Version;
 
 /**
  *
  * @author jdmr
  */
 @Entity
-@Table(name = "sg_cursos")
-public class Curso implements Serializable {
+@Table(name = "sg_xcursos")
+public class XCurso implements Serializable {
 
-    private static final long serialVersionUID = -7693918750910761286L;
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @Version
-    private Integer version;
+    @Column(name = "curso_id", nullable = false)
+    private Long cursoId;
     @Column(length = 32, nullable = false)
     private String codigo;
     @Column(length = 128, nullable = false)
@@ -33,35 +31,38 @@ public class Curso implements Serializable {
     private String descripcion;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
-    @Column(name = "comunidad_nombre", length = 128)
-    private String comunidadNombre;
     @Column(name = "maestro_id", nullable = false)
     private Long maestroId;
-    @Column(name = "maestro_nombre", length = 128)
-    private String maestroNombre;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date inicia;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date termina;
     @Column(length = 254)
     private String url;
+    @Column(length = 32, nullable = false)
+    private String accion;
+    @Column(name = "creador_id", nullable = false)
+    private Long creadorId;
+    @Temporal(javax.persistence.TemporalType.TIMESTAMP)
+    @Column(nullable = false)
+    private Date creado = new Date();
 
-    public Curso() {
+    public XCurso() {
     }
 
-    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url) {
+    public XCurso(Long cursoId, String codigo, String nombre, String descripcion, Long comunidadId, Long maestroId, Date inicia, Date termina, String url, String accion, Long creadorId) {
+        this.cursoId = cursoId;
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.comunidadId = comunidadId;
-        this.comunidadNombre = comunidadNombre;
         this.maestroId = maestroId;
-        this.maestroNombre = maestroNombre;
         this.inicia = inicia;
         this.termina = termina;
         this.url = url;
+        this.accion = accion;
+        this.creadorId = creadorId;
     }
-    
 
     /**
      * @return the id
@@ -78,17 +79,17 @@ public class Curso implements Serializable {
     }
 
     /**
-     * @return the version
+     * @return the cursoId
      */
-    public Integer getVersion() {
-        return version;
+    public Long getCursoId() {
+        return cursoId;
     }
 
     /**
-     * @param version the version to set
+     * @param cursoId the cursoId to set
      */
-    public void setVersion(Integer version) {
-        this.version = version;
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
     }
 
     /**
@@ -119,28 +120,32 @@ public class Curso implements Serializable {
         this.nombre = nombre;
     }
 
+    /**
+     * @return the descripcion
+     */
     public String getDescripcion() {
         return descripcion;
     }
 
+    /**
+     * @param descripcion the descripcion to set
+     */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
+    /**
+     * @return the comunidadId
+     */
     public Long getComunidadId() {
         return comunidadId;
     }
 
+    /**
+     * @param comunidadId the comunidadId to set
+     */
     public void setComunidadId(Long comunidadId) {
         this.comunidadId = comunidadId;
-    }
-
-    public String getComunidadNombre() {
-        return comunidadNombre;
-    }
-
-    public void setComunidadNombre(String comunidadNombre) {
-        this.comunidadNombre = comunidadNombre;
     }
 
     /**
@@ -155,20 +160,6 @@ public class Curso implements Serializable {
      */
     public void setMaestroId(Long maestroId) {
         this.maestroId = maestroId;
-    }
-
-    /**
-     * @return the maestroNombre
-     */
-    public String getMaestroNombre() {
-        return maestroNombre;
-    }
-
-    /**
-     * @param maestroNombre the maestroNombre to set
-     */
-    public void setMaestroNombre(String maestroNombre) {
-        this.maestroNombre = maestroNombre;
     }
 
     /**
@@ -212,7 +203,49 @@ public class Curso implements Serializable {
     public void setUrl(String url) {
         this.url = url;
     }
-    
+
+    /**
+     * @return the accion
+     */
+    public String getAccion() {
+        return accion;
+    }
+
+    /**
+     * @param accion the accion to set
+     */
+    public void setAccion(String accion) {
+        this.accion = accion;
+    }
+
+    /**
+     * @return the creadorId
+     */
+    public Long getCreadorId() {
+        return creadorId;
+    }
+
+    /**
+     * @param creadorId the creadorId to set
+     */
+    public void setCreadorId(Long creadorId) {
+        this.creadorId = creadorId;
+    }
+
+    /**
+     * @return the creado
+     */
+    public Date getCreado() {
+        return creado;
+    }
+
+    /**
+     * @param creado the creado to set
+     */
+    public void setCreado(Date creado) {
+        this.creado = creado;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -221,7 +254,7 @@ public class Curso implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Curso other = (Curso) obj;
+        final XCurso other = (XCurso) obj;
         if (this.getId() != other.getId() && (this.getId() == null || !this.id.equals(other.id))) {
             return false;
         }
@@ -230,14 +263,13 @@ public class Curso implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 19 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
+        int hash = 5;
+        hash = 37 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
         return hash;
     }
 
     @Override
     public String toString() {
-        return getCodigo();
+        return "XCurso{" + "id=" + getId() + ", cursoId=" + getCursoId() + ", codigo=" + getCodigo() + '}';
     }
-
 }

@@ -16,7 +16,6 @@ import org.springframework.test.context.ContextConfiguration;
 import org.springframework.test.context.junit4.SpringJUnit4ClassRunner;
 import org.springframework.transaction.annotation.Transactional;
 import org.junit.Test;
-import org.springframework.dao.DataIntegrityViolationException;
 
 /**
  *
@@ -47,7 +46,7 @@ public class CursoDaoTest {
             sb.append(i);
             String nombre = sb.toString();
             Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-            cursoDao.crea(curso);
+            cursoDao.crea(curso, 1L);
         }
 
         for (int i = 1; i <= 10; i++) {
@@ -56,7 +55,7 @@ public class CursoDaoTest {
             sb.append(i);
             String nombre = sb.toString();
             Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-            cursoDao.crea(curso);
+            cursoDao.crea(curso, 1L);
         }
 
         // Prueba
@@ -87,7 +86,7 @@ public class CursoDaoTest {
             sb.append(i);
             String nombre = sb.toString();
             Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-            cursoDao.crea(curso);
+            cursoDao.crea(curso, 1L);
         }
 
         for (int i = 1; i <= 10; i++) {
@@ -96,7 +95,7 @@ public class CursoDaoTest {
             sb.append(i);
             String nombre = sb.toString();
             Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-            cursoDao.crea(curso);
+            cursoDao.crea(curso, 1L);
         }
 
         // Prueba
@@ -116,31 +115,17 @@ public class CursoDaoTest {
         Assert.assertTrue(cursos.size() == 11);
     }
 
-    @Test(expected=DataIntegrityViolationException.class)
-    public void noDebieraCrearCursoDuplicado() {
-        // inicializacion
-        DateTime date = new DateTime();
-        DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        cursoDao.crea(curso);
-        
-        // prueba
-        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        cursoDao.crea(curso2);
-        Assert.fail("Debio de lanzar excepcion de curso duplicado");
-    }
-
     @Test
     public void debieraCrearCursoDuplicadoEnOtraComunidad() {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
         Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        cursoDao.crea(curso);
+        cursoDao.crea(curso, 1L);
         
         // prueba
         Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        curso = cursoDao.crea(curso2);
+        curso = cursoDao.crea(curso2, 1L);
         Assert.assertNotNull(curso2);
         Assert.assertNotNull(curso2.getId());
     }
@@ -151,12 +136,12 @@ public class CursoDaoTest {
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
         Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        curso = cursoDao.crea(curso);
+        curso = cursoDao.crea(curso, 1L);
 
         // prueba
         curso = cursoDao.obtiene(curso.getId());
         curso.setNombre("TEST-2");
-        curso = cursoDao.actualiza(curso);
+        curso = cursoDao.actualiza(curso, 1L);
         Assert.assertNotNull(curso);
         Assert.assertEquals("TEST-2", curso.getNombre());
         
@@ -171,10 +156,10 @@ public class CursoDaoTest {
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
         Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
-        curso = cursoDao.crea(curso);
+        curso = cursoDao.crea(curso, 1L);
         
         // prueba
-        cursoDao.elimina(curso.getId());
+        cursoDao.elimina(curso.getId(), 1L);
         curso = cursoDao.obtiene(curso.getId());
         Assert.assertNull(curso);
     }
