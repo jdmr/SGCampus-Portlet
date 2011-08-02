@@ -38,6 +38,13 @@ public class Sesion implements Serializable {
     public Sesion() {
     }
 
+    public Sesion(Integer dia, Date horaInicial, Date horaFinal) {
+        this.dia = dia;
+        this.horaInicial = horaInicial;
+        this.horaFinal = horaFinal;
+    }
+    
+
     /**
      * @return the id
      */

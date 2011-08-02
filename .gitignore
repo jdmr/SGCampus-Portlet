@@ -6,4 +6,4 @@ target
 web-app/WEB-INF/classes
 *.orig
 /.settings/
-*.log
+*.log*

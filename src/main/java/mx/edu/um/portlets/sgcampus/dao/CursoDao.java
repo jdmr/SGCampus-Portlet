@@ -6,6 +6,7 @@ import java.util.Map;
 import java.util.Set;
 import mx.edu.um.portlets.sgcampus.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.model.XCurso;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
@@ -43,6 +44,9 @@ public class CursoDao {
 
     public Curso crea(Curso curso, Long creadorId) {
         log.info("Creando el curso {}", curso);
+        if (curso.getInicia() != null && curso.getTermina() != null && curso.getInicia().after(curso.getTermina())) {
+            throw new RuntimeException("La fecha inicial debe ser antes de la que termina");
+        }
         Long id = (Long) hibernateTemplate.save(curso);
         XCurso xcurso = new XCurso();
         BeanUtils.copyProperties(curso, xcurso);
@@ -55,7 +59,7 @@ public class CursoDao {
         return curso;
     }
 
-    @Transactional(readOnly=true)
+    @Transactional(readOnly = true)
     public Map<String, Object> busca(Map<String, Object> params) {
         DetachedCriteria criteria = DetachedCriteria.forClass(Curso.class);
         DetachedCriteria countCriteria = DetachedCriteria.forClass(Curso.class);
@@ -73,12 +77,12 @@ public class CursoDao {
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
             }
-            
+
             if (params.containsKey("comunidades")) {
                 criteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
                 countCriteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
             }
-            
+
             Integer max = 0;
             if (params.containsKey("max")) {
                 max = (Integer) params.get("max");
@@ -90,17 +94,17 @@ public class CursoDao {
             if (params.containsKey("order")) {
                 if (params.containsKey("sort")) {
                     if (params.get("sort").equals(Constantes.ASC)) {
-                        criteria.addOrder(Order.asc((String)params.get("order")));
+                        criteria.addOrder(Order.asc((String) params.get("order")));
                     } else {
-                        criteria.addOrder(Order.desc((String)params.get("order")));
+                        criteria.addOrder(Order.desc((String) params.get("order")));
                     }
                 } else {
-                    criteria.addOrder(Order.asc((String)params.get("order")));
+                    criteria.addOrder(Order.asc((String) params.get("order")));
                 }
             } else {
                 criteria.addOrder(Order.desc("inicia"));
             }
-            
+
             cursos = hibernateTemplate.findByCriteria(criteria, offset, max);
         } else {
             criteria.addOrder(Order.desc("inicia"));
@@ -126,13 +130,19 @@ public class CursoDao {
         hibernateTemplate.save(xcurso);
         return curso;
     }
-    
-    @Transactional(readOnly=true)
+
+    @Transactional(readOnly = true)
     public Curso obtiene(Long id) {
         Curso curso = hibernateTemplate.get(Curso.class, id);
         return curso;
     }
     
+    @Transactional(readOnly = true)
+    public Curso refresh(Curso curso) {
+        hibernateTemplate.refresh(curso);
+        return curso;
+    }
+
     public void elimina(Long id, Long creadorId) {
         Curso curso = hibernateTemplate.load(Curso.class, id);
         XCurso xcurso = new XCurso();
@@ -142,5 +152,25 @@ public class CursoDao {
         xcurso.setCreadorId(creadorId);
         hibernateTemplate.save(xcurso);
         hibernateTemplate.delete(curso);
+    }
+
+    public Sesion creaSesion(Sesion sesion) {
+        if (sesion.getHoraInicial().before(sesion.getHoraFinal())) {
+            Long id = (Long) hibernateTemplate.save(sesion);
+            sesion.setId(id);
+            return sesion;
+        } else {
+            throw new RuntimeException("La hora final debe ser despues de la hora inicial");
+        }
+    }
+    
+    @Transactional(readOnly = true)
+    public Sesion obtieneSesion(Long id) {
+        return (Sesion) hibernateTemplate.get(Sesion.class, id);
+    }
+
+    public void eliminaSesion(Long id) {
+        Sesion sesion = hibernateTemplate.load(Sesion.class, id);
+        hibernateTemplate.delete(sesion);
     }
 }

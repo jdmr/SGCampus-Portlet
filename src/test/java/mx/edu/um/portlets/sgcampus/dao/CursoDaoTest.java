@@ -1,5 +1,6 @@
 package mx.edu.um.portlets.sgcampus.dao;
 
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -7,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import junit.framework.Assert;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Sesion;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.slf4j.Logger;
@@ -162,5 +164,71 @@ public class CursoDaoTest {
         cursoDao.elimina(curso.getId(), 1L);
         curso = cursoDao.obtiene(curso.getId());
         Assert.assertNull(curso);
+    }
+    
+    @Test
+    public void debieraCrearUnaSesion() {
+        log.debug("Debiera crear una sesion");
+        // inicializacion
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        curso = cursoDao.crea(curso, 1L);
+        log.debug("inicializado");
+
+        // prueba
+        Sesion sesion = new Sesion(1,new Date(), new Date());
+        sesion.setCurso(curso);
+        log.debug("Creando sesion");
+        sesion = cursoDao.creaSesion(sesion);
+        log.debug("Sesion {}", sesion);
+        
+        // validaciones
+        Assert.assertNotNull(sesion);
+        Assert.assertNotNull(sesion.getId());
+        curso = cursoDao.refresh(curso);
+        log.debug("Curso {}", curso);
+        log.debug("Sesiones {}", curso.getSesiones());
+        if (curso.getSesiones() != null && curso.getSesiones().size() == 1) {
+            for(Sesion x : curso.getSesiones()) {
+                Assert.assertEquals(sesion, x);
+            }
+        } else {
+            Assert.fail("Debiera haber sesiones");
+        }
+    }
+    
+    @Test
+    public void debieraEliminarUnaSesion() {
+        log.debug("Debiera eliminar una sesion");
+        // inicializacion
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        curso = cursoDao.crea(curso, 1L);
+        log.debug("inicializado");
+
+        // prueba
+        Sesion sesion = new Sesion(1,new Date(), new Date());
+        sesion.setCurso(curso);
+        sesion = cursoDao.creaSesion(sesion);
+        
+        // validaciones
+        Assert.assertNotNull(sesion);
+        Assert.assertNotNull(sesion.getId());
+        curso = cursoDao.refresh(curso);
+        if (curso.getSesiones() != null && curso.getSesiones().size() == 1) {
+            for(Sesion x : curso.getSesiones()) {
+                Assert.assertEquals(sesion, x);
+                
+                Long sesionId = sesion.getId();
+                cursoDao.eliminaSesion(sesionId);
+                
+                Sesion y = cursoDao.obtieneSesion(sesionId);
+                Assert.assertNull("No deberia de encontrar la sesion",y);
+            }
+        } else {
+            Assert.fail("Debiera haber sesiones");
+        }
     }
 }

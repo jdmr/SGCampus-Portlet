@@ -2,11 +2,13 @@ package mx.edu.um.portlets.sgcampus.model;
 
 import java.io.Serializable;
 import java.util.Date;
+import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.Version;
@@ -45,6 +47,8 @@ public class Curso implements Serializable {
     private Date termina;
     @Column(length = 254)
     private String url;
+    @OneToMany(mappedBy="curso")
+    private Set<Sesion> sesiones;
 
     public Curso() {
     }
@@ -211,6 +215,14 @@ public class Curso implements Serializable {
      */
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    public Set<Sesion> getSesiones() {
+        return sesiones;
+    }
+
+    public void setSesiones(Set<Sesion> sesiones) {
+        this.sesiones = sesiones;
     }
     
     @Override
