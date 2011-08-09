@@ -1,5 +1,6 @@
 package mx.edu.um.portlets.sgcampus.dao;
 
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -7,6 +8,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import junit.framework.Assert;
+import mx.edu.um.portlets.sgcampus.Constantes;
+import mx.edu.um.portlets.sgcampus.model.Alumno;
+import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import org.joda.time.DateTime;
@@ -177,7 +181,9 @@ public class CursoDaoTest {
         log.debug("inicializado");
 
         // prueba
-        Sesion sesion = new Sesion(1,new Date(), new Date());
+        DateTime date3 = date.plusHours(2);
+        log.debug("{} | {}", date, date3);
+        Sesion sesion = new Sesion(1,date.toDate(), date3.toDate());
         sesion.setCurso(curso);
         log.debug("Creando sesion");
         sesion = cursoDao.creaSesion(sesion);
@@ -209,7 +215,8 @@ public class CursoDaoTest {
         log.debug("inicializado");
 
         // prueba
-        Sesion sesion = new Sesion(1,new Date(), new Date());
+        DateTime date3 = date.plusHours(2);
+        Sesion sesion = new Sesion(1,date.toDate(), date3.toDate());
         sesion.setCurso(curso);
         sesion = cursoDao.creaSesion(sesion);
         
@@ -230,5 +237,108 @@ public class CursoDaoTest {
         } else {
             Assert.fail("Debiera haber sesiones");
         }
+    }
+    
+    @Test
+    public void debieraInscribirAlumno() {
+        // inicializacion
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        curso = cursoDao.crea(curso, 1L);
+        
+        Alumno alumno = new Alumno();
+        alumno.setAlumnoId(1L);
+        alumno.setUsuario("admin");
+        alumno.setNombreCompleto("Admin User");
+        alumno.setCorreo("admin@test.com");
+        alumno.setFecha(new Date());
+        alumno = cursoDao.creaAlumno(alumno);
+        
+        log.debug("inicializado");
+        AlumnoCurso alumnoCurso = new AlumnoCurso();
+        alumnoCurso.setAlumno(alumno);
+        alumnoCurso.setCurso(curso);
+        alumnoCurso.setAlta(new Date());
+        alumnoCurso.setUsuarioAlta(1L);
+        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+
+        Assert.assertNotNull(alumnoCurso);
+        alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso.getId());
+        Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso.getEstatus());
+        
+        alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
+        
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso.getId());
+        Assert.assertEquals(Constantes.INSCRITO, alumnoCurso.getEstatus());
+    }
+
+    @Test
+    public void debieraEvaluarCurso() {
+        // inicializacion
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        curso = cursoDao.crea(curso, 1L);
+        
+        Alumno alumno = new Alumno();
+        alumno.setAlumnoId(1L);
+        alumno.setUsuario("admin");
+        alumno.setNombreCompleto("Admin User");
+        alumno.setCorreo("admin@test.com");
+        alumno.setFecha(new Date());
+        alumno = cursoDao.creaAlumno(alumno);
+        
+        Alumno alumno2 = new Alumno();
+        alumno2.setAlumnoId(2L);
+        alumno2.setUsuario("admin2");
+        alumno2.setNombreCompleto("Admin2 User");
+        alumno2.setCorreo("admin2@test.com");
+        alumno2.setFecha(new Date());
+        alumno2 = cursoDao.creaAlumno(alumno2);
+        
+        AlumnoCurso alumnoCurso = new AlumnoCurso();
+        alumnoCurso.setAlumno(alumno);
+        alumnoCurso.setCurso(curso);
+        alumnoCurso.setAlta(new Date());
+        alumnoCurso.setUsuarioAlta(1L);
+        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso.getId());
+        Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso.getEstatus());
+
+        AlumnoCurso alumnoCurso2 = new AlumnoCurso();
+        alumnoCurso2.setAlumno(alumno2);
+        alumnoCurso2.setCurso(curso);
+        alumnoCurso2.setAlta(new Date());
+        alumnoCurso2.setUsuarioAlta(2L);
+        alumnoCurso2.setUsuarioAltaNombre("Admin2 User");
+        alumnoCurso2 = cursoDao.preInscribeAlumno(alumnoCurso2);
+        Assert.assertNotNull(alumnoCurso2);
+        alumnoCurso2 = cursoDao.refreshAlumnoCurso(alumnoCurso2);
+        Assert.assertNotNull(alumnoCurso2);
+        Assert.assertNotNull(alumnoCurso2.getId());
+        Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso2.getEstatus());
+
+        alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
+        alumnoCurso2 = cursoDao.inscribeAlumno(alumnoCurso2);
+        
+        log.debug("inicializado");
+        alumnoCurso.setEvaluacion(5);
+        alumnoCurso2.setEvaluacion(4);
+        
+        alumnoCurso = cursoDao.evaluacion(alumnoCurso);
+        alumnoCurso2 = cursoDao.evaluacion(alumnoCurso2);
+        
+        curso = alumnoCurso2.getCurso();
+        Assert.assertEquals(new BigDecimal("4.5"), curso.getEvaluacion());
     }
 }

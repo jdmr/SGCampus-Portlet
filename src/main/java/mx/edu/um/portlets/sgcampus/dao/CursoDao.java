@@ -1,10 +1,13 @@
 package mx.edu.um.portlets.sgcampus.dao;
 
+import java.math.BigDecimal;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import mx.edu.um.portlets.sgcampus.Constantes;
+import mx.edu.um.portlets.sgcampus.model.Alumno;
+import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.model.XCurso;
@@ -136,7 +139,7 @@ public class CursoDao {
         Curso curso = hibernateTemplate.get(Curso.class, id);
         return curso;
     }
-    
+
     @Transactional(readOnly = true)
     public Curso refresh(Curso curso) {
         hibernateTemplate.refresh(curso);
@@ -160,10 +163,11 @@ public class CursoDao {
             sesion.setId(id);
             return sesion;
         } else {
+            log.debug("Hora inicial: {} | Hora final: {}", sesion.getHoraInicial(), sesion.getHoraFinal());
             throw new RuntimeException("La hora final debe ser despues de la hora inicial");
         }
     }
-    
+
     @Transactional(readOnly = true)
     public Sesion obtieneSesion(Long id) {
         return (Sesion) hibernateTemplate.get(Sesion.class, id);
@@ -172,5 +176,56 @@ public class CursoDao {
     public void eliminaSesion(Long id) {
         Sesion sesion = hibernateTemplate.load(Sesion.class, id);
         hibernateTemplate.delete(sesion);
+    }
+
+    public Alumno creaAlumno(Alumno alumno) {
+        Long id = (Long) hibernateTemplate.save(alumno);
+        alumno.setId(id);
+        alumno.setVersion(0);
+        return alumno;
+    }
+
+    public AlumnoCurso preInscribeAlumno(AlumnoCurso alumnoCurso) {
+        alumnoCurso.setEstatus(Constantes.PENDIENTE);
+        Long id = (Long) hibernateTemplate.save(alumnoCurso);
+        alumnoCurso.setId(id);
+        alumnoCurso.setVersion(0);
+        return alumnoCurso;
+    }
+
+    public AlumnoCurso inscribeAlumno(AlumnoCurso alumnoCurso) {
+        alumnoCurso.setEstatus(Constantes.INSCRITO);
+        hibernateTemplate.update(alumnoCurso);
+        return alumnoCurso;
+    }
+
+    public AlumnoCurso rechazaAlumno(AlumnoCurso alumnoCurso) {
+        alumnoCurso.setEstatus(Constantes.RECHAZADO);
+        hibernateTemplate.update(alumnoCurso);
+        return alumnoCurso;
+    }
+
+    @Transactional(readOnly = true)
+    public AlumnoCurso refreshAlumnoCurso(AlumnoCurso alumnoCurso) {
+        hibernateTemplate.refresh(alumnoCurso);
+        return alumnoCurso;
+    }
+
+    public AlumnoCurso evaluacion(AlumnoCurso alumnoCurso) {
+        hibernateTemplate.update(alumnoCurso);
+        Curso curso = alumnoCurso.getCurso();
+        hibernateTemplate.refresh(curso);
+        DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
+        criteria.add(Restrictions.eq("curso", curso));
+        List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
+        Integer total = 0;
+        for(AlumnoCurso x : evaluaciones) {
+            total+=x.getEvaluacion();
+        }
+        BigDecimal evaluacion = new BigDecimal(total).divide(new BigDecimal(evaluaciones.size()));
+        curso.setEvaluacion(evaluacion);
+        hibernateTemplate.update(curso);
+        alumnoCurso.setCurso(curso);
+        return alumnoCurso;
     }
 }

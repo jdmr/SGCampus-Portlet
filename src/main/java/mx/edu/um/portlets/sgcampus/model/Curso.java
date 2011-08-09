@@ -1,6 +1,7 @@
 package mx.edu.um.portlets.sgcampus.model;
 
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
 import javax.persistence.Column;
@@ -47,6 +48,8 @@ public class Curso implements Serializable {
     private Date termina;
     @Column(length = 254)
     private String url;
+    @Column(scale=2,precision=8)
+    private BigDecimal evaluacion;
     @OneToMany(mappedBy="curso")
     private Set<Sesion> sesiones;
 
@@ -65,7 +68,6 @@ public class Curso implements Serializable {
         this.termina = termina;
         this.url = url;
     }
-    
 
     /**
      * @return the id
@@ -123,26 +125,44 @@ public class Curso implements Serializable {
         this.nombre = nombre;
     }
 
+    /**
+     * @return the descripcion
+     */
     public String getDescripcion() {
         return descripcion;
     }
 
+    /**
+     * @param descripcion the descripcion to set
+     */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
     }
 
+    /**
+     * @return the comunidadId
+     */
     public Long getComunidadId() {
         return comunidadId;
     }
 
+    /**
+     * @param comunidadId the comunidadId to set
+     */
     public void setComunidadId(Long comunidadId) {
         this.comunidadId = comunidadId;
     }
 
+    /**
+     * @return the comunidadNombre
+     */
     public String getComunidadNombre() {
         return comunidadNombre;
     }
 
+    /**
+     * @param comunidadNombre the comunidadNombre to set
+     */
     public void setComunidadNombre(String comunidadNombre) {
         this.comunidadNombre = comunidadNombre;
     }
@@ -217,10 +237,30 @@ public class Curso implements Serializable {
         this.url = url;
     }
 
+    /**
+     * @return the evaluacion
+     */
+    public BigDecimal getEvaluacion() {
+        return evaluacion;
+    }
+
+    /**
+     * @param evaluacion the evaluacion to set
+     */
+    public void setEvaluacion(BigDecimal evaluacion) {
+        this.evaluacion = evaluacion;
+    }
+
+    /**
+     * @return the sesiones
+     */
     public Set<Sesion> getSesiones() {
         return sesiones;
     }
 
+    /**
+     * @param sesiones the sesiones to set
+     */
     public void setSesiones(Set<Sesion> sesiones) {
         this.sesiones = sesiones;
     }
