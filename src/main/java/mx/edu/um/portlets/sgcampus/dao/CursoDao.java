@@ -217,6 +217,7 @@ public class CursoDao {
         hibernateTemplate.refresh(curso);
         DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
         criteria.add(Restrictions.eq("curso", curso));
+        criteria.add(Restrictions.isNotNull("evaluacion"));
         List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
         Integer total = 0;
         for(AlumnoCurso x : evaluaciones) {
@@ -224,6 +225,25 @@ public class CursoDao {
         }
         BigDecimal evaluacion = new BigDecimal(total).divide(new BigDecimal(evaluaciones.size()));
         curso.setEvaluacion(evaluacion);
+        hibernateTemplate.update(curso);
+        alumnoCurso.setCurso(curso);
+        return alumnoCurso;
+    }
+
+    public AlumnoCurso califica(AlumnoCurso alumnoCurso) {
+        hibernateTemplate.update(alumnoCurso);
+        Curso curso = alumnoCurso.getCurso();
+        hibernateTemplate.refresh(curso);
+        DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
+        criteria.add(Restrictions.eq("curso", curso));
+        criteria.add(Restrictions.isNotNull("calificacion"));
+        List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
+        BigDecimal total = new BigDecimal("0");
+        for(AlumnoCurso x : evaluaciones) {
+            total = x.getCalificacion().add(total);
+        }
+        BigDecimal calificacionPromedio = total.divide(new BigDecimal(evaluaciones.size()));
+        curso.setCalificacion(calificacionPromedio);
         hibernateTemplate.update(curso);
         alumnoCurso.setCurso(curso);
         return alumnoCurso;

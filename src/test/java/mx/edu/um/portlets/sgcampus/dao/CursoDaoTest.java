@@ -341,4 +341,51 @@ public class CursoDaoTest {
         curso = alumnoCurso2.getCurso();
         Assert.assertEquals(new BigDecimal("4.5"), curso.getEvaluacion());
     }
+    
+    @Test
+    public void debieraEvaluarAAlumno() {
+        // inicializacion
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        curso = cursoDao.crea(curso, 1L);
+        
+        Alumno alumno = new Alumno();
+        alumno.setAlumnoId(1L);
+        alumno.setUsuario("admin");
+        alumno.setNombreCompleto("Admin User");
+        alumno.setCorreo("admin@test.com");
+        alumno.setFecha(new Date());
+        alumno = cursoDao.creaAlumno(alumno);
+        
+        AlumnoCurso alumnoCurso = new AlumnoCurso();
+        alumnoCurso.setAlumno(alumno);
+        alumnoCurso.setCurso(curso);
+        alumnoCurso.setAlta(new Date());
+        alumnoCurso.setUsuarioAlta(1L);
+        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+
+        Assert.assertNotNull(alumnoCurso);
+        alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso.getId());
+        Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso.getEstatus());
+        
+        alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
+        
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso.getId());
+        Assert.assertEquals(Constantes.INSCRITO, alumnoCurso.getEstatus());
+        
+        log.debug("inicializado");
+        alumnoCurso.setCalificacion(new BigDecimal(100));
+        
+        cursoDao.califica(alumnoCurso);
+        
+        alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
+        Assert.assertNotNull(alumnoCurso);
+        Assert.assertEquals(new BigDecimal("100"), alumnoCurso.getCalificacion());
+        Assert.assertEquals(new BigDecimal("100"), curso.getCalificacion());
+    }
 }

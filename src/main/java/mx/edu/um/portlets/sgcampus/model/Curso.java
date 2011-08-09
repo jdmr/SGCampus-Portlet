@@ -48,9 +48,11 @@ public class Curso implements Serializable {
     private Date termina;
     @Column(length = 254)
     private String url;
-    @Column(scale=2,precision=8)
+    @Column(scale = 2, precision = 8)
     private BigDecimal evaluacion;
-    @OneToMany(mappedBy="curso")
+    @Column(scale = 2, precision = 8)
+    private BigDecimal calificacion;
+    @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
 
     public Curso() {
@@ -252,6 +254,20 @@ public class Curso implements Serializable {
     }
 
     /**
+     * @return the calificacion
+     */
+    public BigDecimal getCalificacion() {
+        return evaluacion;
+    }
+
+    /**
+     * @param calificacion the calificacion to set
+     */
+    public void setCalificacion(BigDecimal calificacion) {
+        this.evaluacion = calificacion;
+    }
+
+    /**
      * @return the sesiones
      */
     public Set<Sesion> getSesiones() {
@@ -264,7 +280,7 @@ public class Curso implements Serializable {
     public void setSesiones(Set<Sesion> sesiones) {
         this.sesiones = sesiones;
     }
-    
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -291,5 +307,4 @@ public class Curso implements Serializable {
     public String toString() {
         return getCodigo();
     }
-
 }
