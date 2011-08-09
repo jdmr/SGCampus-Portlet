@@ -12,6 +12,7 @@ import mx.edu.um.portlets.sgcampus.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Etiqueta;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -385,7 +386,26 @@ public class CursoDaoTest {
         
         alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
         Assert.assertNotNull(alumnoCurso);
-        Assert.assertEquals(new BigDecimal("100"), alumnoCurso.getCalificacion());
-        Assert.assertEquals(new BigDecimal("100"), curso.getCalificacion());
+        Assert.assertEquals(new BigDecimal("100").intValue(), alumnoCurso.getCalificacion().intValue());
+        Assert.assertEquals(new BigDecimal("100").intValue(), curso.getCalificacion().intValue());
     }
+    
+    @Test
+    public void debieraCrearCursoConEtiquetas() {
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
+        etiquetas.add(new Etiqueta("TEST1"));
+        etiquetas.add(new Etiqueta("TEST2"));
+        curso.setEtiquetas(etiquetas);
+        curso = cursoDao.crea(curso, 1L);
+        
+        curso = cursoDao.refresh(curso);
+        Assert.assertNotNull(curso.getEtiquetas());
+        for(Etiqueta etiqueta : curso.getEtiquetas()) {
+            Assert.assertTrue(etiqueta.getNombre().startsWith("TEST"));
+        }
+    }
+    
 }

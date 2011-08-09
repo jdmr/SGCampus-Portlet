@@ -20,7 +20,7 @@ import mx.edu.um.portlets.sgcampus.Constantes;
  * @author jdmr
  */
 @Entity
-@Table(name = "alumno_curso", uniqueConstraints = {
+@Table(name = "sg_alumno_curso", uniqueConstraints = {
     @UniqueConstraint(columnNames = {"alumno_id", "curso_id"})})
 public class AlumnoCurso implements Serializable {
 

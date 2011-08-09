@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -54,6 +55,8 @@ public class Curso implements Serializable {
     private BigDecimal calificacion;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
+    @ManyToMany
+    private Set<Etiqueta> etiquetas;
 
     public Curso() {
     }
@@ -257,14 +260,14 @@ public class Curso implements Serializable {
      * @return the calificacion
      */
     public BigDecimal getCalificacion() {
-        return evaluacion;
+        return calificacion;
     }
 
     /**
      * @param calificacion the calificacion to set
      */
     public void setCalificacion(BigDecimal calificacion) {
-        this.evaluacion = calificacion;
+        this.calificacion = calificacion;
     }
 
     /**
@@ -279,6 +282,14 @@ public class Curso implements Serializable {
      */
     public void setSesiones(Set<Sesion> sesiones) {
         this.sesiones = sesiones;
+    }
+
+    public Set<Etiqueta> getEtiquetas() {
+        return etiquetas;
+    }
+
+    public void setEtiquetas(Set<Etiqueta> etiquetas) {
+        this.etiquetas = etiquetas;
     }
 
     @Override
