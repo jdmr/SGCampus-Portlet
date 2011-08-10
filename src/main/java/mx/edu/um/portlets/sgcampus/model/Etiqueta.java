@@ -17,6 +17,7 @@ import javax.persistence.UniqueConstraint;
 public class Etiqueta implements Serializable {
 
     @Id
+    @Column(length=64)
     private String nombre;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
