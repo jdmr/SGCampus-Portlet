@@ -396,8 +396,8 @@ public class CursoDaoTest {
         DateTime date2 = date.plusMonths(1);
         Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
         Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
-        etiquetas.add(new Etiqueta("TEST1"));
-        etiquetas.add(new Etiqueta("TEST2"));
+        etiquetas.add(new Etiqueta("TEST1", 1L));
+        etiquetas.add(new Etiqueta("TEST2", 1L));
         curso.setEtiquetas(etiquetas);
         curso = cursoDao.crea(curso, 1L);
         
@@ -406,6 +406,32 @@ public class CursoDaoTest {
         for(Etiqueta etiqueta : curso.getEtiquetas()) {
             Assert.assertTrue(etiqueta.getNombre().startsWith("TEST"));
         }
+    }
+    
+    public void debieraEncontrarCusoConEtiqueta() {
+        DateTime date = new DateTime();
+        DateTime date2 = date.plusMonths(1);
+        Curso curso  = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Curso curso2 = new Curso("TEST-2", "TEST-2", "TEST-2", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com");
+        Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
+        etiquetas.add(new Etiqueta("TEST", 1L));
+        etiquetas.add(new Etiqueta("PRUEBA", 1L));
+        curso.setEtiquetas(etiquetas);
+        curso  = cursoDao.crea(curso,  1L);
+        curso2 = cursoDao.crea(curso2, 1L);
+
+        List<Curso> cursos = cursoDao.buscaPorEtiqueta(new Etiqueta("TEST", 1L));
+        Assert.assertNotNull(cursos);
+        boolean encontrado = false;
+        for(Curso x : cursos) {
+            if (x.getNombre().equals("TEST-1")) {
+                encontrado = true;
+            }
+            if (x.getNombre().equals("TEST-2")) {
+                Assert.fail("Este curso no tiene esa etiqueta");
+            }
+        }
+        Assert.assertTrue("Debio encontrar el curso", encontrado);
     }
     
 }

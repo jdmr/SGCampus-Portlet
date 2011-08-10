@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
@@ -56,6 +57,7 @@ public class Curso implements Serializable {
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
     @ManyToMany
+    @JoinTable(name="sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
 
     public Curso() {

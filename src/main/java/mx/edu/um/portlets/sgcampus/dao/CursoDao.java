@@ -9,8 +9,11 @@ import mx.edu.um.portlets.sgcampus.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Etiqueta;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.model.XCurso;
+import org.hibernate.Criteria;
+import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
@@ -220,8 +223,8 @@ public class CursoDao {
         criteria.add(Restrictions.isNotNull("evaluacion"));
         List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
         Integer total = 0;
-        for(AlumnoCurso x : evaluaciones) {
-            total+=x.getEvaluacion();
+        for (AlumnoCurso x : evaluaciones) {
+            total += x.getEvaluacion();
         }
         BigDecimal evaluacion = new BigDecimal(total).divide(new BigDecimal(evaluaciones.size()));
         curso.setEvaluacion(evaluacion);
@@ -239,7 +242,7 @@ public class CursoDao {
         criteria.add(Restrictions.isNotNull("calificacion"));
         List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
         BigDecimal total = new BigDecimal("0");
-        for(AlumnoCurso x : evaluaciones) {
+        for (AlumnoCurso x : evaluaciones) {
             total = x.getCalificacion().add(total);
         }
         BigDecimal calificacionPromedio = total.divide(new BigDecimal(evaluaciones.size()));
@@ -247,5 +250,14 @@ public class CursoDao {
         hibernateTemplate.update(curso);
         alumnoCurso.setCurso(curso);
         return alumnoCurso;
+    }
+
+    public List<Curso> buscaPorEtiqueta(Etiqueta etiqueta) {
+        log.debug("Buscando curso por etiqueta {}", etiqueta);
+        Session session = hibernateTemplate.getSessionFactory().openSession();
+        Criteria criteria = session.createCriteria(Curso.class);
+        log.debug("Haciendo query");
+        List<Curso> cursos = (List<Curso>) criteria.createCriteria("etiquetas").add(Restrictions.ilike("nombre", etiqueta.getNombre())).list();
+        return cursos;
     }
 }
