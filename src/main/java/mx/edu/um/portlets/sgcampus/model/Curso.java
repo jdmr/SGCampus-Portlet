@@ -54,6 +54,8 @@ public class Curso implements Serializable {
     private BigDecimal evaluacion;
     @Column(scale = 2, precision = 8)
     private BigDecimal calificacion;
+    @Column(length = 64)
+    private String tipo;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
     @ManyToMany
@@ -63,7 +65,7 @@ public class Curso implements Serializable {
     public Curso() {
     }
 
-    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url) {
+    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url, String tipo) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
@@ -74,6 +76,7 @@ public class Curso implements Serializable {
         this.inicia = inicia;
         this.termina = termina;
         this.url = url;
+        this.tipo = tipo;
     }
 
     /**
@@ -273,6 +276,20 @@ public class Curso implements Serializable {
     }
 
     /**
+     * @return the tipo
+     */
+    public String getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    /**
      * @return the sesiones
      */
     public Set<Sesion> getSesiones() {
@@ -286,10 +303,16 @@ public class Curso implements Serializable {
         this.sesiones = sesiones;
     }
 
+    /**
+     * @return the etiquetas
+     */
     public Set<Etiqueta> getEtiquetas() {
         return etiquetas;
     }
 
+    /**
+     * @param etiquetas the etiquetas to set
+     */
     public void setEtiquetas(Set<Etiqueta> etiquetas) {
         this.etiquetas = etiquetas;
     }
