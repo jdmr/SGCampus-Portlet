@@ -1,4 +1,4 @@
-package mx.edu.um.portlets.sgcampus;
+package mx.edu.um.portlets.sgcampus.utils;
 
 /**
  *

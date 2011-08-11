@@ -13,7 +13,7 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
-import mx.edu.um.portlets.sgcampus.Constantes;
+import mx.edu.um.portlets.sgcampus.utils.Constantes;
 
 /**
  *

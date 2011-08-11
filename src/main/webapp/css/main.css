@@ -1,0 +1,311 @@
+.Curso body {
+}
+.Curso a:link, a:visited, a:hover {
+    font-weight: bold;
+    text-decoration: none;
+}
+
+.Curso h1 {
+}
+
+.Curso ul {
+    padding-left: 15px;
+}
+
+.Curso input, select, textarea {
+    border: 1px solid #ccc;
+    margin: 2px 0;
+    padding: 2px 4px;
+}
+.Curso select {
+   padding: 2px 2px 2px 0;
+}
+.Curso textarea {
+	width: 250px;
+	height: 150px;
+	vertical-align: top;
+}
+
+.Curso input:focus, select:focus, textarea:focus {
+    border: 1px solid #b2d1ff;
+}
+
+.Curso .body {
+    float: left;
+    margin: 0 15px 10px 15px;
+}
+
+/* MESSAGES AND ERRORS */
+
+.Curso .message {
+    background: #f3f8fc url(../images/skin/information.png) 8px 50% no-repeat;
+    border: 1px solid #b2d1ff;
+    color: #006dba;
+    margin: 10px 0 5px 0;
+    padding: 5px 5px 5px 30px
+}
+
+.Curso div.errors {
+    background: #fff3f3;
+    border: 1px solid red;
+    color: #cc0000;
+    margin: 10px 0 5px 0;
+    padding: 5px 0 5px 0;
+}
+.Curso div.errors ul {
+    list-style: none;
+    padding: 0;
+}
+.Curso div.errors li {
+	background: url(../images/skin/exclamation.png) 8px 0% no-repeat;
+    line-height: 16px;
+    padding-left: 30px;
+}
+
+.Curso td.errors select {
+    border: 1px solid red;
+}
+.Curso td.errors input {
+    border: 1px solid red;
+}
+
+/* TABLES */
+
+.Curso table {
+    border: 1px solid #ccc;
+    width: 100%
+}
+.Curso tr {
+    border: 0;
+}
+.Curso td, th {
+    font: 11px verdana, arial, helvetica, sans-serif;
+    line-height: 12px;
+    padding: 5px 6px;
+    text-align: left;
+    vertical-align: top;
+}
+.Curso th {
+    background: #fff url(../images/skin/shadow.jpg);
+    color: #666;
+    font-size: 11px;
+    font-weight: bold;
+    line-height: 17px;
+    padding: 2px 6px;
+}
+.Curso th a:link, th a:visited, th a:hover {
+    color: #333;
+    display: block;
+    font-size: 10px;
+    text-decoration: none;
+    width: 100%;
+}
+.Curso th.asc a, th.desc a {
+    background-position: right;
+    background-repeat: no-repeat;
+}
+.Curso th.asc a {
+    background-image: url(../images/skin/sorted_asc.gif);
+}
+.Curso th.desc a {
+    background-image: url(../images/skin/sorted_desc.gif);
+}
+
+.Curso .odd {
+    background: #f7f7f7;
+}
+.Curso .even {
+    background: #fff;
+}
+
+/* LIST */
+
+.Curso .list table {
+    border-collapse: collapse;
+}
+.Curso .list th, .list td {
+    border-left: 1px solid #ddd;
+}
+.Curso .list th:hover, .list tr:hover {
+    background: #b2d1ff;
+}
+
+/* PAGINATION */
+
+.Curso .paginateButtons {
+    background: #fff url(../images/skin/shadow.jpg) bottom repeat-x;
+    border: 1px solid #ccc;
+    border-top: 0;
+    color: #666;
+    font-size: 10px;
+    overflow: hidden;
+    padding: 10px 3px;
+}
+.Curso .paginateButtons a {
+    background: #fff;
+    border: 1px solid #ccc;
+    border-color: #ccc #aaa #aaa #ccc;
+    color: #666;
+    margin: 0 3px;
+    padding: 2px 6px;
+}
+.Curso .paginateButtons span {
+    padding: 2px 3px;
+}
+
+/* DIALOG */
+
+.Curso .dialog table {
+    padding: 5px 0;
+}
+
+.Curso .prop {
+    padding: 5px;
+}
+.Curso .prop .name {
+    text-align: left;
+    width: 15%;
+    white-space: nowrap;
+}
+.Curso .prop .value {
+    text-align: left;
+    width: 85%;
+}
+
+.Curso .prop .value .errors {
+    color: red;
+}
+
+/* ACTION BUTTONS */
+
+.Curso .buttons {
+    background: #fff url(../images/skin/shadow.jpg) bottom repeat-x;
+    border: 1px solid #ccc;
+    color: #666;
+    font-size: 10px;
+    margin-top: 5px;
+    overflow: hidden;
+    padding: 0;
+    height: 30px;
+}
+
+.Curso .buttons input {
+    background: #fff;
+    border: 0;
+    color: #333;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 3px;
+    overflow: visible;
+    padding: 2px 6px;
+}
+
+.Curso .buttons a {
+    background: #fff;
+    border: 0;
+    color: #333;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: bold;
+    margin-left: 3px;
+    overflow: visible;
+    padding: 2px 6px;
+}
+
+.Curso .buttons input.delete {
+    background: transparent url(../images/skin/database_delete.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .buttons input.edit {
+    background: transparent url(../images/skin/database_edit.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .buttons input.save {
+    background: transparent url(../images/skin/database_save.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .buttons input.create {
+    background: transparent url(../images/skin/database_add.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .buttons a.edit {
+    background: url(../images/skin/database_edit.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .buttons a.cancel {
+    background: url(../images/skin/database_delete.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .buttons a.delete {
+    background: url(../images/skin/database_delete.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .buttons a.back {
+    background: url(../images/skin/database_table.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+
+.Curso .nav {
+    background: #fff url(../images/skin/shadow.jpg) bottom repeat-x;
+    border: 1px solid #ccc;
+    border-style: solid solid;
+    margin-top: 5px;
+    padding: 10px 0;
+}
+.Curso .nav .menuButton {
+    font-size: 10px;
+}
+.Curso .nav .menuButton a {
+    color: #333;
+}
+.Curso .nav .menuButton a.create {
+    background: url(../images/skin/database_add.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .nav .menuButton input.delete {
+    background: transparent url(../images/skin/database_delete.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .nav .menuButton input.edit {
+    background: transparent url(../images/skin/database_edit.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .nav .menuButton input.save {
+    background: transparent url(../images/skin/database_save.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .nav .menuButton input.create {
+    background: transparent url(../images/skin/database_add.png) 5px 50% no-repeat;
+    padding-left: 28px;
+}
+.Curso .nav .menuButton a.edit {
+    background: url(../images/skin/database_edit.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .nav .menuButton a.cancel {
+    background: url(../images/skin/database_delete.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .nav .menuButton a.delete {
+    background: url(../images/skin/database_delete.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .nav .menuButton a.back {
+    background: url(../images/skin/database_table.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}
+.Curso .nav .menuButton a.list {
+    background: url(../images/skin/database_table.png) center left no-repeat;
+    color: #333;
+    padding: 20px;
+}

@@ -5,7 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import mx.edu.um.portlets.sgcampus.Constantes;
+import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
