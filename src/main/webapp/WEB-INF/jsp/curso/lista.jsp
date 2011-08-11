@@ -26,11 +26,11 @@
                 <thead>
                     <tr>
 
-                        <th><liferay-ui:message key="curso.codigo" /></th>
-
                         <th><liferay-ui:message key="curso.nombre" /></th>
 
-                        <th><liferay-ui:message key="curso.comunidad" /></th>
+                        <th><liferay-ui:message key="curso.inicia" /></th>
+
+                        <th><liferay-ui:message key="curso.tipo" /></th>
 
                     </tr>
                 </thead>
@@ -42,11 +42,11 @@
                         </portlet:renderURL>
                         <tr class="${(status.count % 2) == 0 ? 'odd' : 'even'}">
 
-                            <td><a href="${verCurso}">${curso.codigo}</a></td>
+                            <td><a href="${verCurso}">${curso.nombre}</a></td>
 
-                            <td>${curso.nombre}</td>
+                            <td>${curso.inicia}</td>
 
-                            <td>${curso.comunidadNombre}</td>
+                            <td>${curso.tipo}</td>
 
                     </tr>
                     </c:forEach>
