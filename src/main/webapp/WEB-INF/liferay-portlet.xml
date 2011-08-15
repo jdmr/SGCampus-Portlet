@@ -3,7 +3,13 @@
 
 <liferay-portlet-app>
     <portlet>
-        <portlet-name>cursos</portlet-name>
+        <portlet-name>Cursos</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/main.css</header-portlet-css>
+        <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
+    </portlet>
+    <portlet>
+        <portlet-name>CursosPP</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/main.css</header-portlet-css>
         <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>

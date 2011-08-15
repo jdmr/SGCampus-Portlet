@@ -8,7 +8,7 @@
 >
     <portlet>
         <description>Cursos</description>
-        <portlet-name>cursos</portlet-name>
+        <portlet-name>Cursos</portlet-name>
         <display-name>Cursos</display-name>
         <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
         <init-param>
@@ -21,6 +21,39 @@
             <portlet-mode>VIEW</portlet-mode>
         </supports>
         <resource-bundle>cursos</resource-bundle>
+        <portlet-info>
+            <title>Cursos</title>
+            <short-title>Cursos</short-title>
+            <keywords>curso</keywords>
+        </portlet-info>
+        <security-role-ref>
+            <role-name>administrator</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>guest</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>power-user</role-name>
+        </security-role-ref>
+        <security-role-ref>
+            <role-name>user</role-name>
+        </security-role-ref>
+    </portlet>
+    <portlet>
+        <description>Cursos Página Principal</description>
+        <portlet-name>CursosPP</portlet-name>
+        <display-name>Cursos PP</display-name>
+        <portlet-class>org.springframework.web.portlet.DispatcherPortlet</portlet-class>
+        <init-param>
+            <name>contextConfigLocation</name>
+            <value>/WEB-INF/classes/context/portlet/cursospp.xml</value>
+        </init-param>
+        <expiration-cache>0</expiration-cache>
+        <supports>
+            <mime-type>text/html</mime-type>
+            <portlet-mode>VIEW</portlet-mode>
+        </supports>
+        <resource-bundle>cursospp</resource-bundle>
         <portlet-info>
             <title>Cursos</title>
             <short-title>Cursos</short-title>
