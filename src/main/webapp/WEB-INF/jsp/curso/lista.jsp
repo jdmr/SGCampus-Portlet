@@ -32,6 +32,8 @@
 
                         <th><liferay-ui:message key="curso.tipo" /></th>
 
+                        <th><liferay-ui:message key="curso.estatus" /></th>
+    
                     </tr>
                 </thead>
                 <tbody>
@@ -46,8 +48,10 @@
 
                             <td>${curso.inicia}</td>
 
-                            <td>${curso.tipo}</td>
+                            <td><liferay-ui:message key="${curso.tipo}" /></td>
 
+                            <td><liferay-ui:message key="${curso.estatus}" /></td>
+                    
                     </tr>
                     </c:forEach>
                 </tbody>
@@ -77,6 +81,10 @@
     </c:if>
     <div class="nav">
         <span class="menuButton"><a class="create" href='<portlet:renderURL><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><liferay-ui:message key="curso.nuevo" /></a></span>
+        <c:if test="${puedeAutorizar}">
+            <span class="menuButton"><a class="list" href='<portlet:renderURL><portlet:param name="action" value="pendientes"/></portlet:renderURL>'><liferay-ui:message key="curso.pendientes" /></a></span>
+            <span class="menuButton"><a class="list" href='<portlet:renderURL><portlet:param name="action" value="rechazados"/></portlet:renderURL>'><liferay-ui:message key="curso.rechazados" /></a></span>
+        </c:if>
     </div>
     <script type="text/javascript">
         <c:if test="${cursos != null}">

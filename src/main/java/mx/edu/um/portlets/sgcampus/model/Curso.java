@@ -14,6 +14,7 @@ import javax.persistence.ManyToMany;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 /**
@@ -34,7 +35,7 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 500, nullable = false)
+    @Column(length = 1000, nullable = false)
     private String descripcion;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
@@ -56,6 +57,14 @@ public class Curso implements Serializable {
     private BigDecimal calificacion;
     @Column(length = 64)
     private String tipo;
+    @Column(nullable=false, length=32)
+    private String estatus = "ACTIVO";
+    @Column(length=32)
+    private String telefono;
+    @Column(length=32)
+    private String estado;
+    @Column(length=32)
+    private String pais;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
     @ManyToMany
@@ -290,6 +299,62 @@ public class Curso implements Serializable {
     }
 
     /**
+     * @return the estatus
+     */
+    public String getEstatus() {
+        return estatus;
+    }
+
+    /**
+     * @param estatus the estatus to set
+     */
+    public void setEstatus(String estatus) {
+        this.estatus = estatus;
+    }
+
+    /**
+     * @return the telefono
+     */
+    public String getTelefono() {
+        return telefono;
+    }
+
+    /**
+     * @param telefono the telefono to set
+     */
+    public void setTelefono(String telefono) {
+        this.telefono = telefono;
+    }
+
+    /**
+     * @return the estado
+     */
+    public String getEstado() {
+        return estado;
+    }
+
+    /**
+     * @param estado the estado to set
+     */
+    public void setEstado(String estado) {
+        this.estado = estado;
+    }
+
+    /**
+     * @return the pais
+     */
+    public String getPais() {
+        return pais;
+    }
+
+    /**
+     * @param pais the pais to set
+     */
+    public void setPais(String pais) {
+        this.pais = pais;
+    }
+
+    /**
      * @return the sesiones
      */
     public Set<Sesion> getSesiones() {
@@ -343,4 +408,5 @@ public class Curso implements Serializable {
     public String toString() {
         return getCodigo();
     }
+
 }

@@ -19,6 +19,7 @@ import org.hibernate.criterion.DetachedCriteria;
 import org.hibernate.criterion.Disjunction;
 import org.hibernate.criterion.Order;
 import org.hibernate.criterion.Projections;
+import org.hibernate.criterion.Property;
 import org.hibernate.criterion.Restrictions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,18 @@ public class CursoDao {
                 propiedades.add(Restrictions.ilike("maestroNombre", filtro));
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
+            }
+            
+            if (!params.containsKey("estatus")) {
+                criteria.add(Restrictions.disjunction()
+                        .add(Restrictions.eq("estatus", "ACTIVO"))
+                        .add(Restrictions.eq("estatus", "PENDIENTE")));
+                countCriteria.add(Restrictions.disjunction()
+                        .add(Restrictions.eq("estatus", "ACTIVO"))
+                        .add(Restrictions.eq("estatus", "PENDIENTE")));
+            } else {
+                criteria.add(Restrictions.eq("estatus", (String)params.get("estatus")));
+                countCriteria.add(Restrictions.eq("estatus", (String)params.get("estatus")));
             }
 
             if (params.containsKey("comunidades")) {

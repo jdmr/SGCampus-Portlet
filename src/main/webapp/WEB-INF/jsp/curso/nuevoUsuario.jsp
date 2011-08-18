@@ -3,11 +3,10 @@
 <div class="Curso">
     <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
-        <portlet:param name="action" value="crea"/>
+        <portlet:param name="action" value="creaUsuario"/>
     </portlet:actionURL>
 
     <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
-        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestroId" value="${curso.maestroId}" />
         <div class="dialog">
             <table>
                 <tbody>
@@ -37,34 +36,8 @@
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <form:textarea path="descripcion" />
+                            <form:textarea path="descripcion"/>
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />maestroNombre"><liferay-ui:message key="curso.maestro" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <div id="<portlet:namespace />maestroDiv">
-                                <c:if test="${curso.maestroNombre != null && curso.maestroNombre != ''}">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th><liferay-ui:message key="usuario.nombre" /></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>${curso.maestroNombre}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </c:if>
-                            </div>
-                            <input type="text" name="maestroNombre" id="<portlet:namespace />maestroNombre" value="" />
-                            <form:errors cssClass="errors" path="maestroNombre" cssStyle="color:red;" />
                         </td>
                     </tr>
 
@@ -85,26 +58,6 @@
                         <td valign="top" class="value">
                             <input type="text" name="termina" id="<portlet:namespace />termina" value="${curso.termina}" />
                             <form:errors cssClass="errors" path="termina" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />url"><liferay-ui:message key="curso.url" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:input id="<portlet:namespace />url" path="url" maxlength="254"/>
-                            <form:errors cssClass="errors" path="url" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />tipo"><liferay-ui:message key="curso.tipo" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:select path="tipo" items="${tipos}" />
-                            <form:errors cssClass="errors" path="tipo" />
                         </td>
                     </tr>
 
@@ -188,15 +141,6 @@
         });
         $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
         $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
-
     });
-    
-    function <portlet:namespace />initEditor() { 
-        return <%= ((mx.edu.um.portlets.sgcampus.model.Curso)request.getAttribute("curso")).getDescripcion() %>; 
-    }  
 
-    function <portlet:namespace />extractCodeFromEditor() { 
-        var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />editor.getHTML();  
-        alert(x); 
-    }
 </script>

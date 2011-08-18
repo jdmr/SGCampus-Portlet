@@ -12,12 +12,13 @@ import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portal.util.PortalUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.ActionRequest;
@@ -28,6 +29,7 @@ import javax.portlet.ResourceResponse;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
+import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.utils.CursoValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -62,7 +64,6 @@ public class CursoPortlet {
     @Autowired
     private ResourceBundleMessageSource messageSource;
     private Curso curso;
-    private static List<String> tipos;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet ha sido creada");
@@ -108,6 +109,93 @@ public class CursoPortlet {
         modelo.addAttribute("cantidad", params.get("cantidad"));
         modelo.addAttribute("max", max);
         modelo.addAttribute("offset", offset);
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            modelo.addAttribute("puedeAutorizar", true);
+        }
+
+        return "curso/lista";
+    }
+
+    @RequestMapping(params = "action=pendientes")
+    public String pendientes(RenderRequest request,
+            @RequestParam(value = "offset", required = false) Integer offset,
+            @RequestParam(value = "max", required = false) Integer max,
+            @RequestParam(value = "direccion", required = false) String direccion,
+            Model modelo) throws PortalException, SystemException {
+
+        log.debug("Filtrando por pendientes");
+
+        curso = null;
+
+
+        if (max == null) {
+            max = new Integer(5);
+        }
+        if (offset == null) {
+            offset = new Integer(0);
+        } else if (direccion.equals("siguiente")) {
+            offset = offset + max;
+        } else if (direccion.equals("anterior") && offset > 0) {
+            offset = offset - max;
+        }
+
+        Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("max", max);
+        params.put("offset", offset);
+        params.put("comunidades", comunidades.keySet());
+        params.put("estatus", Constantes.PENDIENTE);
+
+        params = cursoDao.busca(params);
+        modelo.addAttribute("cursos", params.get("cursos"));
+        modelo.addAttribute("cantidad", params.get("cantidad"));
+        modelo.addAttribute("max", max);
+        modelo.addAttribute("offset", offset);
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            modelo.addAttribute("puedeAutorizar", true);
+        }
+
+        return "curso/lista";
+    }
+
+    @RequestMapping(params = "action=rechazados")
+    public String rechazados(RenderRequest request,
+            @RequestParam(value = "offset", required = false) Integer offset,
+            @RequestParam(value = "max", required = false) Integer max,
+            @RequestParam(value = "direccion", required = false) String direccion,
+            Model modelo) throws PortalException, SystemException {
+
+        log.debug("Filtrando por rechazados");
+
+        curso = null;
+
+
+        if (max == null) {
+            max = new Integer(5);
+        }
+        if (offset == null) {
+            offset = new Integer(0);
+        } else if (direccion.equals("siguiente")) {
+            offset = offset + max;
+        } else if (direccion.equals("anterior") && offset > 0) {
+            offset = offset - max;
+        }
+
+        Map<Long, String> comunidades = ComunidadUtil.obtieneComunidades(request);
+        Map<String, Object> params = new HashMap<String, Object>();
+        params.put("max", max);
+        params.put("offset", offset);
+        params.put("comunidades", comunidades.keySet());
+        params.put("estatus", Constantes.RECHAZADO);
+
+        params = cursoDao.busca(params);
+        modelo.addAttribute("cursos", params.get("cursos"));
+        modelo.addAttribute("cantidad", params.get("cantidad"));
+        modelo.addAttribute("max", max);
+        modelo.addAttribute("offset", offset);
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            modelo.addAttribute("puedeAutorizar", true);
+        }
 
         return "curso/lista";
     }
@@ -120,7 +208,16 @@ public class CursoPortlet {
         model.addAttribute("curso", curso);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
-        return "curso/nuevo";
+        User user = PortalUtil.getUser(request);
+        if (user != null) {
+            if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+                return "curso/nuevo";
+            } else {
+                return "curso/nuevoUsuario";
+            }
+        } else {
+            return "curso/sinPrivilegios";
+        }
     }
 
     @RequestMapping(params = "action=nuevoError")
@@ -129,7 +226,11 @@ public class CursoPortlet {
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
-        return "curso/nuevo";
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            return "curso/nuevo";
+        } else {
+            return "curso/nuevoUsuario";
+        }
     }
 
     @RequestMapping(params = "action=crea")
@@ -138,6 +239,32 @@ public class CursoPortlet {
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando el curso");
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
+        cursoValidator.validate(curso, result);
+        if (!result.hasErrors()) {
+            curso = cursoDao.crea(curso, curso.getComunidadId());
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("cursoId", curso.getId().toString());
+            sessionStatus.setComplete();
+        } else {
+            log.error("No se pudo crear el curso");
+            response.setRenderParameter("action", "nuevoError");
+        }
+    }
+
+    @RequestMapping(params = "action=creaUsuario")
+    public void creaUsuario(ActionRequest request, ActionResponse response,
+            @ModelAttribute("curso") Curso curso, BindingResult result,
+            Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
+        log.debug("Creando curso por el usuario");
+        curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
+
+        User user = PortalUtil.getUser(request);
+        curso.setMaestroId(user.getPrimaryKey());
+        curso.setMaestroNombre(user.getFullName());
+        curso.setTipo("PATROCINADO");
+        curso.setUrl("URL-INVALIDA");
+        curso.setEstatus("PENDIENTE");
+
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             curso = cursoDao.crea(curso, curso.getComunidadId());
@@ -210,13 +337,11 @@ public class CursoPortlet {
     public void setCursoDao(CursoDao cursoDao) {
         this.cursoDao = cursoDao;
     }
-    
-    public List<String> getTipos(ThemeDisplay themeDisplay) {
-        if (tipos == null) {
-            tipos = new ArrayList<String>();
-            tipos.add(messageSource.getMessage("PAGADO", null, themeDisplay.getLocale()));
-            tipos.add(messageSource.getMessage("PATROCINADO", null, themeDisplay.getLocale()));
-        }
+
+    public Map<String, String> getTipos(ThemeDisplay themeDisplay) {
+        Map<String, String> tipos = new LinkedHashMap<String, String>();
+        tipos.put("PAGADO", messageSource.getMessage("PAGADO", null, themeDisplay.getLocale()));
+        tipos.put("PATROCINADO", messageSource.getMessage("PATROCINADO", null, themeDisplay.getLocale()));
         return tipos;
     }
 }

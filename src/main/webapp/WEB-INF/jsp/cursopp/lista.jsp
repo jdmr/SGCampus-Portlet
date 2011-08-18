@@ -32,6 +32,8 @@
 
                         <th><liferay-ui:message key="curso.tipo" /></th>
 
+                        <th><liferay-ui:message key="curso.estatus" /></th>
+
                     </tr>
                 </thead>
                 <tbody>
@@ -46,8 +48,10 @@
 
                             <td>${curso.inicia}</td>
 
-                            <td>${curso.tipo}</td>
+                            <td><liferay-ui:message key="${curso.tipo}" /></td>
 
+                            <td><liferay-ui:message key="${curso.estatus}" /></td>
+                    
                     </tr>
                     </c:forEach>
                 </tbody>

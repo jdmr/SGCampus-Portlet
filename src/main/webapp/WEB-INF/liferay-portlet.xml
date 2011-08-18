@@ -6,13 +6,13 @@
         <portlet-name>Cursos</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/main.css</header-portlet-css>
-        <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
+        <header-portlet-javascript>/js/main.js</header-portlet-javascript>
     </portlet>
     <portlet>
         <portlet-name>CursosPP</portlet-name>
         <instanceable>false</instanceable>
         <header-portlet-css>/css/main.css</header-portlet-css>
-        <footer-portlet-javascript>/js/main.js</footer-portlet-javascript>
+        <header-portlet-javascript>/js/main.js</header-portlet-javascript>
     </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
@@ -29,5 +29,9 @@
     <role-mapper>
         <role-name>user</role-name>
         <role-link>User</role-link>
+    </role-mapper>
+    <role-mapper>
+        <role-name>cursos-admin</role-name>
+        <role-link>cursos-admin</role-link>
     </role-mapper>
 </liferay-portlet-app>

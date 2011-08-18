@@ -38,6 +38,9 @@
         <security-role-ref>
             <role-name>user</role-name>
         </security-role-ref>
+        <security-role-ref>
+            <role-name>cursos-admin</role-name>
+        </security-role-ref>
     </portlet>
     <portlet>
         <description>Cursos Página Principal</description>
