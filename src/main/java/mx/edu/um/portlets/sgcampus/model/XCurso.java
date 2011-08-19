@@ -27,7 +27,7 @@ public class XCurso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 1000, nullable = false)
+    @Column(length = 2000, nullable = false)
     private String descripcion;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;

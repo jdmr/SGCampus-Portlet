@@ -6,6 +6,7 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
@@ -36,6 +37,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.support.ResourceBundleMessageSource;
+import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
@@ -208,6 +210,14 @@ public class CursoPortlet {
         model.addAttribute("curso", curso);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (curso.getInicia() != null) {
+            model.addAttribute("inicia", sdf.format(curso.getInicia()));
+        }
+        if (curso.getTermina() != null) {
+            model.addAttribute("termina", sdf.format(curso.getTermina()));
+        }
+
         User user = PortalUtil.getUser(request);
         if (user != null) {
             if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
@@ -223,9 +233,21 @@ public class CursoPortlet {
     @RequestMapping(params = "action=nuevoError")
     public String nuevoError(RenderRequest request, Model model) throws SystemException, PortalException {
         log.debug("Hubo algun error y regresamos a editar el nuevo curso");
+        log.debug("TEST: {}", curso);
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        log.debug("Validando inicia {}", curso.getInicia());
+        if (curso.getInicia() != null) {
+            String inicia = sdf.format(curso.getInicia());
+            log.debug("Agregando atributo inicia {}", inicia);
+            model.addAttribute("inicia", inicia);
+        }
+        if (curso.getTermina() != null) {
+            model.addAttribute("termina", sdf.format(curso.getTermina()));
+        }
+
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
             return "curso/nuevo";
         } else {
@@ -238,13 +260,23 @@ public class CursoPortlet {
             @ModelAttribute("curso") Curso curso, BindingResult result,
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando el curso");
+        this.curso = curso;
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
-            curso = cursoDao.crea(curso, curso.getComunidadId());
-            response.setRenderParameter("action", "ver");
-            response.setRenderParameter("cursoId", curso.getId().toString());
-            sessionStatus.setComplete();
+            try {
+                curso = cursoDao.crea(curso, curso.getComunidadId());
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+                sessionStatus.setComplete();
+            } catch (DataIntegrityViolationException e) {
+                log.error("No se pudo crear el curso", e);
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                StringBuilder sb = new StringBuilder(curso.getDescripcion());
+                sb.insert(0, messageSource.getMessage("curso.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
+                curso.setDescripcion(sb.toString());
+                response.setRenderParameter("action", "nuevoError");
+            }
         } else {
             log.error("No se pudo crear el curso");
             response.setRenderParameter("action", "nuevoError");
@@ -256,6 +288,7 @@ public class CursoPortlet {
             @ModelAttribute("curso") Curso curso, BindingResult result,
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando curso por el usuario");
+        this.curso = curso;
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
 
         User user = PortalUtil.getUser(request);
@@ -267,10 +300,19 @@ public class CursoPortlet {
 
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
-            curso = cursoDao.crea(curso, curso.getComunidadId());
-            response.setRenderParameter("action", "ver");
-            response.setRenderParameter("cursoId", curso.getId().toString());
-            sessionStatus.setComplete();
+            try {
+                curso = cursoDao.crea(curso, curso.getComunidadId());
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+                sessionStatus.setComplete();
+            } catch (DataIntegrityViolationException e) {
+                log.error("No se pudo crear el curso", e);
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                StringBuilder sb = new StringBuilder(curso.getDescripcion());
+                sb.insert(0, messageSource.getMessage("curso.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
+                curso.setDescripcion(sb.toString());
+                response.setRenderParameter("action", "nuevoError");
+            }
         } else {
             log.error("No se pudo crear el curso");
             response.setRenderParameter("action", "nuevoError");
@@ -320,6 +362,17 @@ public class CursoPortlet {
 
         PrintWriter writer = response.getWriter();
         writer.println(sb.toString());
+    }
+
+    @RequestMapping(params = "action=ver")
+    public String ver(RenderRequest request,
+            @RequestParam(value = "cursoId") Long cursoId,
+            Model modelo) throws PortalException, SystemException {
+
+        curso = cursoDao.obtiene(cursoId);
+        modelo.addAttribute("curso", curso);
+
+        return "curso/ver";
     }
 
     public Curso getCurso() {

@@ -6,7 +6,9 @@
         <portlet:param name="action" value="crea"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
+    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
+        <form:hidden path="id" />
+        <form:hidden path="version" />
         <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestroId" value="${curso.maestroId}" />
         <div class="dialog">
             <table>
@@ -37,8 +39,7 @@
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <liferay-ui:input-editor />
-                            <input name="<portlet:namespace />descripcion" type="hidden" value="" />
+                            <form:textarea path="descripcion" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -74,7 +75,7 @@
                             <label for="<portlet:namespace />inicia"><liferay-ui:message key="curso.inicia" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="inicia" id="<portlet:namespace />inicia" value="${inicia}" />
+                            <input type="text" name="inicia" id="<portlet:namespace />inicia" value="${curso.inicia}" />
                             <form:errors cssClass="errors" path="inicia" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -84,7 +85,7 @@
                             <label for="<portlet:namespace />termina"><liferay-ui:message key="curso.termina" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="termina" id="<portlet:namespace />termina" value="${termina}" />
+                            <input type="text" name="termina" id="<portlet:namespace />termina" value="${curso.termina}" />
                             <form:errors cssClass="errors" path="termina" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -106,6 +107,16 @@
                         <td valign="top" class="value">
                             <form:select path="tipo" items="${tipos}" />
                             <form:errors cssClass="errors" path="tipo" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="<portlet:namespace />estatus"><liferay-ui:message key="curso.estatus" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:select path="estatus" items="${tiposDeEstatus}" />
+                            <form:errors cssClass="errors" path="estatus" />
                         </td>
                     </tr>
 
@@ -165,31 +176,30 @@
         </div>
     </form:form>
     <script type="text/javascript">
-        $(document).ready(function() {
-            $("input#<portlet:namespace />maestroNombre")
-            .autocomplete({
-                source: "<portlet:resourceURL id='buscaMaestro'/>",
-                select: function(event, ui) {
-                    $("input#<portlet:namespace />maestroId").val(ui.item.id);
-                    $("#<portlet:namespace />maestroDiv").load('<portlet:resourceURL id="asignaMaestro" />',{id:ui.item.id},function() {
-                        $("input#<portlet:namespace />maestroNombre").val(ui.item.nombre);
-                        $("input#<portlet:namespace />inicia").focus();
-                    });
-                    return false;
-                }
-            });
-            $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
-            $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
-            $("input#codigo").focus();
-        });
-
-        function <portlet:namespace />initEditor() { 
-            return "<%= UnicodeFormatter.toString(((mx.edu.um.portlets.sgcampus.model.Curso)request.getAttribute("curso")).getDescripcion()) %>"; 
-        }  
-
-        function extractCodeFromEditor() { 
-            var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />editor.getHTML();  
-            return true;
-        }
+        document.cursoForm.codigo.focus();
     </script>
 </div>
+<link type="text/css" href="<%= request.getContextPath() %>/css/custom-theme/jquery-ui-1.8.10.custom.css" rel="Stylesheet" />
+<!-- Grab Google CDN's jQuery. fall back to local if necessary -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+<script>!window.jQuery && document.write(unescape('%3Cscript src="<%= request.getContextPath() %>/js/jquery-1.6.2.min.js"%3E%3C/script%3E'))</script>
+<script src="<%= request.getContextPath() %>/js/jquery-ui-1.8.10.custom.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input#<portlet:namespace />maestroNombre")
+        .autocomplete({
+            source: "<portlet:resourceURL id='buscaMaestro'/>",
+            select: function(event, ui) {
+                $("input#<portlet:namespace />maestroId").val(ui.item.id);
+                $("#<portlet:namespace />maestroDiv").load('<portlet:resourceURL id="asignaMaestro" />',{id:ui.item.id},function() {
+                    $("input#<portlet:namespace />maestroNombre").val(ui.item.nombre);
+                    $("input#<portlet:namespace />inicia").focus();
+                });
+                return false;
+            }
+        });
+        $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
+        $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
+
+    });
+</script>

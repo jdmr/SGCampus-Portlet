@@ -35,8 +35,8 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 1000, nullable = false)
-    private String descripcion;
+    @Column(length = 2000, nullable = false)
+    private String descripcion = "";
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
