@@ -1,4 +1,3 @@
-<%@ page import="com.liferay.portal.kernel.language.LanguageUtil" %>
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
     <h1><liferay-ui:message key="javax.portlet.title" /> (<%= LanguageUtil.format(pageContext, "curso.cantidad",request.getAttribute("cantidad"),false) %>)</h1>

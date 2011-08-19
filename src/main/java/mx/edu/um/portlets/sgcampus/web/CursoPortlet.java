@@ -261,7 +261,7 @@ public class CursoPortlet {
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
-                User creador = PortalUtil.getUser(request); 
+                User creador = PortalUtil.getUser(request);
                 curso = cursoDao.crea(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -298,7 +298,7 @@ public class CursoPortlet {
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
-                User creador = PortalUtil.getUser(request); 
+                User creador = PortalUtil.getUser(request);
                 curso = cursoDao.crea(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -370,8 +370,8 @@ public class CursoPortlet {
         curso = cursoDao.obtiene(cursoId);
         modelo.addAttribute("curso", curso);
         User creador = PortalUtil.getUser(request);
-        if (request.isUserInRole("Administrator") 
-                || request.isUserInRole("cursos-admin") 
+        if (request.isUserInRole("Administrator")
+                || request.isUserInRole("cursos-admin")
                 || (creador != null && creador.getUserId() == curso.getMaestroId())) {
             modelo.addAttribute("puedeEditar", true);
         }
@@ -397,7 +397,7 @@ public class CursoPortlet {
             modelo.addAttribute("termina", sdf.format(curso.getTermina()));
         }
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
-            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String> ();
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
             tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
             tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
             tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
@@ -426,7 +426,7 @@ public class CursoPortlet {
             modelo.addAttribute("termina", sdf.format(curso.getTermina()));
         }
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
-            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String> ();
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
             tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
             tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
             tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
@@ -451,8 +451,8 @@ public class CursoPortlet {
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
-            } catch(Exception e) {
-                log.error("No se pudo actualizar el curso",e);
+            } catch (Exception e) {
+                log.error("No se pudo actualizar el curso", e);
                 response.setRenderParameter("action", "editaError");
                 response.setRenderParameter("cursoId", curso.getId().toString());
             }
@@ -483,8 +483,8 @@ public class CursoPortlet {
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
-            } catch(Exception e) {
-                log.error("No se pudo actualizar el curso",e);
+            } catch (Exception e) {
+                log.error("No se pudo actualizar el curso", e);
                 response.setRenderParameter("action", "editaError");
                 response.setRenderParameter("cursoId", curso.getId().toString());
             }
@@ -492,6 +492,32 @@ public class CursoPortlet {
             log.error("No se pudo actualizar el curso");
             response.setRenderParameter("action", "editaError");
             response.setRenderParameter("cursoId", curso.getId().toString());
+        }
+    }
+
+    @RequestMapping(params = "action=elimina")
+    public void elimina(ActionRequest request, ActionResponse response,
+            @ModelAttribute("curso") Curso curso, BindingResult result,
+            Model model, SessionStatus sessionStatus, @RequestParam("cursoId") Long id) {
+        log.debug("Eliminando el curso {}", id);
+        try {
+            curso = cursoDao.obtiene(id);
+            this.curso = curso;
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+
+                cursoDao.elimina(id, creador.getUserId());
+                this.curso = null;
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para eliminar este curso");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo eliminar el curso " + id, e);
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("cursoId", id.toString());
         }
     }
 

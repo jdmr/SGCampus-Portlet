@@ -117,8 +117,13 @@
                 <portlet:param name="action" value="ver" />
                 <portlet:param name="cursoId" value="${curso.id}" />
             </portlet:renderURL>
+            <portlet:actionURL var="eliminaCurso" >
+                <portlet:param name="action" value="elimina" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:actionURL>
 
             <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.actualiza' />"/></span>
+            <span class="menuButton"><a class="delete" href="${eliminaCurso}"  onclick="return confirm('<%= LanguageUtil.format(pageContext, "curso.elimina.mensaje",request.getAttribute("curso"),false) %>');"><liferay-ui:message key="curso.elimina" /></a></span>
             <span class="menuButton"><a class="list" href="${verCurso}"><liferay-ui:message key="curso.cancela" /></a></span>
         </div>
     </form:form>
