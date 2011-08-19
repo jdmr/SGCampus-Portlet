@@ -30,6 +30,8 @@
 
                         <th><liferay-ui:message key="curso.inicia" /></th>
 
+                        <th><liferay-ui:message key="curso.maestro" /></th>
+
                         <th><liferay-ui:message key="curso.tipo" /></th>
 
                         <th><liferay-ui:message key="curso.estatus" /></th>
@@ -47,6 +49,8 @@
                             <td><a href="${verCurso}">${curso.nombre}</a></td>
 
                             <td>${curso.inicia}</td>
+
+                            <td><liferay-ui:message key="${curso.maestroNombre}" /></td>
 
                             <td><liferay-ui:message key="${curso.tipo}" /></td>
 

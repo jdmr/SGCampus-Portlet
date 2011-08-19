@@ -1,11 +1,13 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
-    <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
+    <h1><liferay-ui:message key="curso.edita.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
-        <portlet:param name="action" value="creaUsuario"/>
+        <portlet:param name="action" value="actualizaUsuario"/>
     </portlet:actionURL>
 
     <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
+        <form:hidden path="id" />
+        <form:hidden path="version" />
         <div class="dialog">
             <table>
                 <tbody>
@@ -110,10 +112,14 @@
                 </tbody>
             </table>
         </div>
-
         <div class="nav">
-            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.crea' />"/></span>
-            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.cancela" /></a></span>
+            <portlet:renderURL var="verCurso" >
+                <portlet:param name="action" value="ver" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+
+            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.actualiza' />"/></span>
+            <span class="menuButton"><a class="list" href="${verCurso}"><liferay-ui:message key="curso.cancela" /></a></span>
         </div>
     </form:form>
     <script type="text/javascript">
@@ -132,7 +138,6 @@
             });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
-            $("input#codigo").focus();
         });
 
         function <portlet:namespace />initEditor() { 

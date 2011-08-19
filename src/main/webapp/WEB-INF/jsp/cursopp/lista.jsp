@@ -30,6 +30,8 @@
 
                         <th><liferay-ui:message key="curso.inicia" /></th>
 
+                        <th><liferay-ui:message key="curso.maestro" /></th>
+
                         <th><liferay-ui:message key="curso.tipo" /></th>
 
                         <th><liferay-ui:message key="curso.estatus" /></th>
@@ -38,15 +40,13 @@
                 </thead>
                 <tbody>
                     <c:forEach items="${cursos}" var="curso" varStatus="status">
-                        <portlet:renderURL var="verCurso" >
-                            <portlet:param name="action" value="ver" />
-                            <portlet:param name="cursoId" value="${curso.id}" />
-                        </portlet:renderURL>
                         <tr class="${(status.count % 2) == 0 ? 'odd' : 'even'}">
 
-                            <td><a href="${verCurso}">${curso.nombre}</a></td>
+                            <td><a href="${curso.verCurso}">${curso.nombre}</a></td>
 
                             <td>${curso.inicia}</td>
+
+                            <td>${curso.maestroNombre}</td>
 
                             <td><liferay-ui:message key="${curso.tipo}" /></td>
 

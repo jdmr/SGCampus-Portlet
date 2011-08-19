@@ -3,6 +3,7 @@ package mx.edu.um.portlets.sgcampus.web;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import javax.portlet.RenderRequest;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
@@ -62,7 +63,14 @@ public class CursoPPPortlet {
         params.put("comunidades", comunidades.keySet());
 
         params = cursoDao.busca(params);
-        modelo.addAttribute("cursos", params.get("cursos"));
+        List<Curso> cursos = (List<Curso>)params.get("cursos");
+        for(Curso x : cursos) {
+            StringBuilder sb = new StringBuilder();
+            sb.append("/cursos?p_p_id=Cursos_WAR_sgcampusportlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_Cursos_WAR_sgcampusportlet_action=ver&_Cursos_WAR_sgcampusportlet_cursoId=");
+            sb.append(x.getId());
+            x.setVerCurso(sb.toString());
+        }
+        modelo.addAttribute("cursos", cursos);
         modelo.addAttribute("cantidad", params.get("cantidad"));
         modelo.addAttribute("max", max);
         modelo.addAttribute("offset", offset);

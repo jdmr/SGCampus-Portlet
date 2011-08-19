@@ -1,5 +1,4 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
-<link rel="stylesheet" href="<%= request.getContextPath() %>/css/main.css" type="text/css"/>
 <div class="Curso">
     <h1><liferay-ui:message key="curso.sin.privilegios.titulo" /></h1>
     <p>

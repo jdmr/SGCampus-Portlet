@@ -6,7 +6,6 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
-import com.liferay.portal.kernel.util.HtmlUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
@@ -233,15 +232,12 @@ public class CursoPortlet {
     @RequestMapping(params = "action=nuevoError")
     public String nuevoError(RenderRequest request, Model model) throws SystemException, PortalException {
         log.debug("Hubo algun error y regresamos a editar el nuevo curso");
-        log.debug("TEST: {}", curso);
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-        log.debug("Validando inicia {}", curso.getInicia());
         if (curso.getInicia() != null) {
             String inicia = sdf.format(curso.getInicia());
-            log.debug("Agregando atributo inicia {}", inicia);
             model.addAttribute("inicia", inicia);
         }
         if (curso.getTermina() != null) {
@@ -265,7 +261,8 @@ public class CursoPortlet {
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
-                curso = cursoDao.crea(curso, curso.getComunidadId());
+                User creador = PortalUtil.getUser(request); 
+                curso = cursoDao.crea(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
@@ -301,7 +298,8 @@ public class CursoPortlet {
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
-                curso = cursoDao.crea(curso, curso.getComunidadId());
+                User creador = PortalUtil.getUser(request); 
+                curso = cursoDao.crea(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
@@ -371,8 +369,130 @@ public class CursoPortlet {
 
         curso = cursoDao.obtiene(cursoId);
         modelo.addAttribute("curso", curso);
-
+        User creador = PortalUtil.getUser(request);
+        if (request.isUserInRole("Administrator") 
+                || request.isUserInRole("cursos-admin") 
+                || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+            modelo.addAttribute("puedeEditar", true);
+        }
         return "curso/ver";
+    }
+
+    @RequestMapping(params = "action=edita")
+    public String edita(RenderRequest request,
+            @RequestParam(value = "cursoId") Long cursoId,
+            Model modelo) throws PortalException, SystemException {
+
+        curso = cursoDao.obtiene(cursoId);
+        modelo.addAttribute("curso", curso);
+        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (curso.getInicia() != null) {
+            String inicia = sdf.format(curso.getInicia());
+            modelo.addAttribute("inicia", inicia);
+        }
+        if (curso.getTermina() != null) {
+            modelo.addAttribute("termina", sdf.format(curso.getTermina()));
+        }
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String> ();
+            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
+            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
+            return "curso/edita";
+        } else {
+            return "curso/editaUsuario";
+        }
+    }
+
+    @RequestMapping(params = "action=editaError")
+    public String editaError(RenderRequest request,
+            @RequestParam(value = "cursoId") Long cursoId,
+            Model modelo) throws PortalException, SystemException {
+
+        modelo.addAttribute("curso", curso);
+        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (curso.getInicia() != null) {
+            String inicia = sdf.format(curso.getInicia());
+            modelo.addAttribute("inicia", inicia);
+        }
+        if (curso.getTermina() != null) {
+            modelo.addAttribute("termina", sdf.format(curso.getTermina()));
+        }
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String> ();
+            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
+            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
+            return "curso/edita";
+        } else {
+            return "curso/editaUsuario";
+        }
+    }
+
+    @RequestMapping(params = "action=actualiza")
+    public void actualiza(ActionRequest request, ActionResponse response,
+            @ModelAttribute("curso") Curso curso, BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Guardando el curso");
+        this.curso = curso;
+        cursoValidator.validate(curso, result);
+        if (!result.hasErrors()) {
+            try {
+                User creador = PortalUtil.getUser(request);
+                cursoDao.actualiza(curso, creador.getUserId());
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+                sessionStatus.setComplete();
+            } catch(Exception e) {
+                log.error("No se pudo actualizar el curso",e);
+                response.setRenderParameter("action", "editaError");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+            }
+        } else {
+            log.error("No se pudo actualizar el curso");
+            response.setRenderParameter("action", "editaError");
+            response.setRenderParameter("cursoId", curso.getId().toString());
+        }
+    }
+
+    @RequestMapping(params = "action=actualizaUsuario")
+    public void actualizaUsuario(ActionRequest request, ActionResponse response,
+            @ModelAttribute("curso") Curso curso, BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Guardando el curso");
+        this.curso = curso;
+        Curso viejo = cursoDao.obtiene(curso.getId());
+        curso.setMaestroId(viejo.getMaestroId());
+        curso.setMaestroNombre(viejo.getMaestroNombre());
+        curso.setTipo(viejo.getTipo());
+        curso.setUrl(viejo.getUrl());
+        curso.setEstatus(viejo.getEstatus());
+        cursoValidator.validate(curso, result);
+        if (!result.hasErrors()) {
+            try {
+                User creador = PortalUtil.getUser(request);
+                cursoDao.actualiza(curso, creador.getUserId());
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+                sessionStatus.setComplete();
+            } catch(Exception e) {
+                log.error("No se pudo actualizar el curso",e);
+                response.setRenderParameter("action", "editaError");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+            }
+        } else {
+            log.error("No se pudo actualizar el curso");
+            response.setRenderParameter("action", "editaError");
+            response.setRenderParameter("cursoId", curso.getId().toString());
+        }
     }
 
     public Curso getCurso() {

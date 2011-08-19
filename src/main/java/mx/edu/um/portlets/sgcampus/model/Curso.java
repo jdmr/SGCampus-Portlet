@@ -35,7 +35,7 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 2000, nullable = false)
+    @Column(length = 4000, nullable = false)
     private String descripcion = "";
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
@@ -70,6 +70,8 @@ public class Curso implements Serializable {
     @ManyToMany
     @JoinTable(name="sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
+    @Transient
+    private String verCurso;
 
     public Curso() {
     }
@@ -380,6 +382,24 @@ public class Curso implements Serializable {
      */
     public void setEtiquetas(Set<Etiqueta> etiquetas) {
         this.etiquetas = etiquetas;
+    }
+
+    /**
+     * Asigna URL para llevar a página que contiene portlet para ver el curso
+     * 
+     * @return the verCurso
+     */
+    public String getVerCurso() {
+        return verCurso;
+    }
+
+    /**
+     * Obtiene URL para llevar a página que contiene portlet para ver el curso
+     * 
+     * @param verCurso the verCurso to set
+     */
+    public void setVerCurso(String verCurso) {
+        this.verCurso = verCurso;
     }
 
     @Override
