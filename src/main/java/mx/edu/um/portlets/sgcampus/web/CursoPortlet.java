@@ -15,6 +15,7 @@ import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
@@ -28,6 +29,7 @@ import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.utils.CursoValidator;
@@ -65,6 +67,7 @@ public class CursoPortlet {
     @Autowired
     private ResourceBundleMessageSource messageSource;
     private Curso curso;
+    private Sesion sesion;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet ha sido creada");
@@ -375,6 +378,16 @@ public class CursoPortlet {
                 || (creador != null && creador.getUserId() == curso.getMaestroId())) {
             modelo.addAttribute("puedeEditar", true);
         }
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm z");
+        sdf.setTimeZone(themeDisplay.getTimeZone());
+        List<Sesion> sesiones = cursoDao.obtieneSesiones(curso);
+        for (Sesion sesion : sesiones) {
+            sesion.setSdf(sdf);
+        }
+        modelo.addAttribute("sesiones", sesiones);
+
         return "curso/ver";
     }
 
@@ -521,6 +534,86 @@ public class CursoPortlet {
         }
     }
 
+    @RequestMapping(params = "action=nuevaSesion")
+    public String nuevaSesion(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
+        log.debug("Nueva Sesion");
+        curso = cursoDao.obtiene(id);
+
+        sesion = new Sesion();
+        sesion.setCurso(curso);
+
+        model.addAttribute("sesion", sesion);
+        model.addAttribute("dias", getDias(request));
+
+        return "curso/nuevaSesion";
+    }
+
+    @RequestMapping(params = "action=creaSesion")
+    public void creaSesion(ActionRequest request, ActionResponse response,
+            @RequestParam String horaInicial,
+            @RequestParam String horaFinal,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
+        log.debug("Creando la sesion");
+
+        log.debug("Sesion {} {} {} {}", new Object[]{sesion.getDia(), sesion.getCurso().getId(), horaInicial, horaFinal});
+
+        if (sesion.getCurso().getId() != null && sesion.getCurso().getId() > 0) {
+            sesion.setCurso(cursoDao.obtiene(sesion.getCurso().getId()));
+        }
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        sdf.setTimeZone(themeDisplay.getTimeZone());
+        try {
+            sesion.setHoraInicial(sdf.parse(horaInicial));
+            sesion.setHoraFinal(sdf.parse(horaFinal));
+        } catch (ParseException ex) {
+            log.error("No se pudo leer la hora inicial y/o la hora final", ex);
+        }
+
+        try {
+            sesion = cursoDao.creaSesion(sesion);
+            sessionStatus.setComplete();
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("cursoId", curso.getId().toString());
+        } catch (Exception e) {
+            log.error("No se pudo crear la sesion", e);
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("cursoId", curso.getId().toString());
+        }
+
+    }
+
+    @RequestMapping(params = "action=eliminaSesion")
+    public void eliminaSesion(ActionRequest request, ActionResponse response,
+            @RequestParam Long sesionId,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Eliminando sesion {}", sesionId);
+
+        try {
+            curso = cursoDao.obtiene(cursoId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+
+                cursoDao.eliminaSesion(sesionId);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para eliminar esta sesion");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo eliminar la sesion " + sesionId, e);
+        }
+        response.setRenderParameter("action", "ver");
+        response.setRenderParameter("cursoId", cursoId.toString());
+    }
+
     public Curso getCurso() {
         return curso;
     }
@@ -542,5 +635,24 @@ public class CursoPortlet {
         tipos.put("PAGADO", messageSource.getMessage("PAGADO", null, themeDisplay.getLocale()));
         tipos.put("PATROCINADO", messageSource.getMessage("PATROCINADO", null, themeDisplay.getLocale()));
         return tipos;
+    }
+
+    public Map<Integer, String> getDias(RenderRequest request) {
+        Map<Integer, String> dias;
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+
+        dias = new LinkedHashMap<Integer, String>();
+        for (int i = 1; i <= 7; i++) {
+            dias.put(i, messageSource.getMessage("dia" + i, null, themeDisplay.getLocale()));
+        }
+        return dias;
+    }
+
+    public Sesion getSesion() {
+        return sesion;
+    }
+
+    public void setSesion(Sesion sesion) {
+        this.sesion = sesion;
     }
 }

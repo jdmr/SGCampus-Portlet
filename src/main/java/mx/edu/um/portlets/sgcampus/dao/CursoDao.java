@@ -272,4 +272,10 @@ public class CursoDao {
         List<Curso> cursos = (List<Curso>) criteria.createCriteria("etiquetas").add(Restrictions.ilike("nombre", etiqueta.getNombre())).list();
         return cursos;
     }
+
+    public List<Sesion> obtieneSesiones(Curso curso) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(Sesion.class);
+        criteria.add(Restrictions.eq("curso", curso));
+        return hibernateTemplate.findByCriteria(criteria);
+    }
 }

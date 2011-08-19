@@ -1,6 +1,7 @@
 package mx.edu.um.portlets.sgcampus.model;
 
 import java.io.Serializable;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -10,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
+import javax.persistence.Transient;
 import javax.persistence.Version;
 
 /**
@@ -34,6 +36,8 @@ public class Sesion implements Serializable {
     private Date horaFinal;
     @ManyToOne
     private Curso curso;
+    @Transient
+    private SimpleDateFormat sdf;
 
     public Sesion() {
     }
@@ -127,6 +131,31 @@ public class Sesion implements Serializable {
      */
     public void setCurso(Curso curso) {
         this.curso = curso;
+    }
+
+    /**
+     * Para que pueda dar la hora local
+     * 
+     * @param sdf the sdf to set
+     */
+    public void setSdf(SimpleDateFormat sdf) {
+        this.sdf = sdf;
+    }
+    
+    /**
+     * Obtiene hora inicial local
+     * @return hora La hora inicial local
+     */
+    public String getHoraInicialLocal() {
+        return sdf.format(horaInicial);
+    }
+
+    /**
+     * Obtiene hora final local
+     * @return hora La hora final local
+     */
+    public String getHoraFinalLocal() {
+        return sdf.format(horaFinal);
     }
 
     @Override

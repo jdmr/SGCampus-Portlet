@@ -3,15 +3,59 @@
     <div class="dialog">
         <div>${curso.descripcion}</div>
     </div>
-    <div class="nav">
-        <portlet:renderURL var="editaUrl" >
-            <portlet:param name="action" value="edita" />
-            <portlet:param name="cursoId" value="${curso.id}" />
-        </portlet:renderURL>
+    <div class="list">
+        <table id="<portlet:namespace />sesiones">
+            <thead>
+                <tr>
 
+                    <th><liferay-ui:message key="sesion.dia" /></th>
+
+                    <th><liferay-ui:message key="sesion.horaInicial" /></th>
+
+                    <th><liferay-ui:message key="sesion.horaFinal" /></th>
+
+                    <c:if test="${puedeEditar}">
+                        <th><liferay-ui:message key="acciones" /></th>
+                    </c:if>
+                </tr>
+            </thead>
+            <tbody>
+                <c:forEach items="${sesiones}" var="sesion" varStatus="status">
+                    <tr class="${(status.count % 2) == 0 ? 'odd' : 'even'}">
+
+                        <td><liferay-ui:message key="dia${sesion.dia}" /></td>
+
+                        <td>${sesion.horaInicialLocal}</td>
+
+                        <td>${sesion.horaFinalLocal}</td>
+
+                        <c:if test="${puedeEditar}">
+                            <portlet:actionURL var="eliminaSesion" >
+                                <portlet:param name="action" value="eliminaSesion" />
+                                <portlet:param name="sesionId" value="${sesion.id}" />
+                                <portlet:param name="cursoId" value="${curso.id}" />
+                            </portlet:actionURL>
+                            <td><a href="${eliminaSesion}"><liferay-ui:message key="sesion.elimina" /></a></td>
+                        </c:if>
+                    </tr>
+                </c:forEach>
+            </tbody>
+        </table>
+    </div>
+    <div class="nav">
         <span class="menuButton"><a class="list" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.regresar" /></a></span>
         <c:if test="${puedeEditar}">
+            <portlet:renderURL var="editaUrl" >
+                <portlet:param name="action" value="edita" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+            <portlet:renderURL var="nuevaSesionUrl" >
+                <portlet:param name="action" value="nuevaSesion" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+
             <span class="menuButton"><a class="edit" href="${editaUrl}"><liferay-ui:message key="curso.editar" /></a></span>
+            <span class="menuButton"><a class="create" href="${nuevaSesionUrl}"><liferay-ui:message key="curso.nuevaSesion" /></a></span>
         </c:if>
     </div>
 </div>
