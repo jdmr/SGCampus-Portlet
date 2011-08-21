@@ -17,6 +17,7 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -28,6 +29,8 @@ import javax.portlet.RenderRequest;
 import javax.portlet.ResourceRequest;
 import javax.portlet.ResourceResponse;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
+import mx.edu.um.portlets.sgcampus.model.Alumno;
+import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
@@ -377,6 +380,36 @@ public class CursoPortlet {
                 || request.isUserInRole("cursos-admin")
                 || (creador != null && creador.getUserId() == curso.getMaestroId())) {
             modelo.addAttribute("puedeEditar", true);
+        } else if (creador != null) {
+            log.debug("Buscando alumno");
+            Alumno alumno = cursoDao.obtieneAlumno(creador);
+            if (alumno == null) {
+                log.debug("Creando alumno");
+                alumno = new Alumno();
+                alumno.setAlumnoId(creador.getUserId());
+                alumno.setCorreo(creador.getEmailAddress());
+                alumno.setFecha(new Date());
+                alumno.setNombreCompleto(creador.getFullName());
+                alumno.setUsuario(creador.getScreenName());
+                alumno = cursoDao.creaAlumno(alumno);
+            }
+            AlumnoCurso alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);
+            if (alumnoCurso != null) {
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                modelo.addAttribute("estatus", messageSource.getMessage(alumnoCurso.getEstatus(), null, themeDisplay.getLocale()));
+                // Validar su estatus
+                if (alumnoCurso.getEstatus().equals(Constantes.INSCRITO)) {
+                    // Validar si puede entrar
+                    Calendar cal = Calendar.getInstance(themeDisplay.getTimeZone());
+                    boolean existeSesionActiva = cursoDao.existeSesionActiva(cursoId, cal.get(Calendar.DAY_OF_WEEK), cal.getTime());
+                    if (existeSesionActiva) {
+                        modelo.addAttribute("existeSesionActiva",true);
+                    }
+                }
+            } else {
+                log.debug("PUEDE_INSCRIBIRSE");
+                modelo.addAttribute("puedeInscribirse", true);
+            }
         }
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
@@ -612,6 +645,26 @@ public class CursoPortlet {
         }
         response.setRenderParameter("action", "ver");
         response.setRenderParameter("cursoId", cursoId.toString());
+    }
+
+    @RequestMapping(params = "action=inscribirse")
+    public String inscribirse(RenderRequest request, @RequestParam Long cursoId, Model model) {
+        log.debug("Solicitar inscripcion a curso {}", cursoId);
+        try {
+            curso = cursoDao.obtiene(cursoId);
+            User usuario = PortalUtil.getUser(request);
+            Alumno alumno = cursoDao.obtieneAlumno(usuario);
+            AlumnoCurso alumnoCurso = new AlumnoCurso();
+            alumnoCurso.setAlumno(alumno);
+            alumnoCurso.setCurso(curso);
+            alumnoCurso.setUsuarioAlta(usuario.getUserId());
+            alumnoCurso.setUsuarioAltaNombre(usuario.getFullName());
+            alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+            return "curso/preinscripcion";
+        } catch(Exception e) {
+            log.error("No se pudo solicitar la inscripcion al curso "+cursoId, e);
+        }
+        return "curso/nopreincripcion";
     }
 
     public Curso getCurso() {

@@ -1,6 +1,8 @@
 package mx.edu.um.portlets.sgcampus.dao;
 
+import com.liferay.portal.model.User;
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,6 +15,7 @@ import mx.edu.um.portlets.sgcampus.model.Etiqueta;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.model.XCurso;
 import org.hibernate.Criteria;
+import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.DetachedCriteria;
@@ -202,6 +205,7 @@ public class CursoDao {
 
     public AlumnoCurso preInscribeAlumno(AlumnoCurso alumnoCurso) {
         alumnoCurso.setEstatus(Constantes.PENDIENTE);
+        alumnoCurso.setAlta(new Date());
         Long id = (Long) hibernateTemplate.save(alumnoCurso);
         alumnoCurso.setId(id);
         alumnoCurso.setVersion(0);
@@ -224,6 +228,12 @@ public class CursoDao {
     public AlumnoCurso refreshAlumnoCurso(AlumnoCurso alumnoCurso) {
         hibernateTemplate.refresh(alumnoCurso);
         return alumnoCurso;
+    }
+    
+    public List<AlumnoCurso> obtieneAlumnos(Curso curso) {
+        DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
+        criteria.add(Restrictions.eq("curso", curso));
+        return hibernateTemplate.findByCriteria(criteria);
     }
 
     public AlumnoCurso evaluacion(AlumnoCurso alumnoCurso) {
@@ -277,5 +287,39 @@ public class CursoDao {
         DetachedCriteria criteria = DetachedCriteria.forClass(Sesion.class);
         criteria.add(Restrictions.eq("curso", curso));
         return hibernateTemplate.findByCriteria(criteria);
+    }
+
+    public Alumno obtieneAlumno(User usuario) {
+        Alumno alumno = null;
+        List<Alumno> alumnos = hibernateTemplate.findByNamedParam("select a from Alumno a where a.alumnoId = :alumnoId", "alumnoId", usuario.getUserId());
+        if (alumnos != null && alumnos.size() > 0) {
+            alumno = alumnos.get(0);
+        }
+        return alumno;
+    }
+    
+    public Boolean existeSesionActiva(Long cursoId, Integer dia, Date hoy) {
+        log.debug("existeSesionActiva: {} {} {}", new Object[] {cursoId, dia, hoy});
+        boolean resultado = false;
+        Session session = hibernateTemplate.getSessionFactory().openSession();
+        Query query = session.createQuery("select sesion from Sesion sesion where sesion.curso.id = :cursoId and sesion.dia = :dia and :hora between sesion.horaInicial and sesion.horaFinal and :hoy between sesion.curso.inicia and sesion.curso.termina");
+        query.setParameter("cursoId", cursoId);
+        query.setParameter("dia", dia);
+        query.setParameter("hora", hoy);
+        query.setParameter("hoy", hoy);
+        Sesion sesion = (Sesion) query.uniqueResult();
+        if (sesion != null) {
+            resultado = true;
+        }
+        return resultado;
+    }
+
+    public AlumnoCurso obtieneAlumno(Alumno alumno, Curso curso) {
+        AlumnoCurso alumnoCurso = null;
+        List<AlumnoCurso> alumnos = hibernateTemplate.findByNamedParam("from AlumnoCurso where alumno = :alumno and curso = :curso", new String[]{"alumno", "curso"}, new Object[]{alumno, curso});
+        if (alumnos != null && alumnos.size() > 0) {
+            alumnoCurso = alumnos.get(0);
+        }
+        return alumnoCurso;
     }
 }

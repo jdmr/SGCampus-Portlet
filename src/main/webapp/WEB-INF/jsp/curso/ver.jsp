@@ -42,6 +42,11 @@
             </tbody>
         </table>
     </div>
+    <c:if test="${estatus != null}">
+        <div class="dialog">
+            <h1 style="margin:0;padding:0;"><%= LanguageUtil.format(pageContext, "curso.estatus.mensaje",request.getAttribute("estatus"),false) %></h1>
+        </div>
+    </c:if>
     <div class="nav">
         <span class="menuButton"><a class="list" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.regresar" /></a></span>
         <c:if test="${puedeEditar}">
@@ -56,6 +61,16 @@
 
             <span class="menuButton"><a class="edit" href="${editaUrl}"><liferay-ui:message key="curso.editar" /></a></span>
             <span class="menuButton"><a class="create" href="${nuevaSesionUrl}"><liferay-ui:message key="curso.nuevaSesion" /></a></span>
+        </c:if>
+        <c:if test="${puedeInscribirse}">
+            <portlet:renderURL var="inscribirseUrl" >
+                <portlet:param name="action" value="inscribirse" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+            <span class="menuButton"><a class="edit" href="${inscribirseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
+        </c:if>
+        <c:if test="${existeSesionActiva}">
+            <span class="menuButton"><a class="create" href="${curso.url}"><liferay-ui:message key="curso.entrar" /></a></span>
         </c:if>
     </div>
 </div>

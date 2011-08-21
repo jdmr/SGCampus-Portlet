@@ -244,7 +244,10 @@ public class AlumnoCurso implements Serializable {
             return false;
         }
         final AlumnoCurso other = (AlumnoCurso) obj;
-        if (this.getId() != other.getId() && (this.getId() == null || !this.id.equals(other.id))) {
+        if (this.alumno != other.alumno && (this.alumno == null || !this.alumno.equals(other.alumno))) {
+            return false;
+        }
+        if (this.curso != other.curso && (this.curso == null || !this.curso.equals(other.curso))) {
             return false;
         }
         return true;
@@ -252,8 +255,11 @@ public class AlumnoCurso implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 5;
-        hash = 73 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
+        int hash = 3;
+        hash = 71 * hash + (this.id != null ? this.id.hashCode() : 0);
+        hash = 71 * hash + (this.version != null ? this.version.hashCode() : 0);
+        hash = 71 * hash + (this.alumno != null ? this.alumno.hashCode() : 0);
+        hash = 71 * hash + (this.curso != null ? this.curso.hashCode() : 0);
         return hash;
     }
 
