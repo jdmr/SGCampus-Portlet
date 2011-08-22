@@ -11,6 +11,7 @@ import java.util.Set;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
+import mx.edu.um.portlets.sgcampus.model.Asistencia;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Etiqueta;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
@@ -341,5 +342,26 @@ public class CursoDao {
     public AlumnoCurso obtieneAlumnoCurso(Long alumnoCursoId) {
         AlumnoCurso alumnoCurso = hibernateTemplate.get(AlumnoCurso.class, alumnoCursoId);
         return alumnoCurso;
+    }
+
+    public AlumnoCurso obtieneAlumnoCurso(User alumno, Curso curso) {
+        AlumnoCurso alumnoCurso = null;
+        List<AlumnoCurso> alumnos = hibernateTemplate.findByNamedParam("from AlumnoCurso where alumno.alumnoId = :alumnoId and curso = :curso", new String[]{"alumnoId", "curso"}, new Object[]{alumno.getUserId(), curso});
+        if (alumnos != null && alumnos.size() > 0) {
+            alumnoCurso = alumnos.get(0);
+        }
+        return alumnoCurso;
+    }
+
+    public void guardaAsistencia(Long alumnoCursoId) {
+        log.debug("Buscando alumnoCurso {}", alumnoCursoId);
+        AlumnoCurso alumnoCurso = hibernateTemplate.get(AlumnoCurso.class, alumnoCursoId);
+        log.debug("Guardando asistencia de alumno {} al curso {}", alumnoCurso.getAlumno().getId(), alumnoCurso.getCurso().getId());
+        if (alumnoCurso != null) {
+            Asistencia asistencia = new Asistencia(alumnoCurso, new Date());
+            hibernateTemplate.save(asistencia);
+        } else {
+            throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
+        }
     }
 }

@@ -373,6 +373,7 @@ public class CursoPortlet {
             @RequestParam(value = "cursoId") Long cursoId,
             Model modelo) throws PortalException, SystemException {
 
+        AlumnoCurso alumnoCurso = null;
         curso = cursoDao.obtiene(cursoId);
         modelo.addAttribute("curso", curso);
         User creador = PortalUtil.getUser(request);
@@ -393,8 +394,10 @@ public class CursoPortlet {
                 alumno.setUsuario(creador.getScreenName());
                 alumno = cursoDao.creaAlumno(alumno);
             }
-            AlumnoCurso alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);
+            alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);
             if (alumnoCurso != null) {
+                modelo.addAttribute("alumnoCurso",alumnoCurso);
+                
                 ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 modelo.addAttribute("estatus", messageSource.getMessage(alumnoCurso.getEstatus(), null, themeDisplay.getLocale()));
                 // Validar su estatus
@@ -769,6 +772,27 @@ public class CursoPortlet {
         }
         response.setRenderParameter("action", "alumnosPorCurso");
         response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
+    }
+
+    @RequestMapping(params = "action=entrar")
+    public void entrar(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoCursoId,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Entrar a curso {}",cursoId);
+        try {
+            User usuario = PortalUtil.getUser(request);
+            if (usuario != null) {
+                cursoDao.guardaAsistencia(alumnoCursoId);
+                response.sendRedirect(curso.getUrl());
+            } else {
+                log.error("No pudo entrar el alumno al curso {}",cursoId);
+            }
+        } catch(Exception e) {
+            log.error("No pudo entrar el alumno al curso "+cursoId,e);
+        }
     }
 
     public Curso getCurso() {

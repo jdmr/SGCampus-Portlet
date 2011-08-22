@@ -75,7 +75,12 @@
             <span class="menuButton"><a class="edit" href="${inscribirseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
         </c:if>
         <c:if test="${existeSesionActiva}">
-            <span class="menuButton"><a class="create" href="${curso.url}" target="_blank"><liferay-ui:message key="curso.entrar" /></a></span>
+            <portlet:actionURL var="entrarUrl" >
+                <portlet:param name="action" value="entrar" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+                <portlet:param name="alumnoCursoId" value="${alumnoCurso.id}" />
+            </portlet:actionURL>
+            <span class="menuButton"><a class="create" href="${entrarUrl}" target="_blank"><liferay-ui:message key="curso.entrar" /></a></span>
         </c:if>
     </div>
 </div>
