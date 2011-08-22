@@ -184,7 +184,7 @@ public class CursoDaoTest {
         // prueba
         DateTime date3 = date.plusHours(2);
         log.debug("{} | {}", date, date3);
-        Sesion sesion = new Sesion(1,date.toDate(), date3.toDate());
+        Sesion sesion = new Sesion(1,date.toDate(), 240);
         sesion.setCurso(curso);
         log.debug("Creando sesion");
         sesion = cursoDao.creaSesion(sesion);
@@ -217,7 +217,7 @@ public class CursoDaoTest {
 
         // prueba
         DateTime date3 = date.plusHours(2);
-        Sesion sesion = new Sesion(1,date.toDate(), date3.toDate());
+        Sesion sesion = new Sesion(1,date.toDate(), 240);
         sesion.setCurso(curso);
         sesion = cursoDao.creaSesion(sesion);
         

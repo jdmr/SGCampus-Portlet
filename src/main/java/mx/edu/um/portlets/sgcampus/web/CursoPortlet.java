@@ -401,23 +401,25 @@ public class CursoPortlet {
                 if (alumnoCurso.getEstatus().equals(Constantes.INSCRITO)) {
                     // Validar si puede entrar
                     Calendar cal = Calendar.getInstance(themeDisplay.getTimeZone());
-                    boolean existeSesionActiva = cursoDao.existeSesionActiva(cursoId, cal.get(Calendar.DAY_OF_WEEK), cal.getTime());
+                    boolean existeSesionActiva = cursoDao.existeSesionActiva(cursoId, cal);
                     if (existeSesionActiva) {
-                        modelo.addAttribute("existeSesionActiva",true);
+                        modelo.addAttribute("existeSesionActiva", true);
                     }
                 }
             } else {
                 log.debug("PUEDE_INSCRIBIRSE");
                 modelo.addAttribute("puedeInscribirse", true);
             }
+        } else {
+            modelo.addAttribute("puedeInscribirse", true);
         }
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm z");
         sdf.setTimeZone(themeDisplay.getTimeZone());
         List<Sesion> sesiones = cursoDao.obtieneSesiones(curso);
-        for (Sesion sesion : sesiones) {
-            sesion.setSdf(sdf);
+        for (Sesion x : sesiones) {
+            x.setSdf(sdf);
         }
         modelo.addAttribute("sesiones", sesiones);
 
@@ -584,13 +586,12 @@ public class CursoPortlet {
     @RequestMapping(params = "action=creaSesion")
     public void creaSesion(ActionRequest request, ActionResponse response,
             @RequestParam String horaInicial,
-            @RequestParam String horaFinal,
             @ModelAttribute("sesion") Sesion sesion,
             BindingResult result,
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando la sesion");
 
-        log.debug("Sesion {} {} {} {}", new Object[]{sesion.getDia(), sesion.getCurso().getId(), horaInicial, horaFinal});
+        log.debug("Sesion {} {} {}", new Object[]{sesion.getDia(), sesion.getCurso().getId(), horaInicial});
 
         if (sesion.getCurso().getId() != null && sesion.getCurso().getId() > 0) {
             sesion.setCurso(cursoDao.obtiene(sesion.getCurso().getId()));
@@ -601,9 +602,9 @@ public class CursoPortlet {
         sdf.setTimeZone(themeDisplay.getTimeZone());
         try {
             sesion.setHoraInicial(sdf.parse(horaInicial));
-            sesion.setHoraFinal(sdf.parse(horaFinal));
         } catch (ParseException ex) {
-            log.error("No se pudo leer la hora inicial y/o la hora final", ex);
+            log.error("No se pudo leer la hora inicial", ex);
+            response.setRenderParameter("action", "nuevaSesion");
         }
 
         try {
@@ -651,20 +652,123 @@ public class CursoPortlet {
     public String inscribirse(RenderRequest request, @RequestParam Long cursoId, Model model) {
         log.debug("Solicitar inscripcion a curso {}", cursoId);
         try {
-            curso = cursoDao.obtiene(cursoId);
             User usuario = PortalUtil.getUser(request);
-            Alumno alumno = cursoDao.obtieneAlumno(usuario);
-            AlumnoCurso alumnoCurso = new AlumnoCurso();
-            alumnoCurso.setAlumno(alumno);
-            alumnoCurso.setCurso(curso);
-            alumnoCurso.setUsuarioAlta(usuario.getUserId());
-            alumnoCurso.setUsuarioAltaNombre(usuario.getFullName());
-            alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
-            return "curso/preinscripcion";
-        } catch(Exception e) {
-            log.error("No se pudo solicitar la inscripcion al curso "+cursoId, e);
+            if (usuario != null) {
+                curso = cursoDao.obtiene(cursoId);
+                Alumno alumno = cursoDao.obtieneAlumno(usuario);
+                AlumnoCurso alumnoCurso = new AlumnoCurso();
+                alumnoCurso.setAlumno(alumno);
+                alumnoCurso.setCurso(curso);
+                alumnoCurso.setUsuarioAlta(usuario.getUserId());
+                alumnoCurso.setUsuarioAltaNombre(usuario.getFullName());
+                alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+                return "curso/preinscripcion";
+            } else {
+                return "curso/noInscribir";
+            }
+        } catch (Exception e) {
+            log.error("No se pudo solicitar la inscripcion al curso " + cursoId, e);
         }
         return "curso/nopreincripcion";
+    }
+
+    @RequestMapping(params = "action=alumnosPorCurso")
+    public String alumnosPorCurso(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
+        log.debug("Alumnos por Curso {}",id);
+        curso = cursoDao.obtiene(id);
+        List<AlumnoCurso> alumnos = cursoDao.obtieneAlumnos(curso);
+
+        model.addAttribute("curso", curso);
+        model.addAttribute("alumnos", alumnos);
+
+        return "curso/alumnos";
+    }
+
+    @RequestMapping(params = "action=inscribe")
+    public void inscribe(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoCursoId,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Inscribiendo a {}", alumnoCursoId);
+
+        AlumnoCurso alumnoCurso = null;
+        try {
+            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+
+                cursoDao.inscribeAlumno(alumnoCurso);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para inscribir este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo inscribir al alumno " + alumnoCursoId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorCurso");
+        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
+    }
+
+    @RequestMapping(params = "action=pendiente")
+    public void pendiente(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoCursoId,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Poniendo en pendiente a {}", alumnoCursoId);
+
+        AlumnoCurso alumnoCurso = null;
+        try {
+            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+
+                cursoDao.preInscribeAlumno(alumnoCurso);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para pre-inscribir a este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo pre-inscribir al alumno " + alumnoCursoId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorCurso");
+        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
+    }
+
+    @RequestMapping(params = "action=rechaza")
+    public void rechaza(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoCursoId,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Rechazando a {}", alumnoCursoId);
+
+        AlumnoCurso alumnoCurso = null;
+        try {
+            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+
+                cursoDao.rechazaAlumno(alumnoCurso);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para rechazar a este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo rechazar al alumno " + alumnoCursoId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorCurso");
+        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
     }
 
     public Curso getCurso() {

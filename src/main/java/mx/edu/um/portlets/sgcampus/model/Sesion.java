@@ -31,9 +31,7 @@ public class Sesion implements Serializable {
     @Temporal(javax.persistence.TemporalType.TIME)
     @Column(name = "hora_inicial")
     private Date horaInicial;
-    @Temporal(javax.persistence.TemporalType.TIME)
-    @Column(name = "hora_final")
-    private Date horaFinal;
+    private Integer duracion;
     @ManyToOne
     private Curso curso;
     @Transient
@@ -42,10 +40,10 @@ public class Sesion implements Serializable {
     public Sesion() {
     }
 
-    public Sesion(Integer dia, Date horaInicial, Date horaFinal) {
+    public Sesion(Integer dia, Date horaInicial, Integer duracion) {
         this.dia = dia;
         this.horaInicial = horaInicial;
-        this.horaFinal = horaFinal;
+        this.duracion = duracion;
     }
     
 
@@ -106,17 +104,17 @@ public class Sesion implements Serializable {
     }
 
     /**
-     * @return the horaFinal
+     * @return the duracion
      */
-    public Date getHoraFinal() {
-        return horaFinal;
+    public Integer getDuracion() {
+        return duracion;
     }
 
     /**
-     * @param horaFin the horaFinal to set
+     * @param duracion the duracion to set
      */
-    public void setHoraFinal(Date horaFinal) {
-        this.horaFinal = horaFinal;
+    public void setDuracion(Integer duracion) {
+        this.duracion = duracion;
     }
 
     /**
@@ -150,14 +148,6 @@ public class Sesion implements Serializable {
         return sdf.format(horaInicial);
     }
 
-    /**
-     * Obtiene hora final local
-     * @return hora La hora final local
-     */
-    public String getHoraFinalLocal() {
-        return sdf.format(horaFinal);
-    }
-
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -182,6 +172,6 @@ public class Sesion implements Serializable {
 
     @Override
     public String toString() {
-        return "Sesion{" + "dia=" + dia + ", horaInicial=" + horaInicial + ", horaFinal=" + horaFinal + ", curso=" + curso + '}';
+        return "Sesion{" + "dia=" + dia + ", horaInicial=" + horaInicial + ", duracion=" + duracion + ", curso=" + curso + '}';
     }
 }

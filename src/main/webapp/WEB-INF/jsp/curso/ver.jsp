@@ -12,7 +12,7 @@
 
                     <th><liferay-ui:message key="sesion.horaInicial" /></th>
 
-                    <th><liferay-ui:message key="sesion.horaFinal" /></th>
+                    <th><liferay-ui:message key="sesion.duracion" /></th>
 
                     <c:if test="${puedeEditar}">
                         <th><liferay-ui:message key="acciones" /></th>
@@ -27,7 +27,7 @@
 
                         <td>${sesion.horaInicialLocal}</td>
 
-                        <td>${sesion.horaFinalLocal}</td>
+                        <td>${sesion.duracion}</td>
 
                         <c:if test="${puedeEditar}">
                             <portlet:actionURL var="eliminaSesion" >
@@ -44,7 +44,7 @@
     </div>
     <c:if test="${estatus != null}">
         <div class="dialog">
-            <h1 style="margin:0;padding:0;"><%= LanguageUtil.format(pageContext, "curso.estatus.mensaje",request.getAttribute("estatus"),false) %></h1>
+            <h1 style="margin: 5px 0;padding:0;"><%= LanguageUtil.format(pageContext, "curso.estatus.mensaje",request.getAttribute("estatus"),false) %></h1>
         </div>
     </c:if>
     <div class="nav">
@@ -58,9 +58,14 @@
                 <portlet:param name="action" value="nuevaSesion" />
                 <portlet:param name="cursoId" value="${curso.id}" />
             </portlet:renderURL>
+            <portlet:renderURL var="alumnosUrl" >
+                <portlet:param name="action" value="alumnosPorCurso" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
 
             <span class="menuButton"><a class="edit" href="${editaUrl}"><liferay-ui:message key="curso.editar" /></a></span>
             <span class="menuButton"><a class="create" href="${nuevaSesionUrl}"><liferay-ui:message key="curso.nuevaSesion" /></a></span>
+            <span class="menuButton"><a class="list" href="${alumnosUrl}"><liferay-ui:message key="curso.alumnos" /></a></span>
         </c:if>
         <c:if test="${puedeInscribirse}">
             <portlet:renderURL var="inscribirseUrl" >
@@ -70,7 +75,7 @@
             <span class="menuButton"><a class="edit" href="${inscribirseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
         </c:if>
         <c:if test="${existeSesionActiva}">
-            <span class="menuButton"><a class="create" href="${curso.url}"><liferay-ui:message key="curso.entrar" /></a></span>
+            <span class="menuButton"><a class="create" href="${curso.url}" target="_blank"><liferay-ui:message key="curso.entrar" /></a></span>
         </c:if>
     </div>
 </div>

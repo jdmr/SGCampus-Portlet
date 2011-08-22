@@ -2,6 +2,7 @@ package mx.edu.um.portlets.sgcampus.dao;
 
 import com.liferay.portal.model.User;
 import java.math.BigDecimal;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -86,17 +87,13 @@ public class CursoDao {
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
             }
-            
+
             if (!params.containsKey("estatus")) {
-                criteria.add(Restrictions.disjunction()
-                        .add(Restrictions.eq("estatus", "ACTIVO"))
-                        .add(Restrictions.eq("estatus", "PENDIENTE")));
-                countCriteria.add(Restrictions.disjunction()
-                        .add(Restrictions.eq("estatus", "ACTIVO"))
-                        .add(Restrictions.eq("estatus", "PENDIENTE")));
+                criteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
+                countCriteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
             } else {
-                criteria.add(Restrictions.eq("estatus", (String)params.get("estatus")));
-                countCriteria.add(Restrictions.eq("estatus", (String)params.get("estatus")));
+                criteria.add(Restrictions.eq("estatus", (String) params.get("estatus")));
+                countCriteria.add(Restrictions.eq("estatus", (String) params.get("estatus")));
             }
 
             if (params.containsKey("comunidades")) {
@@ -176,12 +173,12 @@ public class CursoDao {
     }
 
     public Sesion creaSesion(Sesion sesion) {
-        if (sesion.getHoraInicial().before(sesion.getHoraFinal())) {
+        if (sesion.getDuracion() > 0) {
             Long id = (Long) hibernateTemplate.save(sesion);
             sesion.setId(id);
             return sesion;
         } else {
-            log.debug("Hora inicial: {} | Hora final: {}", sesion.getHoraInicial(), sesion.getHoraFinal());
+            log.debug("Hora inicial: {} | Duracion: {}", sesion.getHoraInicial(), sesion.getDuracion());
             throw new RuntimeException("La hora final debe ser despues de la hora inicial");
         }
     }
@@ -206,9 +203,13 @@ public class CursoDao {
     public AlumnoCurso preInscribeAlumno(AlumnoCurso alumnoCurso) {
         alumnoCurso.setEstatus(Constantes.PENDIENTE);
         alumnoCurso.setAlta(new Date());
-        Long id = (Long) hibernateTemplate.save(alumnoCurso);
-        alumnoCurso.setId(id);
-        alumnoCurso.setVersion(0);
+        if (alumnoCurso.getId() != null && alumnoCurso.getVersion() != null) {
+            hibernateTemplate.update(alumnoCurso);
+        } else {
+            Long id = (Long) hibernateTemplate.save(alumnoCurso);
+            alumnoCurso.setId(id);
+            alumnoCurso.setVersion(0);
+        }
         return alumnoCurso;
     }
 
@@ -229,7 +230,7 @@ public class CursoDao {
         hibernateTemplate.refresh(alumnoCurso);
         return alumnoCurso;
     }
-    
+
     public List<AlumnoCurso> obtieneAlumnos(Curso curso) {
         DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
         criteria.add(Restrictions.eq("curso", curso));
@@ -297,19 +298,33 @@ public class CursoDao {
         }
         return alumno;
     }
-    
-    public Boolean existeSesionActiva(Long cursoId, Integer dia, Date hoy) {
-        log.debug("existeSesionActiva: {} {} {}", new Object[] {cursoId, dia, hoy});
+
+    public Boolean existeSesionActiva(Long cursoId, Calendar calendario) {
+        Integer dia = calendario.get(Calendar.DAY_OF_WEEK);
+        Date hoy = calendario.getTime();
+        log.debug("existeSesionActiva: {} {} {}", new Object[]{cursoId, dia, hoy});
         boolean resultado = false;
         Session session = hibernateTemplate.getSessionFactory().openSession();
-        Query query = session.createQuery("select sesion from Sesion sesion where sesion.curso.id = :cursoId and sesion.dia = :dia and :hora between sesion.horaInicial and sesion.horaFinal and :hoy between sesion.curso.inicia and sesion.curso.termina");
+        Query query = session.createQuery("select sesion from Sesion sesion where sesion.curso.id = :cursoId and sesion.dia = :dia and :hoy between sesion.curso.inicia and sesion.curso.termina");
         query.setParameter("cursoId", cursoId);
         query.setParameter("dia", dia);
-        query.setParameter("hora", hoy);
         query.setParameter("hoy", hoy);
         Sesion sesion = (Sesion) query.uniqueResult();
         if (sesion != null) {
-            resultado = true;
+            Calendar cal = Calendar.getInstance(calendario.getTimeZone());
+            cal.setTime(sesion.getHoraInicial());
+            calendario.set(Calendar.HOUR, cal.get(Calendar.HOUR));
+            calendario.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
+            Date inicia = calendario.getTime();
+            log.debug("Encontre una sesion activa que inicia a las {}", inicia);
+            long diff = (hoy.getTime() - inicia.getTime()) / (60 * 1000);
+            log.debug("TEST {} vs {}", new Date(hoy.getTime()), new Date(inicia.getTime()));
+            log.debug("Con una diferencia de {} es menor que {}", diff, sesion.getDuracion());
+            if (diff < sesion.getDuracion() && diff > -30) {
+                resultado = true;
+            }
+        } else {
+            log.debug("No encontre una sesion activa");
         }
         return resultado;
     }
@@ -320,6 +335,11 @@ public class CursoDao {
         if (alumnos != null && alumnos.size() > 0) {
             alumnoCurso = alumnos.get(0);
         }
+        return alumnoCurso;
+    }
+
+    public AlumnoCurso obtieneAlumnoCurso(Long alumnoCursoId) {
+        AlumnoCurso alumnoCurso = hibernateTemplate.get(AlumnoCurso.class, alumnoCursoId);
         return alumnoCurso;
     }
 }

@@ -37,11 +37,11 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />horaFinal"><liferay-ui:message key="sesion.horaFinal" /></label>
+                            <label for="<portlet:namespace />duracion"><liferay-ui:message key="sesion.duracion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <form:input path="horaFinal" />
-                            <form:errors cssClass="errors" path="horaFinal" cssStyle="color:red;" />
+                            <form:input path="duracion" />
+                            <form:errors cssClass="errors" path="duracion" cssStyle="color:red;" />
                         </td>
                     </tr>
 
