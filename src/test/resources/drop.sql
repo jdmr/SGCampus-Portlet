@@ -1,4 +1,5 @@
 begin;
+drop table sg_asistencias cascade;
 drop table sg_alumno_curso cascade;
 drop table sg_alumnos cascade;
 drop table sg_curso_etiqueta cascade;

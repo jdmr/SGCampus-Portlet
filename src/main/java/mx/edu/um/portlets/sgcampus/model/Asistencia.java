@@ -17,7 +17,7 @@ import javax.persistence.Version;
  * @author jdmr
  */
 @Entity
-@Table(name = "sg_asistencia")
+@Table(name = "sg_asistencias")
 public class Asistencia implements Serializable {
 
     @Id
