@@ -101,6 +101,11 @@ public class CursoDao {
                 criteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
                 countCriteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
             }
+            
+            if (params.containsKey("maestroId")) {
+                criteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
+                countCriteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
+            }
 
             Integer max = 0;
             if (params.containsKey("max")) {
@@ -364,4 +369,5 @@ public class CursoDao {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
         }
     }
+
 }

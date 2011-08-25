@@ -17,6 +17,12 @@
         <header-portlet-css>/css/main.css</header-portlet-css>
         <header-portlet-javascript>/js/main.js</header-portlet-javascript>
     </portlet>
+    <portlet>
+        <portlet-name>CursosMaestro</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/main.css</header-portlet-css>
+        <header-portlet-javascript>/js/main.js</header-portlet-javascript>
+    </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>
