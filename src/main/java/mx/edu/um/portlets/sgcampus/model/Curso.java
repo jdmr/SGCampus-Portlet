@@ -3,7 +3,6 @@ package mx.edu.um.portlets.sgcampus.model;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
-import java.util.List;
 import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -12,6 +11,7 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinTable;
 import javax.persistence.ManyToMany;
+import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -42,10 +42,8 @@ public class Curso implements Serializable {
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
     private String comunidadNombre;
-    @Column(name = "maestro_id", nullable = false)
-    private Long maestroId;
-    @Column(name = "maestro_nombre", length = 128)
-    private String maestroNombre;
+    @ManyToOne
+    private Maestro maestro;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date inicia;
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -77,14 +75,13 @@ public class Curso implements Serializable {
     public Curso() {
     }
 
-    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Long maestroId, String maestroNombre, Date inicia, Date termina, String url, String tipo) {
+    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Maestro maestro, Date inicia, Date termina, String url, String tipo) {
         this.codigo = codigo;
         this.nombre = nombre;
         this.descripcion = descripcion;
         this.comunidadId = comunidadId;
         this.comunidadNombre = comunidadNombre;
-        this.maestroId = maestroId;
-        this.maestroNombre = maestroNombre;
+        this.maestro = maestro;
         this.inicia = inicia;
         this.termina = termina;
         this.url = url;
@@ -190,31 +187,17 @@ public class Curso implements Serializable {
     }
 
     /**
-     * @return the maestroId
+     * @return the maestro
      */
-    public Long getMaestroId() {
-        return maestroId;
+    public Maestro getMaestro() {
+        return maestro;
     }
 
     /**
-     * @param maestroId the maestroId to set
+     * @param maestro the maestro to set
      */
-    public void setMaestroId(Long maestroId) {
-        this.maestroId = maestroId;
-    }
-
-    /**
-     * @return the maestroNombre
-     */
-    public String getMaestroNombre() {
-        return maestroNombre;
-    }
-
-    /**
-     * @param maestroNombre the maestroNombre to set
-     */
-    public void setMaestroNombre(String maestroNombre) {
-        this.maestroNombre = maestroNombre;
+    public void setMaestro(Maestro maestro) {
+        this.maestro = maestro;
     }
 
     /**

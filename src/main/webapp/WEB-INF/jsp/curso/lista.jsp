@@ -49,7 +49,7 @@
 
                             <td>${curso.inicia}</td>
 
-                            <td><liferay-ui:message key="${curso.maestroNombre}" /></td>
+                            <td>${curso.maestro.nombreCompleto}</td>
 
                             <td><liferay-ui:message key="${curso.tipo}" /></td>
 

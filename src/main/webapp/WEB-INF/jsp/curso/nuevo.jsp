@@ -6,7 +6,7 @@
     </portlet:actionURL>
 
     <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
-        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestroId" value="${curso.maestroId}" />
+        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${curso.maestro.id}" />
         <div class="dialog">
             <table>
                 <tbody>
@@ -48,7 +48,7 @@
                         </td>
                         <td valign="top" class="value">
                             <div id="<portlet:namespace />maestroDiv">
-                                <c:if test="${curso.maestroNombre != null && curso.maestroNombre != ''}">
+                                <c:if test="${curso.maestro != null}">
                                     <table>
                                         <thead>
                                             <tr>
@@ -57,14 +57,14 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>${curso.maestroNombre}</td>
+                                                <td>${curso.maestro.nombreCompleto}</td>
                                             </tr>
                                         </tbody>
                                     </table>
                                 </c:if>
                             </div>
                             <input type="text" name="maestroNombre" id="<portlet:namespace />maestroNombre" value="" />
-                            <form:errors cssClass="errors" path="maestroNombre" cssStyle="color:red;" />
+                            <form:errors cssClass="errors" path="maestro" cssStyle="color:red;" />
                         </td>
                     </tr>
 

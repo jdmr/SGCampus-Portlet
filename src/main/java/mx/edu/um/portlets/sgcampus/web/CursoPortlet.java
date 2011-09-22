@@ -32,6 +32,7 @@ import mx.edu.um.portlets.sgcampus.dao.CursoDao;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Maestro;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
@@ -268,6 +269,13 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
+                Maestro maestro = cursoDao.obtieneMaestro(curso.getMaestro().getId());
+                if (maestro == null) {
+                    User maestroLiferay = UserLocalServiceUtil.getUser(curso.getMaestro().getId());
+                    maestro = new Maestro(maestroLiferay);
+                    maestro = cursoDao.registraMaestro(maestro);
+                }
+                curso.setMaestro(maestro);
                 curso = cursoDao.crea(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -295,8 +303,12 @@ public class CursoPortlet {
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
 
         User user = PortalUtil.getUser(request);
-        curso.setMaestroId(user.getPrimaryKey());
-        curso.setMaestroNombre(user.getFullName());
+        Maestro maestro = cursoDao.obtieneMaestro(user.getUserId());
+        if (maestro == null) {
+            maestro = new Maestro(user);
+            maestro = cursoDao.registraMaestro(maestro);
+        }
+        curso.setMaestro(maestro);
         curso.setTipo("PATROCINADO");
         curso.setUrl("URL-INVALIDA");
         curso.setEstatus("PENDIENTE");
@@ -304,8 +316,7 @@ public class CursoPortlet {
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
-                User creador = PortalUtil.getUser(request);
-                curso = cursoDao.crea(curso, creador.getUserId());
+                curso = cursoDao.crea(curso, user.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
@@ -379,7 +390,7 @@ public class CursoPortlet {
         User creador = PortalUtil.getUser(request);
         if (request.isUserInRole("Administrator")
                 || request.isUserInRole("cursos-admin")
-                || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
             modelo.addAttribute("puedeEditar", true);
         } else if (creador != null) {
             log.debug("Buscando alumno");
@@ -521,8 +532,7 @@ public class CursoPortlet {
         log.debug("Guardando el curso");
         this.curso = curso;
         Curso viejo = cursoDao.obtiene(curso.getId());
-        curso.setMaestroId(viejo.getMaestroId());
-        curso.setMaestroNombre(viejo.getMaestroNombre());
+        curso.setMaestro(viejo.getMaestro());
         curso.setTipo(viejo.getTipo());
         curso.setUrl(viejo.getUrl());
         curso.setEstatus(viejo.getEstatus());
@@ -557,7 +567,7 @@ public class CursoPortlet {
             User creador = PortalUtil.getUser(request);
             if (request.isUserInRole("Administrator")
                     || request.isUserInRole("cursos-admin")
-                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.elimina(id, creador.getUserId());
                 this.curso = null;
@@ -637,7 +647,7 @@ public class CursoPortlet {
             User creador = PortalUtil.getUser(request);
             if (request.isUserInRole("Administrator")
                     || request.isUserInRole("cursos-admin")
-                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.eliminaSesion(sesionId);
                 sessionStatus.setComplete();
@@ -702,7 +712,7 @@ public class CursoPortlet {
             User creador = PortalUtil.getUser(request);
             if (request.isUserInRole("Administrator")
                     || request.isUserInRole("cursos-admin")
-                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.inscribeAlumno(alumnoCurso);
                 sessionStatus.setComplete();
@@ -731,7 +741,7 @@ public class CursoPortlet {
             User creador = PortalUtil.getUser(request);
             if (request.isUserInRole("Administrator")
                     || request.isUserInRole("cursos-admin")
-                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.preInscribeAlumno(alumnoCurso);
                 sessionStatus.setComplete();
@@ -760,7 +770,7 @@ public class CursoPortlet {
             User creador = PortalUtil.getUser(request);
             if (request.isUserInRole("Administrator")
                     || request.isUserInRole("cursos-admin")
-                    || (creador != null && creador.getUserId() == curso.getMaestroId())) {
+                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.rechazaAlumno(alumnoCurso);
                 sessionStatus.setComplete();

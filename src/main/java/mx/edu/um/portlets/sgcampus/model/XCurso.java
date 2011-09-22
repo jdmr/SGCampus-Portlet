@@ -35,8 +35,6 @@ public class XCurso implements Serializable {
     private String comunidadNombre;
     @Column(name = "maestro_id", nullable = false)
     private Long maestroId;
-    @Column(name = "maestro_nombre", length = 128)
-    private String maestroNombre;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date inicia;
     @Temporal(javax.persistence.TemporalType.DATE)
@@ -192,20 +190,6 @@ public class XCurso implements Serializable {
      */
     public void setMaestroId(Long maestroId) {
         this.maestroId = maestroId;
-    }
-
-    /**
-     * @return the maestroNombre
-     */
-    public String getMaestroNombre() {
-        return maestroNombre;
-    }
-
-    /**
-     * @param maestroNombre the maestroNombre to set
-     */
-    public void setMaestroNombre(String maestroNombre) {
-        this.maestroNombre = maestroNombre;
     }
 
     /**

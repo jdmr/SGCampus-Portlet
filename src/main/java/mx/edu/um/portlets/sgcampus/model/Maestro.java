@@ -6,8 +6,6 @@ import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -22,12 +20,9 @@ import javax.persistence.Version;
 public class Maestro implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @Column(name = "maestro_id", nullable = false, unique = true)
-    private Long maestroId;
     @Column(length = 32, nullable = false)
     private String usuario;
     @Column(length = 128, nullable = false)
@@ -52,7 +47,7 @@ public class Maestro implements Serializable {
     }
 
     public Maestro(User maestro) {
-        maestroId = maestro.getUserId();
+        id = maestro.getUserId();
         usuario = maestro.getScreenName();
         correo = maestro.getEmailAddress();
         nombreCompleto = maestro.getFullName();
@@ -85,20 +80,6 @@ public class Maestro implements Serializable {
      */
     public void setVersion(Integer version) {
         this.version = version;
-    }
-
-    /**
-     * @return the maestroId
-     */
-    public Long getMaestroId() {
-        return maestroId;
-    }
-
-    /**
-     * @param maestroId the maestroId to set
-     */
-    public void setMaestroId(Long maestroId) {
-        this.maestroId = maestroId;
     }
 
     /**
@@ -251,6 +232,6 @@ public class Maestro implements Serializable {
 
     @Override
     public String toString() {
-        return "Maestro{" + "id=" + id + ", maestroId=" + maestroId + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
+        return "Maestro{" + "id=" + id + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
     }
 }

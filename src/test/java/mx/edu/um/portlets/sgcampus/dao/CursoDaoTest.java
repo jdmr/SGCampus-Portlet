@@ -13,6 +13,7 @@ import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Etiqueta;
+import mx.edu.um.portlets.sgcampus.model.Maestro;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
 import org.joda.time.DateTime;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -47,12 +48,22 @@ public class CursoDaoTest {
         StringBuilder sb;
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
         for (int i = 1; i <= 20; i++) {
             sb = new StringBuilder();
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -61,7 +72,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -87,12 +98,23 @@ public class CursoDaoTest {
         StringBuilder sb;
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+
         for (int i = 1; i <= 20; i++) {
             sb = new StringBuilder();
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -101,7 +123,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -110,7 +132,7 @@ public class CursoDaoTest {
         comunidades.add(1L);
         Map<String, Object> params = new HashMap<String, Object>();
         params.put("filtro", "TEST1");
-        params.put("comunidades",comunidades);
+        params.put("comunidades", comunidades);
         Map<String, Object> resultado = cursoDao.busca(params);
         Assert.assertNotNull(resultado);
         List<Curso> cursos = (List<Curso>) resultado.get("cursos");
@@ -127,22 +149,42 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         cursoDao.crea(curso, 1L);
-        
+
         // prueba
-        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 2L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso2, 1L);
         Assert.assertNotNull(curso2);
         Assert.assertNotNull(curso2.getId());
     }
-    
+
     @Test
     public void debieraModificarCurso() {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         // prueba
@@ -151,45 +193,65 @@ public class CursoDaoTest {
         curso = cursoDao.actualiza(curso, 1L);
         Assert.assertNotNull(curso);
         Assert.assertEquals("TEST-2", curso.getNombre());
-        
+
         curso = cursoDao.obtiene(curso.getId());
         Assert.assertNotNull(curso);
         Assert.assertEquals("TEST-2", curso.getNombre());
     }
-    
+
     @Test
     public void debieraEliminarCurso() {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
-        
+
         // prueba
         cursoDao.elimina(curso.getId(), 1L);
         curso = cursoDao.obtiene(curso.getId());
         Assert.assertNull(curso);
     }
-    
+
     @Test
     public void debieraCrearUnaSesion() {
         log.debug("Debiera crear una sesion");
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
         log.debug("inicializado");
 
         // prueba
         DateTime date3 = date.plusHours(2);
         log.debug("{} | {}", date, date3);
-        Sesion sesion = new Sesion(1,date.toDate(), 240);
+        Sesion sesion = new Sesion(1, date.toDate(), 240);
         sesion.setCurso(curso);
         log.debug("Creando sesion");
         sesion = cursoDao.creaSesion(sesion);
         log.debug("Sesion {}", sesion);
-        
+
         // validaciones
         Assert.assertNotNull(sesion);
         Assert.assertNotNull(sesion.getId());
@@ -197,57 +259,77 @@ public class CursoDaoTest {
         log.debug("Curso {}", curso);
         log.debug("Sesiones {}", curso.getSesiones());
         if (curso.getSesiones() != null && curso.getSesiones().size() == 1) {
-            for(Sesion x : curso.getSesiones()) {
+            for (Sesion x : curso.getSesiones()) {
                 Assert.assertEquals(sesion, x);
             }
         } else {
             Assert.fail("Debiera haber sesiones");
         }
     }
-    
+
     @Test
     public void debieraEliminarUnaSesion() {
         log.debug("Debiera eliminar una sesion");
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
         log.debug("inicializado");
 
         // prueba
         DateTime date3 = date.plusHours(2);
-        Sesion sesion = new Sesion(1,date.toDate(), 240);
+        Sesion sesion = new Sesion(1, date.toDate(), 240);
         sesion.setCurso(curso);
         sesion = cursoDao.creaSesion(sesion);
-        
+
         // validaciones
         Assert.assertNotNull(sesion);
         Assert.assertNotNull(sesion.getId());
         curso = cursoDao.refresh(curso);
         if (curso.getSesiones() != null && curso.getSesiones().size() == 1) {
-            for(Sesion x : curso.getSesiones()) {
+            for (Sesion x : curso.getSesiones()) {
                 Assert.assertEquals(sesion, x);
-                
+
                 Long sesionId = sesion.getId();
                 cursoDao.eliminaSesion(sesionId);
-                
+
                 Sesion y = cursoDao.obtieneSesion(sesionId);
-                Assert.assertNull("No deberia de encontrar la sesion",y);
+                Assert.assertNull("No deberia de encontrar la sesion", y);
             }
         } else {
             Assert.fail("Debiera haber sesiones");
         }
     }
-    
+
     @Test
     public void debieraInscribirAlumno() {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
-        
+
         Alumno alumno = new Alumno();
         alumno.setAlumnoId(1L);
         alumno.setUsuario("admin");
@@ -255,7 +337,7 @@ public class CursoDaoTest {
         alumno.setCorreo("admin@test.com");
         alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
-        
+
         log.debug("inicializado");
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
@@ -270,9 +352,9 @@ public class CursoDaoTest {
         Assert.assertNotNull(alumnoCurso);
         Assert.assertNotNull(alumnoCurso.getId());
         Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso.getEstatus());
-        
+
         alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
-        
+
         Assert.assertNotNull(alumnoCurso);
         Assert.assertNotNull(alumnoCurso);
         Assert.assertNotNull(alumnoCurso.getId());
@@ -284,9 +366,19 @@ public class CursoDaoTest {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
-        
+
         Alumno alumno = new Alumno();
         alumno.setAlumnoId(1L);
         alumno.setUsuario("admin");
@@ -294,7 +386,7 @@ public class CursoDaoTest {
         alumno.setCorreo("admin@test.com");
         alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
-        
+
         Alumno alumno2 = new Alumno();
         alumno2.setAlumnoId(2L);
         alumno2.setUsuario("admin2");
@@ -302,7 +394,7 @@ public class CursoDaoTest {
         alumno2.setCorreo("admin2@test.com");
         alumno2.setFechaIngreso(new Date());
         alumno2 = cursoDao.creaAlumno(alumno2);
-        
+
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
         alumnoCurso.setCurso(curso);
@@ -331,26 +423,36 @@ public class CursoDaoTest {
 
         alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
         alumnoCurso2 = cursoDao.inscribeAlumno(alumnoCurso2);
-        
+
         log.debug("inicializado");
         alumnoCurso.setEvaluacion(new BigDecimal("5"));
         alumnoCurso2.setEvaluacion(new BigDecimal("4"));
-        
+
         alumnoCurso = cursoDao.evaluacion(alumnoCurso);
         alumnoCurso2 = cursoDao.evaluacion(alumnoCurso2);
-        
+
         curso = alumnoCurso2.getCurso();
         Assert.assertEquals(new BigDecimal("4.5"), curso.getEvaluacion());
     }
-    
+
     @Test
     public void debieraEvaluarAAlumno() {
         // inicializacion
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
-        
+
         Alumno alumno = new Alumno();
         alumno.setAlumnoId(1L);
         alumno.setUsuario("admin");
@@ -358,7 +460,7 @@ public class CursoDaoTest {
         alumno.setCorreo("admin@test.com");
         alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
-        
+
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
         alumnoCurso.setCurso(curso);
@@ -372,58 +474,78 @@ public class CursoDaoTest {
         Assert.assertNotNull(alumnoCurso);
         Assert.assertNotNull(alumnoCurso.getId());
         Assert.assertEquals(Constantes.PENDIENTE, alumnoCurso.getEstatus());
-        
+
         alumnoCurso = cursoDao.inscribeAlumno(alumnoCurso);
-        
+
         Assert.assertNotNull(alumnoCurso);
         Assert.assertNotNull(alumnoCurso.getId());
         Assert.assertEquals(Constantes.INSCRITO, alumnoCurso.getEstatus());
-        
+
         log.debug("inicializado");
         alumnoCurso.setCalificacion(new BigDecimal(100));
-        
+
         cursoDao.califica(alumnoCurso);
-        
+
         alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
         Assert.assertNotNull(alumnoCurso);
         Assert.assertEquals(new BigDecimal("100").intValue(), alumnoCurso.getCalificacion().intValue());
         Assert.assertEquals(new BigDecimal("100").intValue(), curso.getCalificacion().intValue());
     }
-    
+
     @Test
     public void debieraCrearCursoConEtiquetas() {
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
         etiquetas.add(new Etiqueta("TEST1", 1L));
         etiquetas.add(new Etiqueta("TEST2", 1L));
         curso.setEtiquetas(etiquetas);
         curso = cursoDao.crea(curso, 1L);
-        
+
         curso = cursoDao.refresh(curso);
         Assert.assertNotNull(curso.getEtiquetas());
-        for(Etiqueta etiqueta : curso.getEtiquetas()) {
+        for (Etiqueta etiqueta : curso.getEtiquetas()) {
             Assert.assertTrue(etiqueta.getNombre().startsWith("TEST"));
         }
     }
-    
+
     public void debieraEncontrarCusoConEtiqueta() {
         DateTime date = new DateTime();
         DateTime date2 = date.plusMonths(1);
-        Curso curso  = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
-        Curso curso2 = new Curso("TEST-2", "TEST-2", "TEST-2", 1L, "TEST", 1L, "MAESTRO1", date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Maestro maestro = new Maestro();
+        maestro.setId(1L);
+        maestro.setUsuario("maestro1");
+        maestro.setNombreCompleto("MAESTRO1");
+        maestro.setCorreo("test@test.com");
+        maestro.setEstado("NL");
+        maestro.setPais("MEXICO");
+        maestro.setTelefono("8260000000");
+        maestro.setFechaIngreso(new Date());
+        maestro = cursoDao.registraMaestro(maestro);
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso2 = new Curso("TEST-2", "TEST-2", "TEST-2", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
         etiquetas.add(new Etiqueta("TEST", 1L));
         etiquetas.add(new Etiqueta("PRUEBA", 1L));
         curso.setEtiquetas(etiquetas);
-        curso  = cursoDao.crea(curso,  1L);
+        curso = cursoDao.crea(curso, 1L);
         curso2 = cursoDao.crea(curso2, 1L);
 
         List<Curso> cursos = cursoDao.buscaPorEtiqueta(new Etiqueta("TEST", 1L));
         Assert.assertNotNull(cursos);
         boolean encontrado = false;
-        for(Curso x : cursos) {
+        for (Curso x : cursos) {
             if (x.getNombre().equals("TEST-1")) {
                 encontrado = true;
             }
@@ -433,5 +555,4 @@ public class CursoDaoTest {
         }
         Assert.assertTrue("Debio encontrar el curso", encontrado);
     }
-    
 }

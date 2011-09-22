@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import mx.edu.um.portlets.sgcampus.model.Maestro;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.model.Alumno;
 import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
@@ -78,16 +79,18 @@ public class CursoDao {
             curso.setCodigo("U" + nf.format(folio.getValor()));
         }
         Long id = (Long) hibernateTemplate.save(curso);
+        curso.setId(id);
+        curso.setVersion(0);
 
         XCurso xcurso = new XCurso();
         BeanUtils.copyProperties(curso, xcurso);
         xcurso.setCursoId(id);
         xcurso.setAccion(Constantes.CREAR);
         xcurso.setCreadorId(creadorId);
-        curso.setId(id);
-        curso.setVersion(0);
+        xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
 
+        
         return curso;
     }
 
@@ -105,7 +108,6 @@ public class CursoDao {
                 propiedades.add(Restrictions.ilike("codigo", filtro));
                 propiedades.add(Restrictions.ilike("nombre", filtro));
                 propiedades.add(Restrictions.ilike("comunidadNombre", filtro));
-                propiedades.add(Restrictions.ilike("maestroNombre", filtro));
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
             }
@@ -121,11 +123,6 @@ public class CursoDao {
             if (params.containsKey("comunidades")) {
                 criteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
                 countCriteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
-            }
-
-            if (params.containsKey("maestroId")) {
-                criteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
-                countCriteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
             }
 
             Integer max = 0;
@@ -172,6 +169,7 @@ public class CursoDao {
         xcurso.setCursoId(curso.getId());
         xcurso.setAccion(Constantes.ACTUALIZAR);
         xcurso.setCreadorId(creadorId);
+        xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
         return curso;
     }
@@ -195,6 +193,7 @@ public class CursoDao {
         xcurso.setCursoId(curso.getId());
         xcurso.setAccion(Constantes.ELIMINAR);
         xcurso.setCreadorId(creadorId);
+        xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
         hibernateTemplate.delete(curso);
     }
@@ -324,6 +323,7 @@ public class CursoDao {
         xcurso.setCursoId(curso.getId());
         xcurso.setAccion(Constantes.ACTUALIZAR);
         xcurso.setCreadorId(alumnoCurso.getAlumno().getId());
+        xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
 
         alumnoCurso.setCurso(curso);
@@ -362,7 +362,8 @@ public class CursoDao {
         BeanUtils.copyProperties(curso, xcurso);
         xcurso.setCursoId(curso.getId());
         xcurso.setAccion(Constantes.ACTUALIZAR);
-        xcurso.setCreadorId(alumnoCurso.getCurso().getMaestroId());
+        xcurso.setCreadorId(alumnoCurso.getCurso().getMaestro().getId());
+        xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
 
 
@@ -456,5 +457,15 @@ public class CursoDao {
         } else {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
         }
+    }
+
+    public Maestro obtieneMaestro(Long maestroId) {
+        log.debug("Buscando maestro {}", maestroId);
+        return hibernateTemplate.get(Maestro.class, maestroId);
+    }
+
+    public Maestro registraMaestro(Maestro maestro) {
+        hibernateTemplate.save(maestro);
+        return maestro;
     }
 }
