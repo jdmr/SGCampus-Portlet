@@ -389,7 +389,7 @@ public class CursoPortlet {
                 alumno = new Alumno();
                 alumno.setAlumnoId(creador.getUserId());
                 alumno.setCorreo(creador.getEmailAddress());
-                alumno.setFecha(new Date());
+                alumno.setFechaIngreso(new Date());
                 alumno.setNombreCompleto(creador.getFullName());
                 alumno.setUsuario(creador.getScreenName());
                 alumno = cursoDao.creaAlumno(alumno);
@@ -662,8 +662,8 @@ public class CursoPortlet {
                 AlumnoCurso alumnoCurso = new AlumnoCurso();
                 alumnoCurso.setAlumno(alumno);
                 alumnoCurso.setCurso(curso);
-                alumnoCurso.setUsuarioAlta(usuario.getUserId());
-                alumnoCurso.setUsuarioAltaNombre(usuario.getFullName());
+                alumnoCurso.setCreadorId(usuario.getUserId());
+                alumnoCurso.setCreadorNombre(usuario.getFullName());
                 alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
                 return "curso/preinscripcion";
             } else {

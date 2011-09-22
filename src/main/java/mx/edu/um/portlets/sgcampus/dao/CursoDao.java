@@ -2,6 +2,8 @@ package mx.edu.um.portlets.sgcampus.dao;
 
 import com.liferay.portal.model.User;
 import java.math.BigDecimal;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
@@ -14,7 +16,9 @@ import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.Asistencia;
 import mx.edu.um.portlets.sgcampus.model.Curso;
 import mx.edu.um.portlets.sgcampus.model.Etiqueta;
+import mx.edu.um.portlets.sgcampus.model.Folio;
 import mx.edu.um.portlets.sgcampus.model.Sesion;
+import mx.edu.um.portlets.sgcampus.model.XAlumnoCurso;
 import mx.edu.um.portlets.sgcampus.model.XCurso;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
@@ -58,7 +62,23 @@ public class CursoDao {
         if (curso.getInicia() != null && curso.getTermina() != null && curso.getInicia().after(curso.getTermina())) {
             throw new RuntimeException("La fecha inicial debe ser antes de la que termina");
         }
+        if (curso.getCodigo() == null) {
+            log.debug("Asignando codigo");
+            List<Folio> folios = hibernateTemplate.findByNamedParam("select folio from Folio folio where folio.nombre = :nombre and folio.comunidadId = :comunidadId", new String[]{"nombre", "comunidadId"}, new Object[]{Constantes.CURSO, curso.getComunidadId()});
+            Folio folio = null;
+            if (folios != null && folios.size() > 0) {
+                folio = folios.get(0);
+            } else {
+                folio = new Folio(Constantes.CURSO, 0L, curso.getComunidadId());
+            }
+            folio.setValor(folio.getValor() + 1);
+            NumberFormat nf = DecimalFormat.getInstance();
+            nf.setGroupingUsed(false);
+            nf.setMinimumIntegerDigits(7);
+            curso.setCodigo("U" + nf.format(folio.getValor()));
+        }
         Long id = (Long) hibernateTemplate.save(curso);
+
         XCurso xcurso = new XCurso();
         BeanUtils.copyProperties(curso, xcurso);
         xcurso.setCursoId(id);
@@ -67,6 +87,7 @@ public class CursoDao {
         curso.setId(id);
         curso.setVersion(0);
         hibernateTemplate.save(xcurso);
+
         return curso;
     }
 
@@ -101,7 +122,7 @@ public class CursoDao {
                 criteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
                 countCriteria.add(Restrictions.in("comunidadId", (Set<Long>) params.get("comunidades")));
             }
-            
+
             if (params.containsKey("maestroId")) {
                 criteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
                 countCriteria.add(Restrictions.eq("maestroId", params.get("maestroId")));
@@ -208,7 +229,7 @@ public class CursoDao {
 
     public AlumnoCurso preInscribeAlumno(AlumnoCurso alumnoCurso) {
         alumnoCurso.setEstatus(Constantes.PENDIENTE);
-        alumnoCurso.setAlta(new Date());
+        alumnoCurso.setFecha(new Date());
         if (alumnoCurso.getId() != null && alumnoCurso.getVersion() != null) {
             hibernateTemplate.update(alumnoCurso);
         } else {
@@ -216,18 +237,47 @@ public class CursoDao {
             alumnoCurso.setId(id);
             alumnoCurso.setVersion(0);
         }
+        // HISTORIAL
+        XAlumnoCurso xalumnoCurso = new XAlumnoCurso();
+        BeanUtils.copyProperties(alumnoCurso, xalumnoCurso);
+        xalumnoCurso.setAlumnoCursoId(alumnoCurso.getId());
+        xalumnoCurso.setAlumnoId(alumnoCurso.getAlumno().getId());
+        xalumnoCurso.setCursoId(alumnoCurso.getCurso().getId());
+        xalumnoCurso.setAccion(Constantes.CREAR);
+        hibernateTemplate.save(xalumnoCurso);
+
         return alumnoCurso;
     }
 
     public AlumnoCurso inscribeAlumno(AlumnoCurso alumnoCurso) {
         alumnoCurso.setEstatus(Constantes.INSCRITO);
         hibernateTemplate.update(alumnoCurso);
+
+        // HISTORIAL
+        XAlumnoCurso xalumnoCurso = new XAlumnoCurso();
+        BeanUtils.copyProperties(alumnoCurso, xalumnoCurso);
+        xalumnoCurso.setAlumnoCursoId(alumnoCurso.getId());
+        xalumnoCurso.setAlumnoId(alumnoCurso.getAlumno().getId());
+        xalumnoCurso.setCursoId(alumnoCurso.getCurso().getId());
+        xalumnoCurso.setAccion(Constantes.ACTUALIZAR);
+        hibernateTemplate.save(xalumnoCurso);
+
         return alumnoCurso;
     }
 
     public AlumnoCurso rechazaAlumno(AlumnoCurso alumnoCurso) {
         alumnoCurso.setEstatus(Constantes.RECHAZADO);
         hibernateTemplate.update(alumnoCurso);
+
+        // HISTORIAL
+        XAlumnoCurso xalumnoCurso = new XAlumnoCurso();
+        BeanUtils.copyProperties(alumnoCurso, xalumnoCurso);
+        xalumnoCurso.setAlumnoCursoId(alumnoCurso.getId());
+        xalumnoCurso.setAlumnoId(alumnoCurso.getAlumno().getId());
+        xalumnoCurso.setCursoId(alumnoCurso.getCurso().getId());
+        xalumnoCurso.setAccion(Constantes.ACTUALIZAR);
+        hibernateTemplate.save(xalumnoCurso);
+
         return alumnoCurso;
     }
 
@@ -245,25 +295,53 @@ public class CursoDao {
 
     public AlumnoCurso evaluacion(AlumnoCurso alumnoCurso) {
         hibernateTemplate.update(alumnoCurso);
+
+        // HISTORIAL
+        XAlumnoCurso xalumnoCurso = new XAlumnoCurso();
+        BeanUtils.copyProperties(alumnoCurso, xalumnoCurso);
+        xalumnoCurso.setAlumnoCursoId(alumnoCurso.getId());
+        xalumnoCurso.setAlumnoId(alumnoCurso.getAlumno().getId());
+        xalumnoCurso.setCursoId(alumnoCurso.getCurso().getId());
+        xalumnoCurso.setAccion(Constantes.ACTUALIZAR);
+        hibernateTemplate.save(xalumnoCurso);
+
         Curso curso = alumnoCurso.getCurso();
         hibernateTemplate.refresh(curso);
         DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
         criteria.add(Restrictions.eq("curso", curso));
         criteria.add(Restrictions.isNotNull("evaluacion"));
         List<AlumnoCurso> evaluaciones = hibernateTemplate.findByCriteria(criteria);
-        Integer total = 0;
+        BigDecimal total = new BigDecimal("0");
         for (AlumnoCurso x : evaluaciones) {
-            total += x.getEvaluacion();
+            total = total.add(x.getEvaluacion());
         }
-        BigDecimal evaluacion = new BigDecimal(total).divide(new BigDecimal(evaluaciones.size()));
+        BigDecimal evaluacion = total.divide(new BigDecimal(evaluaciones.size()));
         curso.setEvaluacion(evaluacion);
         hibernateTemplate.update(curso);
+
+        XCurso xcurso = new XCurso();
+        BeanUtils.copyProperties(curso, xcurso);
+        xcurso.setCursoId(curso.getId());
+        xcurso.setAccion(Constantes.ACTUALIZAR);
+        xcurso.setCreadorId(alumnoCurso.getAlumno().getId());
+        hibernateTemplate.save(xcurso);
+
         alumnoCurso.setCurso(curso);
         return alumnoCurso;
     }
 
     public AlumnoCurso califica(AlumnoCurso alumnoCurso) {
         hibernateTemplate.update(alumnoCurso);
+
+        // HISTORIAL
+        XAlumnoCurso xalumnoCurso = new XAlumnoCurso();
+        BeanUtils.copyProperties(alumnoCurso, xalumnoCurso);
+        xalumnoCurso.setAlumnoCursoId(alumnoCurso.getId());
+        xalumnoCurso.setAlumnoId(alumnoCurso.getAlumno().getId());
+        xalumnoCurso.setCursoId(alumnoCurso.getCurso().getId());
+        xalumnoCurso.setAccion(Constantes.ACTUALIZAR);
+        hibernateTemplate.save(xalumnoCurso);
+
         Curso curso = alumnoCurso.getCurso();
         hibernateTemplate.refresh(curso);
         DetachedCriteria criteria = DetachedCriteria.forClass(AlumnoCurso.class);
@@ -278,6 +356,16 @@ public class CursoDao {
         curso.setCalificacion(calificacionPromedio);
         hibernateTemplate.update(curso);
         alumnoCurso.setCurso(curso);
+
+
+        XCurso xcurso = new XCurso();
+        BeanUtils.copyProperties(curso, xcurso);
+        xcurso.setCursoId(curso.getId());
+        xcurso.setAccion(Constantes.ACTUALIZAR);
+        xcurso.setCreadorId(alumnoCurso.getCurso().getMaestroId());
+        hibernateTemplate.save(xcurso);
+
+
         return alumnoCurso;
     }
 
@@ -369,5 +457,4 @@ public class CursoDao {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
         }
     }
-
 }

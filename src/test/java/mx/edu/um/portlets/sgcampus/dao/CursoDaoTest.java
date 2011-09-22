@@ -253,16 +253,16 @@ public class CursoDaoTest {
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");
-        alumno.setFecha(new Date());
+        alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
         
         log.debug("inicializado");
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
         alumnoCurso.setCurso(curso);
-        alumnoCurso.setAlta(new Date());
-        alumnoCurso.setUsuarioAlta(1L);
-        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso.setFecha(new Date());
+        alumnoCurso.setCreadorId(1L);
+        alumnoCurso.setCreadorNombre("Admin User");
         alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
 
         Assert.assertNotNull(alumnoCurso);
@@ -292,7 +292,7 @@ public class CursoDaoTest {
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");
-        alumno.setFecha(new Date());
+        alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
         
         Alumno alumno2 = new Alumno();
@@ -300,15 +300,15 @@ public class CursoDaoTest {
         alumno2.setUsuario("admin2");
         alumno2.setNombreCompleto("Admin2 User");
         alumno2.setCorreo("admin2@test.com");
-        alumno2.setFecha(new Date());
+        alumno2.setFechaIngreso(new Date());
         alumno2 = cursoDao.creaAlumno(alumno2);
         
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
         alumnoCurso.setCurso(curso);
-        alumnoCurso.setAlta(new Date());
-        alumnoCurso.setUsuarioAlta(1L);
-        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso.setFecha(new Date());
+        alumnoCurso.setCreadorId(1L);
+        alumnoCurso.setCreadorNombre("Admin User");
         alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
         Assert.assertNotNull(alumnoCurso);
         alumnoCurso = cursoDao.refreshAlumnoCurso(alumnoCurso);
@@ -319,9 +319,9 @@ public class CursoDaoTest {
         AlumnoCurso alumnoCurso2 = new AlumnoCurso();
         alumnoCurso2.setAlumno(alumno2);
         alumnoCurso2.setCurso(curso);
-        alumnoCurso2.setAlta(new Date());
-        alumnoCurso2.setUsuarioAlta(2L);
-        alumnoCurso2.setUsuarioAltaNombre("Admin2 User");
+        alumnoCurso2.setFecha(new Date());
+        alumnoCurso2.setCreadorId(2L);
+        alumnoCurso2.setCreadorNombre("Admin2 User");
         alumnoCurso2 = cursoDao.preInscribeAlumno(alumnoCurso2);
         Assert.assertNotNull(alumnoCurso2);
         alumnoCurso2 = cursoDao.refreshAlumnoCurso(alumnoCurso2);
@@ -333,8 +333,8 @@ public class CursoDaoTest {
         alumnoCurso2 = cursoDao.inscribeAlumno(alumnoCurso2);
         
         log.debug("inicializado");
-        alumnoCurso.setEvaluacion(5);
-        alumnoCurso2.setEvaluacion(4);
+        alumnoCurso.setEvaluacion(new BigDecimal("5"));
+        alumnoCurso2.setEvaluacion(new BigDecimal("4"));
         
         alumnoCurso = cursoDao.evaluacion(alumnoCurso);
         alumnoCurso2 = cursoDao.evaluacion(alumnoCurso2);
@@ -356,15 +356,15 @@ public class CursoDaoTest {
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");
-        alumno.setFecha(new Date());
+        alumno.setFechaIngreso(new Date());
         alumno = cursoDao.creaAlumno(alumno);
         
         AlumnoCurso alumnoCurso = new AlumnoCurso();
         alumnoCurso.setAlumno(alumno);
         alumnoCurso.setCurso(curso);
-        alumnoCurso.setAlta(new Date());
-        alumnoCurso.setUsuarioAlta(1L);
-        alumnoCurso.setUsuarioAltaNombre("Admin User");
+        alumnoCurso.setFecha(new Date());
+        alumnoCurso.setCreadorId(1L);
+        alumnoCurso.setCreadorNombre("Admin User");
         alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
 
         Assert.assertNotNull(alumnoCurso);

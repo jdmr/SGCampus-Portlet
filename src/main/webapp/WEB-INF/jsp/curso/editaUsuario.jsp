@@ -14,16 +14,6 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="codigo"><liferay-ui:message key="curso.codigo" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:input path="codigo" maxlength="32"/>
-                            <form:errors cssClass="errors" path="codigo" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
                             <label for="nombre"><liferay-ui:message key="curso.nombre" /></label>
                         </td>
                         <td valign="top" class="value">

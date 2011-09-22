@@ -8,10 +8,8 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
-import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
-import javax.persistence.UniqueConstraint;
 import javax.persistence.Version;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 
@@ -20,19 +18,20 @@ import mx.edu.um.portlets.sgcampus.utils.Constantes;
  * @author jdmr
  */
 @Entity
-@Table(name = "sg_alumno_curso", uniqueConstraints = {
-    @UniqueConstraint(columnNames = {"alumno_id", "curso_id"})})
-public class AlumnoCurso implements Serializable {
+@Table(name = "sg_xalumno_curso")
+public class XAlumnoCurso implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @ManyToOne
-    private Alumno alumno;
-    @ManyToOne
-    private Curso curso;
+    @Column(name="alumno_curso_id")
+    private Long alumnoCursoId;
+    @Column(name="alumno_id", nullable = false)
+    private Long alumnoId;
+    @Column(name = "curso_id", nullable = false)
+    private Long cursoId;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date fecha;
@@ -46,8 +45,10 @@ public class AlumnoCurso implements Serializable {
     private BigDecimal calificacion;
     @Column(nullable = false, length = 32)
     private String estatus = Constantes.PENDIENTE;
+    @Column(nullable = false, length = 32)
+    private String accion;
 
-    public AlumnoCurso() {
+    public XAlumnoCurso() {
     }
 
     /**
@@ -79,31 +80,45 @@ public class AlumnoCurso implements Serializable {
     }
 
     /**
-     * @return the alumno
+     * @return the alumnoCursoId
      */
-    public Alumno getAlumno() {
-        return alumno;
+    public Long getAlumnoCursoId() {
+        return alumnoCursoId;
     }
 
     /**
-     * @param alumno the alumno to set
+     * @param alumnoCursoId the alumnoCursoId to set
      */
-    public void setAlumno(Alumno alumno) {
-        this.alumno = alumno;
+    public void setAlumnoCursoId(Long alumnoCursoId) {
+        this.alumnoCursoId = alumnoCursoId;
     }
 
     /**
-     * @return the curso
+     * @return the alumnoId
      */
-    public Curso getCurso() {
-        return curso;
+    public Long getAlumnoId() {
+        return alumnoId;
     }
 
     /**
-     * @param curso the curso to set
+     * @param alumnoId the alumnoId to set
      */
-    public void setCurso(Curso curso) {
-        this.curso = curso;
+    public void setAlumnoId(Long alumnoId) {
+        this.alumnoId = alumnoId;
+    }
+
+    /**
+     * @return the cursoId
+     */
+    public Long getCursoId() {
+        return cursoId;
+    }
+
+    /**
+     * @param cursoId the cursoId to set
+     */
+    public void setCursoId(Long cursoId) {
+        this.cursoId = cursoId;
     }
 
     /**
@@ -204,6 +219,19 @@ public class AlumnoCurso implements Serializable {
         this.estatus = estatus;
     }
 
+    /**
+     * @return the accion
+     */
+    public String getAccion() {
+        return accion;
+    }
+
+    /**
+     * @param accion the accion to set
+     */
+    public void setAccion(String accion) {
+        this.accion = accion;
+    }
 
     @Override
     public boolean equals(Object obj) {
@@ -213,11 +241,11 @@ public class AlumnoCurso implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final AlumnoCurso other = (AlumnoCurso) obj;
-        if (this.getAlumno() != other.getAlumno() && (this.getAlumno() == null || !this.alumno.equals(other.alumno))) {
+        final XAlumnoCurso other = (XAlumnoCurso) obj;
+        if (this.getId() != other.getId() && (this.getId() == null || !this.id.equals(other.id))) {
             return false;
         }
-        if (this.getCurso() != other.getCurso() && (this.getCurso() == null || !this.curso.equals(other.curso))) {
+        if (this.getVersion() != other.getVersion() && (this.getVersion() == null || !this.version.equals(other.version))) {
             return false;
         }
         return true;
@@ -225,16 +253,15 @@ public class AlumnoCurso implements Serializable {
 
     @Override
     public int hashCode() {
-        int hash = 3;
-        hash = 71 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
-        hash = 71 * hash + (this.getVersion() != null ? this.getVersion().hashCode() : 0);
-        hash = 71 * hash + (this.getAlumno() != null ? this.getAlumno().hashCode() : 0);
-        hash = 71 * hash + (this.getCurso() != null ? this.getCurso().hashCode() : 0);
+        int hash = 7;
+        hash = 89 * hash + (this.getId() != null ? this.getId().hashCode() : 0);
+        hash = 89 * hash + (this.getVersion() != null ? this.getVersion().hashCode() : 0);
         return hash;
     }
 
     @Override
     public String toString() {
-        return "AlumnoCurso{" + "id=" + getId() + ", alumno=" + getAlumno() + ", curso=" + getCurso() + ", estatus=" + getEstatus() + '}';
+        return "XAlumnoCurso{" + "id=" + getId() + ", version=" + getVersion() + ", alumnoId=" + getAlumnoId() + ", cursoId=" + getCursoId() + ", accion=" + getAccion() + '}';
     }
+
 }

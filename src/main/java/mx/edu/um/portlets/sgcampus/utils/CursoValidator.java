@@ -26,7 +26,6 @@ public class CursoValidator implements Validator {
     @Override
     public void validate(Object target, Errors errors) {
         log.debug("Validando curso");
-        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "codigo", "curso.codigo.requerido");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "nombre", "curso.nombre.requerido");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "descripcion", "curso.descripcion.requerido");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "comunidadId", "curso.comunidad.requerida");

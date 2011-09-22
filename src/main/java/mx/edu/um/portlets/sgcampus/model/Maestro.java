@@ -2,6 +2,7 @@ package mx.edu.um.portlets.sgcampus.model;
 
 import com.liferay.portal.model.User;
 import java.io.Serializable;
+import java.math.BigDecimal;
 import java.util.Date;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -17,16 +18,16 @@ import javax.persistence.Version;
  * @author jdmr
  */
 @Entity
-@Table(name = "sg_alumnos")
-public class Alumno implements Serializable {
+@Table(name="sg_maestros")
+public class Maestro implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @Column(name = "alumno_id", nullable = false, unique = true)
-    private Long alumnoId;
+    @Column(name = "maestro_id", nullable = false, unique = true)
+    private Long maestroId;
     @Column(length = 32, nullable = false)
     private String usuario;
     @Column(length = 128, nullable = false)
@@ -34,23 +35,27 @@ public class Alumno implements Serializable {
     @Column(name = "nombre_completo", length = 200, nullable = false)
     private String nombreCompleto;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
-    @Column(name="fecha_ingreso", nullable = false)
+    @Column(name = "fecha_ingreso", nullable = false)
     private Date fechaIngreso;
-    @Column(length=32)
+    @Column(length = 32)
     private String telefono;
-    @Column(length=32)
+    @Column(length = 32)
     private String estado;
-    @Column(length=32)
+    @Column(length = 32)
     private String pais;
+    @Column(scale=1, precision=8)
+    private BigDecimal evaluacion;
+    @Column(name = "cantidad_evaluaciones")
+    private Integer cantidadEvaluaciones;
 
-    public Alumno() {
+    public Maestro() {
     }
 
-    public Alumno(User alumno) {
-        alumnoId = alumno.getUserId();
-        usuario = alumno.getScreenName();
-        correo = alumno.getEmailAddress();
-        nombreCompleto = alumno.getFullName();
+    public Maestro(User maestro) {
+        maestroId = maestro.getUserId();
+        usuario = maestro.getScreenName();
+        correo = maestro.getEmailAddress();
+        nombreCompleto = maestro.getFullName();
         fechaIngreso = new Date();
     }
 
@@ -83,17 +88,17 @@ public class Alumno implements Serializable {
     }
 
     /**
-     * @return the alumnoId
+     * @return the maestroId
      */
-    public Long getAlumnoId() {
-        return alumnoId;
+    public Long getMaestroId() {
+        return maestroId;
     }
 
     /**
-     * @param alumnoId the alumnoId to set
+     * @param maestroId the maestroId to set
      */
-    public void setAlumnoId(Long alumnoId) {
-        this.alumnoId = alumnoId;
+    public void setMaestroId(Long maestroId) {
+        this.maestroId = maestroId;
     }
 
     /**
@@ -194,6 +199,34 @@ public class Alumno implements Serializable {
         this.pais = pais;
     }
 
+    /**
+     * @return the evaluacion
+     */
+    public BigDecimal getEvaluacion() {
+        return evaluacion;
+    }
+
+    /**
+     * @param evaluacion the evaluacion to set
+     */
+    public void setEvaluacion(BigDecimal evaluacion) {
+        this.evaluacion = evaluacion;
+    }
+
+    /**
+     * @return the cantidadEvaluaciones
+     */
+    public Integer getCantidadEvaluaciones() {
+        return cantidadEvaluaciones;
+    }
+
+    /**
+     * @param cantidadEvaluaciones the cantidadEvaluaciones to set
+     */
+    public void setCantidadEvaluaciones(Integer cantidadEvaluaciones) {
+        this.cantidadEvaluaciones = cantidadEvaluaciones;
+    }
+
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -202,7 +235,7 @@ public class Alumno implements Serializable {
         if (getClass() != obj.getClass()) {
             return false;
         }
-        final Alumno other = (Alumno) obj;
+        final Maestro other = (Maestro) obj;
         if (this.id != other.id && ( this.id == null || !this.id.equals(other.id) )) {
             return false;
         }
@@ -218,6 +251,6 @@ public class Alumno implements Serializable {
 
     @Override
     public String toString() {
-        return "Alumno{" + "id=" + id + ", alumnoId=" + alumnoId + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
+        return "Maestro{" + "id=" + id + ", maestroId=" + maestroId + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
     }
 }
