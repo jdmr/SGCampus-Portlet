@@ -52,6 +52,8 @@ public class Curso implements Serializable {
     private String url;
     @Column(scale = 2, precision = 8)
     private BigDecimal evaluacion;
+    @Column(name = "cantidad_evaluaciones")
+    private Integer cantidadEvaluaciones = 0;
     @Column(scale = 2, precision = 8)
     private BigDecimal calificacion;
     @Column(length = 64)
@@ -254,6 +256,20 @@ public class Curso implements Serializable {
      */
     public void setEvaluacion(BigDecimal evaluacion) {
         this.evaluacion = evaluacion;
+    }
+
+    /**
+     * @return the cantidadEvaluaciones
+     */
+    public Integer getCantidadEvaluaciones() {
+        return cantidadEvaluaciones;
+    }
+
+    /**
+     * @param cantidadEvaluaciones the cantidadEvaluaciones to set
+     */
+    public void setCantidadEvaluaciones(Integer cantidadEvaluaciones) {
+        this.cantidadEvaluaciones = cantidadEvaluaciones;
     }
 
     /**

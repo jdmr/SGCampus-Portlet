@@ -316,6 +316,7 @@ public class CursoDao {
         }
         BigDecimal evaluacion = total.divide(new BigDecimal(evaluaciones.size()));
         curso.setEvaluacion(evaluacion);
+        curso.setCantidadEvaluaciones(evaluaciones.size());
         hibernateTemplate.update(curso);
 
         XCurso xcurso = new XCurso();
