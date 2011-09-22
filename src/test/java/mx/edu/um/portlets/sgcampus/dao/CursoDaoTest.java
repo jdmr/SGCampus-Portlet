@@ -331,7 +331,7 @@ public class CursoDaoTest {
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
-        alumno.setAlumnoId(1L);
+        alumno.setId(1L);
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");
@@ -380,7 +380,7 @@ public class CursoDaoTest {
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
-        alumno.setAlumnoId(1L);
+        alumno.setId(1L);
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");
@@ -388,7 +388,7 @@ public class CursoDaoTest {
         alumno = cursoDao.creaAlumno(alumno);
 
         Alumno alumno2 = new Alumno();
-        alumno2.setAlumnoId(2L);
+        alumno2.setId(2L);
         alumno2.setUsuario("admin2");
         alumno2.setNombreCompleto("Admin2 User");
         alumno2.setCorreo("admin2@test.com");
@@ -454,7 +454,7 @@ public class CursoDaoTest {
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
-        alumno.setAlumnoId(1L);
+        alumno.setId(1L);
         alumno.setUsuario("admin");
         alumno.setNombreCompleto("Admin User");
         alumno.setCorreo("admin@test.com");

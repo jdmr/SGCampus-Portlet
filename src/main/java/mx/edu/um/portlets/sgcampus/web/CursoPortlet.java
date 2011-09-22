@@ -393,16 +393,12 @@ public class CursoPortlet {
                 || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
             modelo.addAttribute("puedeEditar", true);
         } else if (creador != null) {
-            log.debug("Buscando alumno");
+            log.debug("Buscando alumno por {}", creador.getUserId());
             Alumno alumno = cursoDao.obtieneAlumno(creador);
             if (alumno == null) {
                 log.debug("Creando alumno");
-                alumno = new Alumno();
-                alumno.setAlumnoId(creador.getUserId());
-                alumno.setCorreo(creador.getEmailAddress());
-                alumno.setFechaIngreso(new Date());
-                alumno.setNombreCompleto(creador.getFullName());
-                alumno.setUsuario(creador.getScreenName());
+                alumno = new Alumno(creador);
+                log.debug("con el id {}", alumno.getId());
                 alumno = cursoDao.creaAlumno(alumno);
             }
             alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);

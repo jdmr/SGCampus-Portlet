@@ -220,8 +220,8 @@ public class CursoDao {
     }
 
     public Alumno creaAlumno(Alumno alumno) {
-        Long id = (Long) hibernateTemplate.save(alumno);
-        alumno.setId(id);
+        log.debug("Creando alumno con id {}",alumno.getId());
+        hibernateTemplate.save(alumno);
         alumno.setVersion(0);
         return alumno;
     }
@@ -387,7 +387,7 @@ public class CursoDao {
 
     public Alumno obtieneAlumno(User usuario) {
         Alumno alumno = null;
-        List<Alumno> alumnos = hibernateTemplate.findByNamedParam("select a from Alumno a where a.alumnoId = :alumnoId", "alumnoId", usuario.getUserId());
+        List<Alumno> alumnos = hibernateTemplate.findByNamedParam("select a from Alumno a where a.id = :alumnoId", "alumnoId", usuario.getUserId());
         if (alumnos != null && alumnos.size() > 0) {
             alumno = alumnos.get(0);
         }
@@ -440,7 +440,7 @@ public class CursoDao {
 
     public AlumnoCurso obtieneAlumnoCurso(User alumno, Curso curso) {
         AlumnoCurso alumnoCurso = null;
-        List<AlumnoCurso> alumnos = hibernateTemplate.findByNamedParam("from AlumnoCurso where alumno.alumnoId = :alumnoId and curso = :curso", new String[]{"alumnoId", "curso"}, new Object[]{alumno.getUserId(), curso});
+        List<AlumnoCurso> alumnos = hibernateTemplate.findByNamedParam("from AlumnoCurso where alumno.id = :alumnoId and curso = :curso", new String[]{"alumnoId", "curso"}, new Object[]{alumno.getUserId(), curso});
         if (alumnos != null && alumnos.size() > 0) {
             alumnoCurso = alumnos.get(0);
         }

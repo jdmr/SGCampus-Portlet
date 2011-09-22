@@ -21,12 +21,9 @@ import javax.persistence.Version;
 public class Alumno implements Serializable {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     @Version
     private Integer version;
-    @Column(name = "alumno_id", nullable = false, unique = true)
-    private Long alumnoId;
     @Column(length = 32, nullable = false)
     private String usuario;
     @Column(length = 128, nullable = false)
@@ -47,7 +44,7 @@ public class Alumno implements Serializable {
     }
 
     public Alumno(User alumno) {
-        alumnoId = alumno.getUserId();
+        id = alumno.getUserId();
         usuario = alumno.getScreenName();
         correo = alumno.getEmailAddress();
         nombreCompleto = alumno.getFullName();
@@ -80,20 +77,6 @@ public class Alumno implements Serializable {
      */
     public void setVersion(Integer version) {
         this.version = version;
-    }
-
-    /**
-     * @return the alumnoId
-     */
-    public Long getAlumnoId() {
-        return alumnoId;
-    }
-
-    /**
-     * @param alumnoId the alumnoId to set
-     */
-    public void setAlumnoId(Long alumnoId) {
-        this.alumnoId = alumnoId;
     }
 
     /**
@@ -218,6 +201,6 @@ public class Alumno implements Serializable {
 
     @Override
     public String toString() {
-        return "Alumno{" + "id=" + id + ", alumnoId=" + alumnoId + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
+        return "Alumno{" + "id=" + id + ", usuario=" + usuario + ", correo=" + correo + ", nombreCompleto=" + nombreCompleto + '}';
     }
 }
