@@ -6,13 +6,19 @@ import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
+import com.liferay.portal.kernel.util.CalendarFactoryUtil;
 import com.liferay.portal.kernel.util.OrderByComparator;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
+import com.liferay.portal.service.ServiceContext;
+import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.journal.model.JournalArticle;
+import com.liferay.portlet.journal.model.JournalArticleConstants;
+import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
@@ -44,6 +50,7 @@ import org.springframework.beans.propertyeditors.CustomDateEditor;
 import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.InitBinder;
@@ -258,6 +265,7 @@ public class CursoPortlet {
         }
     }
 
+    @Transactional
     @RequestMapping(params = "action=crea")
     public void crea(ActionRequest request, ActionResponse response,
             @ModelAttribute("curso") Curso curso, BindingResult result,
@@ -267,6 +275,7 @@ public class CursoPortlet {
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
             try {
                 User creador = PortalUtil.getUser(request);
                 Maestro maestro = cursoDao.obtieneMaestro(curso.getMaestro().getId());
@@ -276,13 +285,64 @@ public class CursoPortlet {
                     maestro = cursoDao.registraMaestro(maestro);
                 }
                 curso.setMaestro(maestro);
+
+                // Creando contenido dentro de liferay
+                ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+                String[] assetTagNames = {curso.getCodigo()};
+                serviceContext.setAssetTagNames(assetTagNames);
+
+                Calendar displayDate;
+                if (themeDisplay != null) {
+                    displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+                } else {
+                    displayDate = CalendarFactoryUtil.getCalendar();
+                }
+
+                JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
+                        creador.getUserId(), // UserId
+                        curso.getComunidadId(), // GroupId
+                        "", // ArticleId
+                        true, // AutoArticleId
+                        JournalArticleConstants.DEFAULT_VERSION, // Version
+                        curso.getNombre(), // Titulo
+                        null, // Descripcion
+                        curso.getDescripcion(), // Contenido
+                        "general", // Tipo
+                        "", // Estructura
+                        "", // Template
+                        displayDate.get(Calendar.MONTH), // displayDateMonth,
+                        displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
+                        displayDate.get(Calendar.YEAR), // displayDateYear,
+                        displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
+                        displayDate.get(Calendar.MINUTE), // displayDateMinute,
+                        0, // expirationDateMonth, 
+                        0, // expirationDateDay, 
+                        0, // expirationDateYear, 
+                        0, // expirationDateHour, 
+                        0, // expirationDateMinute, 
+                        true, // neverExpire
+                        0, // reviewDateMonth, 
+                        0, // reviewDateDay, 
+                        0, // reviewDateYear, 
+                        0, // reviewDateHour, 
+                        0, // reviewDateMinute, 
+                        true, // neverReview
+                        true, // indexable
+                        false, // SmallImage
+                        "", // SmallImageUrl
+                        null, // SmallFile
+                        null, // Images
+                        "", // articleURL 
+                        serviceContext // serviceContext
+                        );
+                
                 curso = cursoDao.crea(curso, creador.getUserId());
+
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
             } catch (DataIntegrityViolationException e) {
                 log.error("No se pudo crear el curso", e);
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 StringBuilder sb = new StringBuilder(curso.getDescripcion());
                 sb.insert(0, messageSource.getMessage("curso.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
                 curso.setDescripcion(sb.toString());
@@ -403,8 +463,8 @@ public class CursoPortlet {
             }
             alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);
             if (alumnoCurso != null) {
-                modelo.addAttribute("alumnoCurso",alumnoCurso);
-                
+                modelo.addAttribute("alumnoCurso", alumnoCurso);
+
                 ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 modelo.addAttribute("estatus", messageSource.getMessage(alumnoCurso.getEstatus(), null, themeDisplay.getLocale()));
                 // Validar su estatus
@@ -683,7 +743,7 @@ public class CursoPortlet {
 
     @RequestMapping(params = "action=alumnosPorCurso")
     public String alumnosPorCurso(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
-        log.debug("Alumnos por Curso {}",id);
+        log.debug("Alumnos por Curso {}", id);
         curso = cursoDao.obtiene(id);
         List<AlumnoCurso> alumnos = cursoDao.obtieneAlumnos(curso);
 
@@ -787,17 +847,17 @@ public class CursoPortlet {
             @ModelAttribute("sesion") Sesion sesion,
             BindingResult result,
             Model model, SessionStatus sessionStatus) {
-        log.debug("Entrar a curso {}",cursoId);
+        log.debug("Entrar a curso {}", cursoId);
         try {
             User usuario = PortalUtil.getUser(request);
             if (usuario != null) {
                 cursoDao.guardaAsistencia(alumnoCursoId);
                 response.sendRedirect(curso.getUrl());
             } else {
-                log.error("No pudo entrar el alumno al curso {}",cursoId);
+                log.error("No pudo entrar el alumno al curso {}", cursoId);
             }
-        } catch(Exception e) {
-            log.error("No pudo entrar el alumno al curso "+cursoId,e);
+        } catch (Exception e) {
+            log.error("No pudo entrar el alumno al curso " + cursoId, e);
         }
     }
 

@@ -71,6 +71,7 @@ public class Curso implements Serializable {
     @ManyToMany
     @JoinTable(name="sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
+    private String tags;
     @Transient
     private String verCurso;
 
@@ -382,6 +383,20 @@ public class Curso implements Serializable {
      */
     public void setEtiquetas(Set<Etiqueta> etiquetas) {
         this.etiquetas = etiquetas;
+    }
+
+    /**
+     * @return the tags
+     */
+    public String getTags() {
+        return tags;
+    }
+
+    /**
+     * @param tags the tags to set
+     */
+    public void setTags(String tags) {
+        this.tags = tags;
     }
 
     /**

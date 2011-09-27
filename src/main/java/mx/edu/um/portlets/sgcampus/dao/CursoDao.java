@@ -60,9 +60,13 @@ public class CursoDao {
 
     public Curso crea(Curso curso, Long creadorId) {
         log.info("Creando el curso {}", curso);
+        
+        // La fecha de inicio debe ser antes de la de termino
         if (curso.getInicia() != null && curso.getTermina() != null && curso.getInicia().after(curso.getTermina())) {
             throw new RuntimeException("La fecha inicial debe ser antes de la que termina");
         }
+        
+        // Asignando codigo si no tiene uno
         if (curso.getCodigo() == null) {
             log.debug("Asignando codigo");
             List<Folio> folios = hibernateTemplate.findByNamedParam("select folio from Folio folio where folio.nombre = :nombre and folio.comunidadId = :comunidadId", new String[]{"nombre", "comunidadId"}, new Object[]{Constantes.CURSO, curso.getComunidadId()});
@@ -78,10 +82,13 @@ public class CursoDao {
             nf.setMinimumIntegerDigits(7);
             curso.setCodigo("U" + nf.format(folio.getValor()));
         }
+        
+        // Creando curso
         Long id = (Long) hibernateTemplate.save(curso);
         curso.setId(id);
         curso.setVersion(0);
 
+        // Historial
         XCurso xcurso = new XCurso();
         BeanUtils.copyProperties(curso, xcurso);
         xcurso.setCursoId(id);
