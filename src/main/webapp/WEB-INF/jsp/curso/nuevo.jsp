@@ -165,31 +165,6 @@
     </form:form>
     <script type="text/javascript">
         $(document).ready(function() {
-            var availableTags = [
-                "ActionScript",
-                "AppleScript",
-                "Asp",
-                "BASIC",
-                "C",
-                "C++",
-                "Clojure",
-                "COBOL",
-                "ColdFusion",
-                "Erlang",
-                "Fortran",
-                "Groovy",
-                "Haskell",
-                "Java",
-                "JavaScript",
-                "Lisp",
-                "Perl",
-                "PHP",
-                "Python",
-                "Ruby",
-                "Scala",
-                "Scheme"
-            ];
-            
             $("input#<portlet:namespace />maestroNombre")
             .autocomplete({
                 source: "<portlet:resourceURL id='buscaMaestro'/>",
@@ -204,7 +179,6 @@
             });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
-            $("ul#tags").tagit({select:true, tagSource:availableTags})
             $("input#codigo").focus();
         });
 
