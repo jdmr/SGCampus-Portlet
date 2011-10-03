@@ -83,7 +83,7 @@
 
     </c:if>
     <div class="nav">
-        <span class="menuButton"><a class="create" href='<portlet:renderURL><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><liferay-ui:message key="curso.nuevo" /></a></span>
+        <span class="menuButton"><a class="create" href='<portlet:renderURL windowState="<%= WindowState.MAXIMIZED.toString() %>" ><portlet:param name="action" value="nuevo"/></portlet:renderURL>'><liferay-ui:message key="curso.nuevo" /></a></span>
         <c:if test="${puedeAutorizar}">
             <span class="menuButton"><a class="list" href='<portlet:renderURL><portlet:param name="action" value="pendientes"/></portlet:renderURL>'><liferay-ui:message key="curso.pendientes" /></a></span>
             <span class="menuButton"><a class="list" href='<portlet:renderURL><portlet:param name="action" value="rechazados"/></portlet:renderURL>'><liferay-ui:message key="curso.rechazados" /></a></span>

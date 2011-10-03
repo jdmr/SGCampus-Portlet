@@ -36,7 +36,9 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 4000, nullable = false)
+    @Column(name = "descripcion_id", nullable = false)
+    private Long descripcionId;
+    @Transient
     private String descripcion = "";
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
@@ -71,6 +73,7 @@ public class Curso implements Serializable {
     @ManyToMany
     @JoinTable(name="sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
+    @Transient
     private String tags;
     @Transient
     private String verCurso;
@@ -78,9 +81,10 @@ public class Curso implements Serializable {
     public Curso() {
     }
 
-    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Maestro maestro, Date inicia, Date termina, String url, String tipo) {
+    public Curso(String codigo, String nombre, Long descripcionId, String descripcion, Long comunidadId, String comunidadNombre, Maestro maestro, Date inicia, Date termina, String url, String tipo) {
         this.codigo = codigo;
         this.nombre = nombre;
+        this.descripcionId = descripcionId;
         this.descripcion = descripcion;
         this.comunidadId = comunidadId;
         this.comunidadNombre = comunidadNombre;
@@ -145,6 +149,20 @@ public class Curso implements Serializable {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
+    }
+
+    /**
+     * @return the descripcionId
+     */
+    public Long getDescripcionId() {
+        return descripcionId;
+    }
+
+    /**
+     * @param descripcionId the descripcionId to set
+     */
+    public void setDescripcionId(Long descripcionId) {
+        this.descripcionId = descripcionId;
     }
 
     /**

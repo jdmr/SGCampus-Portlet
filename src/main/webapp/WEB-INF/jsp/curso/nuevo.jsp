@@ -36,7 +36,7 @@
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <liferay-ui:input-editor />
+                            <liferay-ui:input-editor width="850" />
                             <input name="<portlet:namespace />descripcion" type="hidden" value="" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
                         </td>
@@ -115,6 +115,17 @@
                         <td valign="top" class="value">
                             <form:select path="comunidadId" items="${comunidades}" />
                             <form:errors cssClass="errors" path="comunidadId" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="tags"><liferay-ui:message key="tags" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <liferay-ui:asset-tags-selector hiddenInput="tags" />
+                            <aui:input type="hidden" name="tags" />
+                            <form:errors cssClass="errors" path="tags" />
                         </td>
                     </tr>
 

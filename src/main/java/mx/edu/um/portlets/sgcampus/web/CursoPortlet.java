@@ -16,6 +16,7 @@ import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
+import com.liferay.portlet.asset.service.AssetEntryServiceUtil;
 import com.liferay.portlet.journal.model.JournalArticle;
 import com.liferay.portlet.journal.model.JournalArticleConstants;
 import com.liferay.portlet.journal.service.JournalArticleLocalServiceUtil;
@@ -52,6 +53,7 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.stereotype.Controller;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.ui.Model;
+import org.springframework.util.StringUtils;
 import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.InitBinder;
 import org.springframework.web.bind.annotation.ModelAttribute;
@@ -272,6 +274,8 @@ public class CursoPortlet {
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando el curso");
         this.curso = curso;
+        String[] tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
+        
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
@@ -288,8 +292,7 @@ public class CursoPortlet {
 
                 // Creando contenido dentro de liferay
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
-                String[] assetTagNames = {curso.getCodigo()};
-                serviceContext.setAssetTagNames(assetTagNames);
+                serviceContext.setAssetTagNames(tags);
 
                 Calendar displayDate;
                 if (themeDisplay != null) {
@@ -335,6 +338,8 @@ public class CursoPortlet {
                         "", // articleURL 
                         serviceContext // serviceContext
                         );
+                
+                curso.setDescripcionId(article.getPrimaryKey());
                 
                 curso = cursoDao.crea(curso, creador.getUserId());
 
@@ -446,6 +451,13 @@ public class CursoPortlet {
 
         AlumnoCurso alumnoCurso = null;
         curso = cursoDao.obtiene(cursoId);
+        
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
+        AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
+        String contenido = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+        curso.setDescripcion(contenido);
+        
         modelo.addAttribute("curso", curso);
         User creador = PortalUtil.getUser(request);
         if (request.isUserInRole("Administrator")
@@ -465,7 +477,6 @@ public class CursoPortlet {
             if (alumnoCurso != null) {
                 modelo.addAttribute("alumnoCurso", alumnoCurso);
 
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 modelo.addAttribute("estatus", messageSource.getMessage(alumnoCurso.getEstatus(), null, themeDisplay.getLocale()));
                 // Validar su estatus
                 if (alumnoCurso.getEstatus().equals(Constantes.INSCRITO)) {
@@ -484,7 +495,6 @@ public class CursoPortlet {
             modelo.addAttribute("puedeInscribirse", true);
         }
 
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         SimpleDateFormat sdf = new SimpleDateFormat("HH:mm z");
         sdf.setTimeZone(themeDisplay.getTimeZone());
         List<Sesion> sesiones = cursoDao.obtieneSesiones(curso);
@@ -502,9 +512,15 @@ public class CursoPortlet {
             Model modelo) throws PortalException, SystemException {
 
         curso = cursoDao.obtiene(cursoId);
+        
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
+        AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
+        String contenido = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+        curso.setDescripcion(contenido);
+        
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         modelo.addAttribute("tipos", this.getTipos(themeDisplay));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (curso.getInicia() != null) {
@@ -565,6 +581,11 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
+                
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
+                JournalArticleLocalServiceUtil.updateContent(themeDisplay.getScopeGroupId(), new Long(ja.getResourcePrimKey()).toString(), ja.getVersion(), curso.getDescripcion());
+                
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());

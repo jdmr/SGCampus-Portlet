@@ -27,8 +27,8 @@ public class XCurso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(length = 4000, nullable = false)
-    private String descripcion;
+    @Column(name = "descripcion_id", nullable = false)
+    private Long descripcionId;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
@@ -64,20 +64,6 @@ public class XCurso implements Serializable {
     private Date creado = new Date();
 
     public XCurso() {
-    }
-
-    public XCurso(Long cursoId, String codigo, String nombre, String descripcion, Long comunidadId, Long maestroId, Date inicia, Date termina, String url, String accion, Long creadorId) {
-        this.cursoId = cursoId;
-        this.codigo = codigo;
-        this.nombre = nombre;
-        this.descripcion = descripcion;
-        this.comunidadId = comunidadId;
-        this.maestroId = maestroId;
-        this.inicia = inicia;
-        this.termina = termina;
-        this.url = url;
-        this.accion = accion;
-        this.creadorId = creadorId;
     }
 
     /**
@@ -137,17 +123,17 @@ public class XCurso implements Serializable {
     }
 
     /**
-     * @return the descripcion
+     * @return the descripcionId
      */
-    public String getDescripcion() {
-        return descripcion;
+    public Long getDescripcionId() {
+        return descripcionId;
     }
 
     /**
-     * @param descripcion the descripcion to set
+     * @param descripcionId the descripcionId to set
      */
-    public void setDescripcion(String descripcion) {
-        this.descripcion = descripcion;
+    public void setDescripcionId(Long descripcionId) {
+        this.descripcionId = descripcionId;
     }
 
     /**
