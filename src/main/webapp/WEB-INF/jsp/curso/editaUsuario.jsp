@@ -8,6 +8,7 @@
     <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
         <form:hidden path="id" />
         <form:hidden path="version" />
+        <input type="hidden" id="<portlet:namespace />descripcionId" name="<portlet:namespace />descripcionId" value="${curso.descripcionId}" />
         <div class="dialog">
             <table>
                 <tbody>

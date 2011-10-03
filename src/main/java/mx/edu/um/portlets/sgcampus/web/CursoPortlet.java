@@ -24,23 +24,10 @@ import java.io.IOException;
 import java.io.PrintWriter;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import javax.portlet.ActionRequest;
-import javax.portlet.ActionResponse;
-import javax.portlet.RenderRequest;
-import javax.portlet.ResourceRequest;
-import javax.portlet.ResourceResponse;
+import java.util.*;
+import javax.portlet.*;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
-import mx.edu.um.portlets.sgcampus.model.Alumno;
-import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
-import mx.edu.um.portlets.sgcampus.model.Curso;
-import mx.edu.um.portlets.sgcampus.model.Maestro;
-import mx.edu.um.portlets.sgcampus.model.Sesion;
+import mx.edu.um.portlets.sgcampus.model.*;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import mx.edu.um.portlets.sgcampus.utils.CursoValidator;
@@ -365,6 +352,7 @@ public class CursoPortlet {
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando curso por el usuario");
         this.curso = curso;
+        String[] tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
 
         User user = PortalUtil.getUser(request);
@@ -380,14 +368,65 @@ public class CursoPortlet {
 
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
             try {
+                // Creando contenido dentro de liferay
+                ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+                serviceContext.setAssetTagNames(tags);
+
+                Calendar displayDate;
+                if (themeDisplay != null) {
+                    displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+                } else {
+                    displayDate = CalendarFactoryUtil.getCalendar();
+                }
+
+                JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
+                        user.getUserId(), // UserId
+                        curso.getComunidadId(), // GroupId
+                        "", // ArticleId
+                        true, // AutoArticleId
+                        JournalArticleConstants.DEFAULT_VERSION, // Version
+                        curso.getNombre(), // Titulo
+                        null, // Descripcion
+                        curso.getDescripcion(), // Contenido
+                        "general", // Tipo
+                        "", // Estructura
+                        "", // Template
+                        displayDate.get(Calendar.MONTH), // displayDateMonth,
+                        displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
+                        displayDate.get(Calendar.YEAR), // displayDateYear,
+                        displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
+                        displayDate.get(Calendar.MINUTE), // displayDateMinute,
+                        0, // expirationDateMonth, 
+                        0, // expirationDateDay, 
+                        0, // expirationDateYear, 
+                        0, // expirationDateHour, 
+                        0, // expirationDateMinute, 
+                        true, // neverExpire
+                        0, // reviewDateMonth, 
+                        0, // reviewDateDay, 
+                        0, // reviewDateYear, 
+                        0, // reviewDateHour, 
+                        0, // reviewDateMinute, 
+                        true, // neverReview
+                        true, // indexable
+                        false, // SmallImage
+                        "", // SmallImageUrl
+                        null, // SmallFile
+                        null, // Images
+                        "", // articleURL 
+                        serviceContext // serviceContext
+                        );
+                
+                curso.setDescripcionId(article.getPrimaryKey());
+                
                 curso = cursoDao.crea(curso, user.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
             } catch (DataIntegrityViolationException e) {
                 log.error("No se pudo crear el curso", e);
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 StringBuilder sb = new StringBuilder(curso.getDescripcion());
                 sb.insert(0, messageSource.getMessage("curso.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
                 curso.setDescripcion(sb.toString());
@@ -584,7 +623,7 @@ public class CursoPortlet {
                 
                 ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(themeDisplay.getScopeGroupId(), new Long(ja.getResourcePrimKey()).toString(), ja.getVersion(), curso.getDescripcion());
+                JournalArticleLocalServiceUtil.updateContent(themeDisplay.getScopeGroupId(), new Long(ja.getPrimaryKey()).toString(), ja.getVersion(), curso.getDescripcion());
                 
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
@@ -609,6 +648,7 @@ public class CursoPortlet {
         log.debug("Guardando el curso");
         this.curso = curso;
         Curso viejo = cursoDao.obtiene(curso.getId());
+        curso.setCodigo(viejo.getCodigo());
         curso.setMaestro(viejo.getMaestro());
         curso.setTipo(viejo.getTipo());
         curso.setUrl(viejo.getUrl());
@@ -617,6 +657,11 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
+                
+                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
+                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
+                
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -698,7 +743,7 @@ public class CursoPortlet {
         }
 
         try {
-            sesion = cursoDao.creaSesion(sesion);
+            cursoDao.creaSesion(sesion);
             sessionStatus.setComplete();
             response.setRenderParameter("action", "ver");
             response.setRenderParameter("cursoId", curso.getId().toString());
