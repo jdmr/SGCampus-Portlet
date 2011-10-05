@@ -48,7 +48,6 @@
         </div>
     </c:if>
     <div class="nav">
-        <span class="menuButton"><a class="list" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.regresar" /></a></span>
         <c:if test="${puedeEditar}">
             <portlet:renderURL var="editaUrl" >
                 <portlet:param name="action" value="edita" />
@@ -68,11 +67,37 @@
             <span class="menuButton"><a class="list" href="${alumnosUrl}"><liferay-ui:message key="curso.alumnos" /></a></span>
         </c:if>
         <c:if test="${puedeInscribirse}">
-            <portlet:renderURL var="inscribirseUrl" >
-                <portlet:param name="action" value="inscribirse" />
-                <portlet:param name="cursoId" value="${curso.id}" />
-            </portlet:renderURL>
-            <span class="menuButton"><a class="edit" href="${inscribirseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
+            <c:choose>
+                <c:when test="${curso.tipo == 'PAGADO'}">
+                    <portlet:actionURL var="pagadoUrl" >
+                        <portlet:param name="action" value="pagado" />
+                        <portlet:param name="cursoId" value="${curso.id}" />
+                    </portlet:actionURL>
+                    <portlet:actionURL var="noPagadoUrl" >
+                        <portlet:param name="action" value="noPagado" />
+                        <portlet:param name="cursoId" value="${curso.id}" />
+                    </portlet:actionURL>
+                    <form action="https://mexico.dineromail.com/Shop/Shop_Ingreso.asp" method="post"> 
+                        <input type="hidden" name="NombreItem" value="${curso.nombre}"/> 
+                        <input type="hidden" name="TipoMoneda" value="1"/> 
+                        <input type="hidden" name="PrecioItem" value="${curso.precio}"/> 
+                        <input type="hidden" name="E_Comercio" value="547336"/> 
+                        <input type="hidden" name="NroItem" value="-"/> 
+                        <input type="hidden" name="DireccionExito" value="${pagadoUrl}"/> 
+                        <input type="hidden" name="DireccionFracaso" value="${noPagadoUrl}"/> 
+                        <input type="hidden" name="DireccionEnvio" value="0"/> 
+                        <input type="hidden" name="Mensaje" value="1"/>
+                        <span class="menuButton"><input type="submit" class="edit" value='<liferay-ui:message key="curso.inscribirse" />' /></span>
+                    </form>
+                </c:when>
+                <c:otherwise>
+                    <portlet:renderURL var="inscribirseUrl" >
+                        <portlet:param name="action" value="inscribirse" />
+                        <portlet:param name="cursoId" value="${curso.id}" />
+                    </portlet:renderURL>
+                    <span class="menuButton"><a class="edit" href="${inscribirseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
+                </c:otherwise>
+            </c:choose>
         </c:if>
         <c:if test="${existeSesionActiva}">
             <portlet:actionURL var="entrarUrl" >
@@ -82,5 +107,6 @@
             </portlet:actionURL>
             <span class="menuButton"><a class="create" href="${entrarUrl}" target="_blank"><liferay-ui:message key="curso.entrar" /></a></span>
         </c:if>
+        <span class="menuButton"><a class="list" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.regresar" /></a></span>
     </div>
 </div>

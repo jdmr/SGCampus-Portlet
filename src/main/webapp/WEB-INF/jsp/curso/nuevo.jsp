@@ -99,12 +99,37 @@
                     </tr>
 
                     <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />tipo"><liferay-ui:message key="curso.tipo" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:select path="tipo" items="${tipos}" />
-                            <form:errors cssClass="errors" path="tipo" />
+                        <td colspan="2" style="padding:0;">
+                            <table style="border:0;">
+                                <tbody>
+                                    <tr class="prop">
+                                        <td valign="top" class="name">
+                                            <label for="tipo"><liferay-ui:message key="curso.tipo" /></label>
+                                        </td>
+                                        <td valign="top" class="value">
+                                            <form:select path="tipo" items="${tipos}" />
+                                            <form:errors cssClass="errors" path="tipo" />
+                                        </td>
+                                    </tr>
+                                </tbody>
+                            </table>
+                            <div id="tipoDiv"
+                                 <c:if test="${curso.tipo == 'PATROCINADO'}">style="display:none;"</c:if>
+                                 >
+                                <table style="border:0;">
+                                    <tbody>
+                                        <tr class="prop">
+                                            <td valign="top" class="name">
+                                                <label for="precio"><liferay-ui:message key="curso.precio" /></label>
+                                            </td>
+                                            <td valign="top" class="value">
+                                                <form:input path="precio" />
+                                                <form:errors cssClass="errors" path="precio" />
+                                            </td>
+                                        </tr>
+                                    </tbody>
+                                </table>
+                            </div>
                         </td>
                     </tr>
 
@@ -190,6 +215,14 @@
             });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
+            $("select#tipo").change(function() {
+                if($(this).val() == 'PATROCINADO') {
+                    $("div#tipoDiv").slideUp();
+                } else {
+                    $("div#tipoDiv").slideDown();
+                }
+            });
+            
             $("input#codigo").focus();
         });
 

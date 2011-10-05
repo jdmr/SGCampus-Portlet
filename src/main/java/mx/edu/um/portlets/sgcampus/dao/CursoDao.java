@@ -398,6 +398,10 @@ public class CursoDao {
         List<Alumno> alumnos = hibernateTemplate.findByNamedParam("select a from Alumno a where a.id = :alumnoId", "alumnoId", usuario.getUserId());
         if (alumnos != null && alumnos.size() > 0) {
             alumno = alumnos.get(0);
+        } else {
+            alumno = new Alumno(usuario);
+            hibernateTemplate.save(alumno);
+            alumno.setVersion(0);
         }
         return alumno;
     }
@@ -461,6 +465,7 @@ public class CursoDao {
         log.debug("Guardando asistencia de alumno {} al curso {}", alumnoCurso.getAlumno().getId(), alumnoCurso.getCurso().getId());
         if (alumnoCurso != null) {
             Asistencia asistencia = new Asistencia(alumnoCurso, new Date());
+            log.debug("Guardando la asistencia");
             hibernateTemplate.save(asistencia);
         } else {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());

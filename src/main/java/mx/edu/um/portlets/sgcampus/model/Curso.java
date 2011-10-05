@@ -69,6 +69,8 @@ public class Curso implements Serializable {
     private String estado;
     @Column(length = 32)
     private String pais;
+    @Column(scale=2,precision=8)
+    private BigDecimal precio;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
     @ManyToMany
@@ -374,6 +376,20 @@ public class Curso implements Serializable {
      */
     public void setPais(String pais) {
         this.pais = pais;
+    }
+
+    /**
+     * @return the precio
+     */
+    public BigDecimal getPrecio() {
+        return precio;
+    }
+
+    /**
+     * @param precio the precio to set
+     */
+    public void setPrecio(BigDecimal precio) {
+        this.precio = precio;
     }
 
     /**

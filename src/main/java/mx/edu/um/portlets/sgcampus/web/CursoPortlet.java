@@ -942,6 +942,55 @@ public class CursoPortlet {
         }
     }
 
+    @RequestMapping(params = "action=pagado")
+    public void pagado(ActionRequest request, ActionResponse response,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("El alumno pago el curso {}", cursoId);
+        try {
+            User usuario = PortalUtil.getUser(request);
+            if (usuario != null) {
+                curso = cursoDao.obtiene(cursoId);
+                log.debug("Curso {}",curso);
+                Alumno alumno = cursoDao.obtieneAlumno(usuario);
+                log.debug("Alumno {}", alumno);
+                AlumnoCurso alumnoCurso = new AlumnoCurso();
+                alumnoCurso.setAlumno(alumno);
+                alumnoCurso.setCurso(curso);
+                alumnoCurso.setCreadorId(usuario.getUserId());
+                alumnoCurso.setCreadorNombre(usuario.getFullName());
+                alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
+                cursoDao.inscribeAlumno(alumnoCurso);
+                
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("cursoId", curso.getId().toString());
+            } else {
+                log.error("No pudo entrar el alumno al curso {}", cursoId);
+            }
+        } catch (Exception e) {
+            log.error("No pudo entrar el alumno al curso " + cursoId, e);
+        }
+    }
+
+    @RequestMapping(params = "action=noPagado")
+    public void noPagado(ActionRequest request, ActionResponse response,
+            @RequestParam Long cursoId,
+            @ModelAttribute("sesion") Sesion sesion,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("El alumno no pago el curso {}", cursoId);
+        response.setRenderParameter("action", "noPago");
+    }
+
+    @RequestMapping(params = "action=noPago")
+    public String noPago(RenderRequest request, Model model) {
+        log.debug("Mostrando pagina de NO PAGO");
+
+        return "curso/noPago";
+    }
+
     public Curso getCurso() {
         return curso;
     }
