@@ -1,4 +1,5 @@
 begin;
+drop table if exists sg_asistencia cascade;
 drop table if exists sg_asistencias cascade;
 drop table if exists sg_alumno_curso cascade;
 drop table if exists sg_xalumno_curso cascade;

@@ -87,7 +87,7 @@
                         <input type="hidden" name="DireccionFracaso" value="${noPagadoUrl}"/> 
                         <input type="hidden" name="DireccionEnvio" value="0"/> 
                         <input type="hidden" name="Mensaje" value="1"/>
-                        <span class="menuButton"><input type="submit" class="edit" value='<liferay-ui:message key="curso.inscribirse" />' /></span>
+                        <span class="menuButton"><input type="submit" name="enviaPago" class="edit" value='<liferay-ui:message key="curso.inscribirse" />' /></span>
                     </form>
                 </c:when>
                 <c:otherwise>

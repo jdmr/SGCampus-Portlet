@@ -60,12 +60,12 @@ public class CursoDao {
 
     public Curso crea(Curso curso, Long creadorId) {
         log.info("Creando el curso {}", curso);
-        
+
         // La fecha de inicio debe ser antes de la de termino
         if (curso.getInicia() != null && curso.getTermina() != null && curso.getInicia().after(curso.getTermina())) {
             throw new RuntimeException("La fecha inicial debe ser antes de la que termina");
         }
-        
+
         // Asignando codigo si no tiene uno
         if (curso.getCodigo() == null) {
             log.debug("Asignando codigo");
@@ -82,7 +82,7 @@ public class CursoDao {
             nf.setMinimumIntegerDigits(7);
             curso.setCodigo("U" + nf.format(folio.getValor()));
         }
-        
+
         // Creando curso
         Long id = (Long) hibernateTemplate.save(curso);
         curso.setId(id);
@@ -97,7 +97,7 @@ public class CursoDao {
         xcurso.setMaestroId(curso.getMaestro().getId());
         hibernateTemplate.save(xcurso);
 
-        
+
         return curso;
     }
 
@@ -227,7 +227,7 @@ public class CursoDao {
     }
 
     public Alumno creaAlumno(Alumno alumno) {
-        log.debug("Creando alumno con id {}",alumno.getId());
+        log.debug("Creando alumno con id {}", alumno.getId());
         hibernateTemplate.save(alumno);
         alumno.setVersion(0);
         return alumno;
@@ -466,7 +466,8 @@ public class CursoDao {
         if (alumnoCurso != null) {
             Asistencia asistencia = new Asistencia(alumnoCurso, new Date());
             log.debug("Guardando la asistencia");
-            hibernateTemplate.save(asistencia);
+            Long id = (Long) hibernateTemplate.save(asistencia);
+            log.debug("Se ha guardado la asistencia {}",id);
         } else {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
         }
