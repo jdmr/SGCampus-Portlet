@@ -476,4 +476,9 @@ public class CursoDao {
         hibernateTemplate.save(maestro);
         return maestro;
     }
+
+    public Maestro refreshMaestro(Maestro maestro) {
+        hibernateTemplate.refresh(maestro);
+        return maestro;
+    }
 }

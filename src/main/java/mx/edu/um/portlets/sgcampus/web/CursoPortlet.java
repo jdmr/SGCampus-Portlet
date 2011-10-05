@@ -261,7 +261,15 @@ public class CursoPortlet {
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando el curso");
         this.curso = curso;
-        String[] tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
+        String[] tags;
+        log.debug("getTags():{}", curso.getTags());
+        if (curso.getTags()!=null && !",".equals(curso.getTags().trim())) {
+            tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
+            log.debug("Resultado de delimited: {}",tags);
+        } else {
+            tags = new String[] {curso.getCodigo()};
+            log.debug("Resultado de crearlo directo: {}",tags);
+        }
         
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
         cursoValidator.validate(curso, result);
@@ -279,6 +287,7 @@ public class CursoPortlet {
 
                 // Creando contenido dentro de liferay
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+                log.debug("TAGS: {}",tags);
                 serviceContext.setAssetTagNames(tags);
 
                 Calendar displayDate;
@@ -352,7 +361,14 @@ public class CursoPortlet {
             Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
         log.debug("Creando curso por el usuario");
         this.curso = curso;
-        String[] tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
+        String[] tags;
+        if (curso.getTags()!=null && !",".equals(curso.getTags().trim())) {
+            tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
+            log.debug("Resultado de delimited: {}",tags);
+        } else {
+            tags = new String[] {curso.getCodigo()};
+            log.debug("Resultado de crearlo directo: {}",tags);
+        }
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
 
         User user = PortalUtil.getUser(request);
@@ -615,15 +631,15 @@ public class CursoPortlet {
             @ModelAttribute("curso") Curso curso, BindingResult result,
             Model model, SessionStatus sessionStatus) {
         log.debug("Guardando el curso");
+        curso.setMaestro(cursoDao.refreshMaestro(curso.getMaestro()));
         this.curso = curso;
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
                 
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(themeDisplay.getScopeGroupId(), new Long(ja.getPrimaryKey()).toString(), ja.getVersion(), curso.getDescripcion());
+                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
                 
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
@@ -658,7 +674,6 @@ public class CursoPortlet {
             try {
                 User creador = PortalUtil.getUser(request);
                 
-                ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
                 JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
                 

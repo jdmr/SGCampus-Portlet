@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -60,18 +61,18 @@ public class Curso implements Serializable {
     private BigDecimal calificacion;
     @Column(length = 64)
     private String tipo;
-    @Column(nullable=false, length=32)
+    @Column(nullable = false, length = 32)
     private String estatus = "ACTIVO";
-    @Column(length=32)
+    @Column(length = 32)
     private String telefono;
-    @Column(length=32)
+    @Column(length = 32)
     private String estado;
-    @Column(length=32)
+    @Column(length = 32)
     private String pais;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
     @ManyToMany
-    @JoinTable(name="sg_curso_etiqueta")
+    @JoinTable(name = "sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
     @Transient
     private String tags;
@@ -461,5 +462,4 @@ public class Curso implements Serializable {
     public String toString() {
         return getCodigo();
     }
-
 }
