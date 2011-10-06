@@ -5,7 +5,7 @@
         <portlet:param name="action" value="busca" />
     </portlet:renderURL>
 
-    <form name="<portlet:namespace />fm" method="post" action="${actionUrl}" >
+    <form name="<portlet:namespace />buscaCurso" method="post" action="${actionUrl}" >
         <div class="search">
             <table>
                 <tbody>

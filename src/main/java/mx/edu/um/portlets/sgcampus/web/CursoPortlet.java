@@ -52,7 +52,7 @@ import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  * Administrador de cursos
- * 
+ *
  * @author jdmr
  */
 @Controller
@@ -68,6 +68,7 @@ public class CursoPortlet {
     private ResourceBundleMessageSource messageSource;
     private Curso curso;
     private Sesion sesion;
+    private Contenido contenido;
 
     public CursoPortlet() {
         log.info("Nueva instancia de Curso Portlet ha sido creada");
@@ -263,14 +264,14 @@ public class CursoPortlet {
         this.curso = curso;
         String[] tags;
         log.debug("getTags():{}", curso.getTags());
-        if (curso.getTags()!=null && !",".equals(curso.getTags().trim())) {
-            tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
-            log.debug("Resultado de delimited: {}",tags);
+        if (curso.getTags() != null && !",".equals(curso.getTags().trim())) {
+            tags = StringUtils.delimitedListToStringArray(curso.getTags() + curso.getCodigo(), ",");
+            log.debug("Resultado de delimited: {}", tags);
         } else {
-            tags = new String[] {curso.getCodigo()};
-            log.debug("Resultado de crearlo directo: {}",tags);
+            tags = new String[]{curso.getCodigo()};
+            log.debug("Resultado de crearlo directo: {}", tags);
         }
-        
+
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
         cursoValidator.validate(curso, result);
         if (!result.hasErrors()) {
@@ -287,7 +288,7 @@ public class CursoPortlet {
 
                 // Creando contenido dentro de liferay
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
-                log.debug("TAGS: {}",tags);
+                log.debug("TAGS: {}", tags);
                 serviceContext.setAssetTagNames(tags);
 
                 Calendar displayDate;
@@ -334,9 +335,9 @@ public class CursoPortlet {
                         "", // articleURL 
                         serviceContext // serviceContext
                         );
-                
+
                 curso.setDescripcionId(article.getPrimaryKey());
-                
+
                 curso = cursoDao.crea(curso, creador.getUserId());
 
                 response.setRenderParameter("action", "ver");
@@ -362,12 +363,12 @@ public class CursoPortlet {
         log.debug("Creando curso por el usuario");
         this.curso = curso;
         String[] tags;
-        if (curso.getTags()!=null && !",".equals(curso.getTags().trim())) {
-            tags = StringUtils.delimitedListToStringArray(curso.getTags()+curso.getCodigo(), ",");
-            log.debug("Resultado de delimited: {}",tags);
+        if (curso.getTags() != null && !",".equals(curso.getTags().trim())) {
+            tags = StringUtils.delimitedListToStringArray(curso.getTags() + curso.getCodigo(), ",");
+            log.debug("Resultado de delimited: {}", tags);
         } else {
-            tags = new String[] {curso.getCodigo()};
-            log.debug("Resultado de crearlo directo: {}",tags);
+            tags = new String[]{curso.getCodigo()};
+            log.debug("Resultado de crearlo directo: {}", tags);
         }
         curso.setComunidadNombre(GroupLocalServiceUtil.getGroup(curso.getComunidadId()).getDescriptiveName());
 
@@ -434,9 +435,9 @@ public class CursoPortlet {
                         "", // articleURL 
                         serviceContext // serviceContext
                         );
-                
+
                 curso.setDescripcionId(article.getPrimaryKey());
-                
+
                 curso = cursoDao.crea(curso, user.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -506,13 +507,13 @@ public class CursoPortlet {
 
         AlumnoCurso alumnoCurso = null;
         curso = cursoDao.obtiene(cursoId);
-        
+
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
         AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
         String contenido = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
         curso.setDescripcion(contenido);
-        
+
         modelo.addAttribute("curso", curso);
         User creador = PortalUtil.getUser(request);
         if (request.isUserInRole("Administrator")
@@ -567,13 +568,13 @@ public class CursoPortlet {
             Model modelo) throws PortalException, SystemException {
 
         curso = cursoDao.obtiene(cursoId);
-        
+
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
         AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
         String contenido = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
         curso.setDescripcion(contenido);
-        
+
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", this.getTipos(themeDisplay));
@@ -637,10 +638,10 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
-                
+
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
                 JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
-                
+
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -673,10 +674,10 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
-                
+
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
                 JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
-                
+
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -953,7 +954,7 @@ public class CursoPortlet {
             User usuario = PortalUtil.getUser(request);
             if (usuario != null) {
                 curso = cursoDao.obtiene(cursoId);
-                log.debug("Curso {}",curso);
+                log.debug("Curso {}", curso);
                 Alumno alumno = cursoDao.obtieneAlumno(usuario);
                 log.debug("Alumno {}", alumno);
                 AlumnoCurso alumnoCurso = new AlumnoCurso();
@@ -963,7 +964,7 @@ public class CursoPortlet {
                 alumnoCurso.setCreadorNombre(usuario.getFullName());
                 alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
                 cursoDao.inscribeAlumno(alumnoCurso);
-                
+
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
             } else {
@@ -989,6 +990,32 @@ public class CursoPortlet {
         log.debug("Mostrando pagina de NO PAGO");
 
         return "curso/noPago";
+    }
+
+    @RequestMapping(params = "action=contenidoLista")
+    public String contenidoLista(RenderRequest request, @RequestParam Long cursoId, Model model) {
+        log.debug("Lista de contenidos del curso {}", cursoId);
+        List<Contenido> contenidos = cursoDao.obtieneContenidos(cursoId);
+        model.addAttribute("contenidos", contenidos);
+        model.addAttribute("cantidad", contenidos.size());
+        model.addAttribute("cursoId", cursoId);
+
+        return "curso/listaContenidos";
+    }
+
+    @RequestMapping(params = "action=nuevoContenido")
+    public String nuevoContenido(RenderRequest request, @RequestParam Long cursoId, Model model) {
+        log.debug("Nuevo contenido del curso {}", cursoId);
+        List<Contenido> contenidos = cursoDao.obtieneContenidos(cursoId);
+        model.addAttribute("contenidos", contenidos);
+        model.addAttribute("cantidad", contenidos.size());
+        
+        curso = cursoDao.obtiene(cursoId);
+        Contenido contenido = new Contenido();
+        contenido.setCurso(curso);
+        model.addAttribute("contenido", contenido);
+
+        return "curso/nuevoContenido";
     }
 
     public Curso getCurso() {
@@ -1031,5 +1058,13 @@ public class CursoPortlet {
 
     public void setSesion(Sesion sesion) {
         this.sesion = sesion;
+    }
+
+    public Contenido getContenido() {
+        return contenido;
+    }
+
+    public void setContenido(Contenido contenido) {
+        this.contenido = contenido;
     }
 }

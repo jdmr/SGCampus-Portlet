@@ -73,6 +73,8 @@ public class Curso implements Serializable {
     private BigDecimal precio;
     @OneToMany(mappedBy = "curso")
     private Set<Sesion> sesiones;
+    @OneToMany(mappedBy = "curso")
+    private Set<Contenido> contenidos;
     @ManyToMany
     @JoinTable(name = "sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
@@ -404,6 +406,20 @@ public class Curso implements Serializable {
      */
     public void setSesiones(Set<Sesion> sesiones) {
         this.sesiones = sesiones;
+    }
+
+    /**
+     * @return the contenidos
+     */
+    public Set<Contenido> getContenidos() {
+        return contenidos;
+    }
+
+    /**
+     * @param contenidos the contenidos to set
+     */
+    public void setContenidos(Set<Contenido> contenidos) {
+        this.contenidos = contenidos;
     }
 
     /**

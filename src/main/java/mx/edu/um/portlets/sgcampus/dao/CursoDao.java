@@ -10,17 +10,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import mx.edu.um.portlets.sgcampus.model.Maestro;
+import mx.edu.um.portlets.sgcampus.model.*;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
-import mx.edu.um.portlets.sgcampus.model.Alumno;
-import mx.edu.um.portlets.sgcampus.model.AlumnoCurso;
-import mx.edu.um.portlets.sgcampus.model.Asistencia;
-import mx.edu.um.portlets.sgcampus.model.Curso;
-import mx.edu.um.portlets.sgcampus.model.Etiqueta;
-import mx.edu.um.portlets.sgcampus.model.Folio;
-import mx.edu.um.portlets.sgcampus.model.Sesion;
-import mx.edu.um.portlets.sgcampus.model.XAlumnoCurso;
-import mx.edu.um.portlets.sgcampus.model.XCurso;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
@@ -486,5 +477,11 @@ public class CursoDao {
     public Maestro refreshMaestro(Maestro maestro) {
         hibernateTemplate.refresh(maestro);
         return maestro;
+    }
+
+    public List<Contenido> obtieneContenidos(Long cursoId) {
+        log.debug("Buscando los contenidos del curso {}",cursoId);
+        List<Contenido> contenidos = hibernateTemplate.findByNamedParam("select contenido from Contenido contenido where contenido.curso.id = :cursoId order by orden", "cursoId", cursoId);
+        return contenidos;
     }
 }
