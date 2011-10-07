@@ -9,7 +9,7 @@
         <portlet:param name="cursoId" value="${contenido.curso.id}" />
     </portlet:renderURL>
     
-    <form:form name="contenidoForm" commandName="contenido" method="post" action="${actionUrl}" >
+    <form:form name="contenidoForm" commandName="contenido" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
         <form:hidden path="curso.id" />
         <div class="dialog">
             <table>
@@ -41,7 +41,7 @@
                         </td>
                         <td valign="top" class="value">
                             <liferay-ui:input-editor width="850" />
-                            <input name="<portlet:namespace />descripcion" type="hidden" value="" />
+                            <input name="<portlet:namespace />texto" type="hidden" value="" />
                             <form:errors cssClass="errors" path="texto" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -65,3 +65,17 @@
         </div>
     </form:form>
 </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        $("input#nombre").focus();
+    });
+
+    function <portlet:namespace />initEditor() { 
+        return "<%= UnicodeFormatter.toString(((mx.edu.um.portlets.sgcampus.model.Contenido)request.getAttribute("contenido")).getTexto()) %>"; 
+    }  
+
+    function extractCodeFromEditor() { 
+        var x = document.contenidoForm.<portlet:namespace />texto.value = window.<portlet:namespace />editor.getHTML();  
+        return true;
+    }
+</script>

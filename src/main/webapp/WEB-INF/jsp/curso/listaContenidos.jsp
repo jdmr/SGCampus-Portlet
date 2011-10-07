@@ -58,7 +58,12 @@
             <portlet:param name="action" value="nuevoContenido" />
             <portlet:param name="cursoId" value="${cursoId}" />
         </portlet:renderURL>
-        <span class="menuButton"><a class="create" href='${nuevoContenidoURL}'><liferay-ui:message key="curso.nuevo" /></a></span>
+        <portlet:renderURL var="verCursoURL">
+            <portlet:param name="action" value="verCurso" />
+            <portlet:param name="cursoId" value="${cursoId}" />
+        </portlet:renderURL>
+        <span class="menuButton"><a class="create" href='${nuevoContenidoURL}'><liferay-ui:message key="contenido.nuevo" /></a></span>
+        <span class="menuButton"><a class="list" href='${verCursoURL}'><liferay-ui:message key="curso.regresar" /></a></span>
     </div>
     <script type="text/javascript">
         <c:if test="${cursos != null}">

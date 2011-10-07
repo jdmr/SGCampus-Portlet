@@ -458,7 +458,7 @@ public class CursoDao {
             Asistencia asistencia = new Asistencia(alumnoCurso, new Date());
             log.debug("Guardando la asistencia");
             Long id = (Long) hibernateTemplate.save(asistencia);
-            log.debug("Se ha guardado la asistencia {}",id);
+            log.debug("Se ha guardado la asistencia {}", id);
         } else {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoCurso.getAlumno().getId() + " al curso " + alumnoCurso.getCurso().getId());
         }
@@ -480,8 +480,13 @@ public class CursoDao {
     }
 
     public List<Contenido> obtieneContenidos(Long cursoId) {
-        log.debug("Buscando los contenidos del curso {}",cursoId);
+        log.debug("Buscando los contenidos del curso {}", cursoId);
         List<Contenido> contenidos = hibernateTemplate.findByNamedParam("select contenido from Contenido contenido where contenido.curso.id = :cursoId order by orden", "cursoId", cursoId);
         return contenidos;
+    }
+
+    public void creaContenido(Contenido contenido) {
+        log.debug("Creando contenido para el curso {}", contenido.getCurso().getId());
+        hibernateTemplate.save(contenido);
     }
 }

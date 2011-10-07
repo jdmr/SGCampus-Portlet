@@ -356,6 +356,7 @@ public class CursoPortlet {
         }
     }
 
+    @Transactional
     @RequestMapping(params = "action=creaUsuario")
     public void creaUsuario(ActionRequest request, ActionResponse response,
             @ModelAttribute("curso") Curso curso, BindingResult result,
@@ -627,6 +628,7 @@ public class CursoPortlet {
         }
     }
 
+    @Transactional
     @RequestMapping(params = "action=actualiza")
     public void actualiza(ActionRequest request, ActionResponse response,
             @ModelAttribute("curso") Curso curso, BindingResult result,
@@ -658,6 +660,7 @@ public class CursoPortlet {
         }
     }
 
+    @Transactional
     @RequestMapping(params = "action=actualizaUsuario")
     public void actualizaUsuario(ActionRequest request, ActionResponse response,
             @ModelAttribute("curso") Curso curso, BindingResult result,
@@ -1016,6 +1019,82 @@ public class CursoPortlet {
         model.addAttribute("contenido", contenido);
 
         return "curso/nuevoContenido";
+    }
+
+    @Transactional
+    @RequestMapping(params = "action=creaContenido")
+    public void creaContenido(ActionRequest request, ActionResponse response,
+            @ModelAttribute("contenido") Contenido contenido,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Creando contenido para el curso {}", contenido.getCurso().getId());
+        try {
+            curso = cursoDao.refresh(contenido.getCurso());
+            contenido.setCurso(curso);
+            // Creando contenido dentro de liferay
+            ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+            //serviceContext.setAssetTagNames(tags);
+
+            User user = PortalUtil.getUser(request);
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            Calendar displayDate;
+            if (themeDisplay != null) {
+                displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+            } else {
+                displayDate = CalendarFactoryUtil.getCalendar();
+            }
+
+            log.debug("UsuarioId: {}", user.getUserId());
+            log.debug("GroupId: {}", curso.getComunidadId());
+            log.debug("Nombre: {}", contenido.getNombre());
+            log.debug("Descripcion: {}", contenido.getDescripcion());
+            log.debug("Contenido: {}", contenido.getTexto());
+            JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
+                    user.getUserId(), // UserId
+                    curso.getComunidadId(), // GroupId
+                    "", // ArticleId
+                    true, // AutoArticleId
+                    JournalArticleConstants.DEFAULT_VERSION, // Version
+                    contenido.getNombre(), // Titulo
+                    contenido.getDescripcion(), // Descripcion
+                    contenido.getTexto(), // Contenido
+                    "general", // Tipo
+                    "", // Estructura
+                    "", // Template
+                    displayDate.get(Calendar.MONTH), // displayDateMonth,
+                    displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
+                    displayDate.get(Calendar.YEAR), // displayDateYear,
+                    displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
+                    displayDate.get(Calendar.MINUTE), // displayDateMinute,
+                    0, // expirationDateMonth, 
+                    0, // expirationDateDay, 
+                    0, // expirationDateYear, 
+                    0, // expirationDateHour, 
+                    0, // expirationDateMinute, 
+                    true, // neverExpire
+                    0, // reviewDateMonth, 
+                    0, // reviewDateDay, 
+                    0, // reviewDateYear, 
+                    0, // reviewDateHour, 
+                    0, // reviewDateMinute, 
+                    true, // neverReview
+                    true, // indexable
+                    false, // SmallImage
+                    "", // SmallImageUrl
+                    null, // SmallFile
+                    null, // Images
+                    "", // articleURL 
+                    serviceContext // serviceContext
+                    );
+            log.debug("Articulo creado creando contenido");
+            contenido.setContenidoId(article.getId());
+            cursoDao.creaContenido(contenido);
+            log.debug("Contenido creado regresando a lista de contenidos");
+            response.setRenderParameter("action", "contenidoLista");
+            response.setRenderParameter("cursoId", contenido.getCurso().getId().toString());
+        } catch(Exception e) {
+            throw new RuntimeException("No se pudo crear el contenido",e);
+        }
     }
 
     public Curso getCurso() {

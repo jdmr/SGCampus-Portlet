@@ -23,7 +23,7 @@ public class Contenido implements Serializable {
     @Column(length = 200)
     private String descripcion;
     @Transient
-    private String texto;
+    private String texto = "";
     @Column(length = 200)
     private String etiquetas;
     @Column(nullable = false)
