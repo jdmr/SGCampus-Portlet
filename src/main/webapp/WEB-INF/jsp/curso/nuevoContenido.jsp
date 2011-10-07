@@ -37,6 +37,16 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
+                            <label for="orden"><liferay-ui:message key="contenido.orden" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:input path="orden" maxlength="3"/>
+                            <form:errors cssClass="errors" path="orden" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
                             <label for="texto"><liferay-ui:message key="contenido.texto" /></label>
                         </td>
                         <td valign="top" class="value">
@@ -46,21 +56,11 @@
                         </td>
                     </tr>
 
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="orden"><liferay-ui:message key="contenido.orden" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:input path="orden" maxlength="3"/>
-                            <form:errors cssClass="errors" path="orden" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
                 </tbody>
             </table>
         </div>
         <div class="nav">
-            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='sesion.crea' />"/></span>
+            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='contenido.crea' />"/></span>
             <span class="menuButton"><a class="cancel" href='${verContenido}'><liferay-ui:message key="sesion.cancela" /></a></span>
         </div>
     </form:form>
@@ -69,10 +69,6 @@
     $(document).ready(function() {
         $("input#nombre").focus();
     });
-
-    function <portlet:namespace />initEditor() { 
-        return "<%= UnicodeFormatter.toString(((mx.edu.um.portlets.sgcampus.model.Contenido)request.getAttribute("contenido")).getTexto()) %>"; 
-    }  
 
     function extractCodeFromEditor() { 
         var x = document.contenidoForm.<portlet:namespace />texto.value = window.<portlet:namespace />editor.getHTML();  
