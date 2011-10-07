@@ -489,4 +489,10 @@ public class CursoDao {
         log.debug("Creando contenido para el curso {}", contenido.getCurso().getId());
         hibernateTemplate.save(contenido);
     }
+
+    public Contenido obtieneContenido(Long contenidoId) {
+        log.debug("Buscando el contenido {}", contenidoId);
+        Contenido contenido = hibernateTemplate.get(Contenido.class, contenidoId);
+        return contenido;
+    }
 }

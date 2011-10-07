@@ -1097,6 +1097,27 @@ public class CursoPortlet {
         }
     }
 
+    @RequestMapping(params = "action=verContenido")
+    public String verContenido(RenderRequest request, @RequestParam Long contenidoId, Model model) {
+        log.debug("Viendo el contenido {}", contenidoId);
+        
+        try {
+            contenido = cursoDao.obtieneContenido(contenidoId);
+            
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(contenido.getContenidoId());
+            AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
+            String texto = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
+            contenido.setTexto(texto);
+            model.addAttribute("contenido", contenido);
+            
+            return "curso/verContenido";
+        } catch(Exception e) {
+            throw new RuntimeException("No se pudo ver el contenido",e);
+        }
+        
+    }
+
     public Curso getCurso() {
         return curso;
     }

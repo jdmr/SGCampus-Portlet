@@ -14,17 +14,21 @@
 
                         <th><liferay-ui:message key="contenido.nombre" /></th>
 
+                        <th><liferay-ui:message key="contenido.orden" /></th>
+
                     </tr>
                 </thead>
                 <tbody>
                     <c:forEach items="${contenidos}" var="contenido" varStatus="status">
                         <portlet:renderURL var="verContenido" >
-                            <portlet:param name="action" value="ver" />
+                            <portlet:param name="action" value="verContenido" />
                             <portlet:param name="contenidoId" value="${contenido.id}" />
                         </portlet:renderURL>
                         <tr class="${(status.count % 2) == 0 ? 'odd' : 'even'}">
 
                             <td><a href="${verContenido}">${contenido.nombre}</a></td>
+                            
+                            <td>${contenido.orden}</td>
 
                         </tr>
                     </c:forEach>
