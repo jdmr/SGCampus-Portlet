@@ -82,7 +82,7 @@
                         <portlet:param name="action" value="noPagado" />
                         <portlet:param name="cursoId" value="${curso.id}" />
                     </portlet:actionURL>
-                    <form action="https://mexico.dineromail.com/Shop/Shop_Ingreso.asp" method="post"> 
+                    <form action="https://mexico.dineromail.com/Shop/Shop_Ingreso.asp" method="post" style="display: inline-block;padding-right: 10px;"> 
                         <input type="hidden" name="NombreItem" value="${curso.nombre}"/> 
                         <input type="hidden" name="TipoMoneda" value="1"/> 
                         <input type="hidden" name="PrecioItem" value="${curso.precio}"/> 

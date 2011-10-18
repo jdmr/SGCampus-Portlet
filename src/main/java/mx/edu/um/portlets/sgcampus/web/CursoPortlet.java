@@ -300,12 +300,12 @@ public class CursoPortlet {
                 //String descripcion = HtmlUtil.fromInputSafe(curso.getDescripcion());
                 curso.setDescripcion(ParamUtil.getString(request, "descripcion"));
                 String descripcion = curso.getDescripcion();
-//                log.debug("Contenido: {}",descripcion);
-//                log.debug("Contenido2: {}",HtmlUtil.toInputSafe(descripcion));
-//                log.debug("Contenido3: {}",HtmlUtil.fromInputSafe(descripcion));
-//                log.debug("Contenido4: {}",HtmlUtil.escape(descripcion));
-//                log.debug("Contenido5: {}",HtmlUtil.unescape(descripcion));
-//                log.debug("Contenido6: {}",UnicodeFormatter.toString(descripcion));
+                log.debug("Contenido: {}",descripcion);
+                log.debug("Contenido2: {}",HtmlUtil.toInputSafe(descripcion));
+                log.debug("Contenido3: {}",HtmlUtil.fromInputSafe(descripcion));
+                log.debug("Contenido4: {}",HtmlUtil.escape(descripcion));
+                log.debug("Contenido5: {}",HtmlUtil.unescape(descripcion));
+                log.debug("Contenido6: {}",UnicodeFormatter.toString(descripcion));
                 JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
                         creador.getUserId(), // UserId
                         curso.getComunidadId(), // GroupId

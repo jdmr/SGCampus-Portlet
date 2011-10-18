@@ -43,7 +43,7 @@
                                                      />
                             <input name="<portlet:namespace />descripcion" type="hidden" value="" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
-                            <input type="button" onclick="javascript:verContenido();" value="Ver Contenido" />
+                            <!--input type="button" onclick="javascript:verContenido();" value="Ver Contenido" /-->
                         </td>
                     </tr>
 
