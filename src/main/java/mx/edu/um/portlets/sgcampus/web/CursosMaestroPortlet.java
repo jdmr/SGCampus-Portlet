@@ -4,18 +4,22 @@ import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
 import com.liferay.portal.kernel.util.WebKeys;
 import com.liferay.portal.model.Group;
+import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
+import com.liferay.portal.util.PortalUtil;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import javax.portlet.RenderRequest;
 import mx.edu.um.portlets.sgcampus.dao.CursoDao;
 import mx.edu.um.portlets.sgcampus.model.Curso;
+import mx.edu.um.portlets.sgcampus.model.Maestro;
 import mx.edu.um.portlets.sgcampus.utils.ComunidadUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.support.ResourceBundleMessageSource;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +27,7 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 /**
  * Administrador de cursos en la pagina principal
- * 
+ *
  * @author jdmr
  */
 @Controller
@@ -33,6 +37,8 @@ public class CursosMaestroPortlet {
     private static final Logger log = LoggerFactory.getLogger(CursosMaestroPortlet.class);
     @Autowired
     private CursoDao cursoDao;
+    @Autowired
+    private ResourceBundleMessageSource messageSource;
     private Curso curso;
 
     public CursosMaestroPortlet() {
@@ -65,24 +71,44 @@ public class CursosMaestroPortlet {
         params.put("max", max);
         params.put("offset", offset);
         params.put("comunidades", comunidades.keySet());
-        log.debug("Para las comunidades {}",comunidades.keySet());
-        
+        log.debug("Para las comunidades {}", comunidades.keySet());
+
         log.debug("Buscando maestro");
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         Group group = GroupLocalServiceUtil.getGroup(themeDisplay.getScopeGroupId());
-        params.put("maestroId",group.getClassPK());
+        params.put("maestroId", group.getClassPK());
         //User perfil = UserLocalServiceUtil.getUserById(group.getClassPK());
 
-        params = cursoDao.busca(params);
-        List<Curso> cursos = (List<Curso>)params.get("cursos");
-        for(Curso x : cursos) {
+        String nombreMaestro = messageSource.getMessage("yo", null, themeDisplay.getLocale());
+        Map<String, Object> resultados1 = cursoDao.busca(params);
+        List<Curso> cursos = (List<Curso>) resultados1.get("cursos");
+        for (Curso x : cursos) {
+            Maestro maestro = x.getMaestro();
+            maestro.setNombreCompleto(nombreMaestro);
+        }
+
+        Long cantidad = (Long) resultados1.get("cantidad");
+
+        params.remove("maestroId");
+        User alumno = PortalUtil.getUser(request);
+        params.put("alumnoId", alumno.getPrimaryKey());
+        Map<String, Object> resultados2 = cursoDao.busca(params);
+        List<Curso> cursos2 = (List<Curso>) resultados2.get("cursos");
+        cursos.addAll(cursos2);
+        if (cantidad != null && resultados2.get("cantidad") != null) {
+            cantidad += (Long) resultados2.get("cantidad");
+        } else if (resultados2.get("cantidad") != null) {
+            cantidad = (Long) resultados2.get("cantidad");
+        }
+
+        for (Curso x : cursos) {
             StringBuilder sb = new StringBuilder();
             sb.append("/cursos?p_p_id=Cursos_WAR_sgcampusportlet&p_p_lifecycle=0&p_p_state=normal&p_p_mode=view&p_p_col_id=column-1&p_p_col_count=1&_Cursos_WAR_sgcampusportlet_action=ver&_Cursos_WAR_sgcampusportlet_cursoId=");
             sb.append(x.getId());
             x.setVerCurso(sb.toString());
         }
         modelo.addAttribute("cursos", cursos);
-        modelo.addAttribute("cantidad", params.get("cantidad"));
+        modelo.addAttribute("cantidad", cantidad);
         modelo.addAttribute("max", max);
         modelo.addAttribute("offset", offset);
 

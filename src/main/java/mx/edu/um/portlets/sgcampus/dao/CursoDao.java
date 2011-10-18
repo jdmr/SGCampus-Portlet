@@ -4,23 +4,14 @@ import com.liferay.portal.model.User;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 import mx.edu.um.portlets.sgcampus.model.*;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import org.hibernate.Criteria;
 import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
-import org.hibernate.criterion.DetachedCriteria;
-import org.hibernate.criterion.Disjunction;
-import org.hibernate.criterion.Order;
-import org.hibernate.criterion.Projections;
-import org.hibernate.criterion.Restrictions;
+import org.hibernate.criterion.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.BeanUtils;
@@ -94,8 +85,9 @@ public class CursoDao {
 
     @Transactional(readOnly = true)
     public Map<String, Object> busca(Map<String, Object> params) {
-        DetachedCriteria criteria = DetachedCriteria.forClass(Curso.class);
-        DetachedCriteria countCriteria = DetachedCriteria.forClass(Curso.class);
+        Session session = hibernateTemplate.getSessionFactory().openSession();
+        Criteria criteria = session.createCriteria(Curso.class);
+        Criteria countCriteria = session.createCriteria(Curso.class);
         List<Curso> cursos;
         List<Long> cantidades;
         if (params != null) {
@@ -109,7 +101,7 @@ public class CursoDao {
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
             }
-
+            
             if (!params.containsKey("estatus")) {
                 criteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
                 countCriteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
@@ -144,15 +136,27 @@ public class CursoDao {
             } else {
                 criteria.addOrder(Order.desc("inicia"));
             }
-
-            cursos = hibernateTemplate.findByCriteria(criteria, offset, max);
+            
+            if (params.containsKey("maestroId")) {
+                criteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
+                countCriteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
+            }
+            
+            if (params.containsKey("alumnoId")) {
+                criteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
+                countCriteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
+            }
+            
+            criteria.setFirstResult(offset);
+            criteria.setMaxResults(max);
+            cursos = criteria.list();
         } else {
             criteria.addOrder(Order.desc("inicia"));
-            cursos = hibernateTemplate.findByCriteria(criteria);
+            cursos = criteria.list();
         }
 
         countCriteria.setProjection(Projections.rowCount());
-        cantidades = hibernateTemplate.findByCriteria(countCriteria);
+        cantidades = countCriteria.list();
 
         Map<String, Object> resultados = new HashMap<String, Object>();
         resultados.put("cursos", cursos);

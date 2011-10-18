@@ -36,9 +36,14 @@
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <liferay-ui:input-editor width="850" />
+                            <liferay-ui:input-editor name='<%= renderResponse.getNamespace() + "structure_el_TextAreaField_content" %>' 
+                                                     editorImpl="editor.wysiwyg.portal-web.docroot.html.portlet.journal.edit_article_content.jsp" 
+                                                     toolbarSet="liferay-article" 
+                                                     width="100%" 
+                                                     />
                             <input name="<portlet:namespace />descripcion" type="hidden" value="" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
+                            <input type="button" onclick="javascript:verContenido();" value="Ver Contenido" />
                         </td>
                     </tr>
 
@@ -231,8 +236,14 @@
         }  
 
         function extractCodeFromEditor() { 
-            var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />editor.getHTML();  
+            var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />structure_el_TextAreaField_content.getHTML();  
             return true;
+        }
+        
+        function verContenido() {
+            alert("HTML: "+window.<portlet:namespace />structure_el_TextAreaField_content.getHTML());
+            alert("HTML2:"+ window.<portlet:namespace />structure_el_TextAreaField_content.getHTML(true));
+            alert("XHTML:"+window.<portlet:namespace />structure_el_TextAreaField_content.getXHTML());
         }
     </script>
 </div>

@@ -12,4 +12,5 @@ drop table if exists sg_xcursos cascade;
 drop table if exists sg_folios cascade;
 drop table if exists sg_maestros cascade;
 drop table if exists sg_examenes cascade;
+drop table if exists sg_contenidos cascade;
 commit;

@@ -104,6 +104,13 @@
                 </c:otherwise>
             </c:choose>
         </c:if>
+        <c:if test="${noPuedeInscribirse}">
+            <portlet:renderURL var="registrarseUrl" >
+                <portlet:param name="action" value="inscribirse" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+            <span class="menuButton"><a class="edit" href="${registrarseUrl}"><liferay-ui:message key="curso.inscribirse" /></a></span>
+        </c:if>
         <c:if test="${existeSesionActiva}">
             <portlet:actionURL var="entrarUrl" >
                 <portlet:param name="action" value="entrar" />

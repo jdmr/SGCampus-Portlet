@@ -2,6 +2,7 @@ package mx.edu.um.portlets.sgcampus.model;
 
 import java.io.Serializable;
 import javax.persistence.*;
+import org.springframework.web.multipart.MultipartFile;
 
 /**
  *
@@ -30,6 +31,10 @@ public class Contenido implements Serializable {
     private Integer orden = 0;
     @ManyToOne
     private Curso curso;
+    @Column(nullable = false, length = 64)
+    private String tipo;
+    @Transient
+    private MultipartFile archivo;
 
     public Contenido() {
     }
@@ -158,6 +163,34 @@ public class Contenido implements Serializable {
      */
     public void setCurso(Curso curso) {
         this.curso = curso;
+    }
+
+    /**
+     * @return the tipo
+     */
+    public String getTipo() {
+        return tipo;
+    }
+
+    /**
+     * @param tipo the tipo to set
+     */
+    public void setTipo(String tipo) {
+        this.tipo = tipo;
+    }
+
+    /**
+     * @return the archivo
+     */
+    public MultipartFile getArchivo() {
+        return archivo;
+    }
+
+    /**
+     * @param archivo the archivo to set
+     */
+    public void setArchivo(MultipartFile archivo) {
+        this.archivo = archivo;
     }
 
     @Override

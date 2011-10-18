@@ -4,20 +4,7 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 import java.util.Set;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinTable;
-import javax.persistence.ManyToMany;
-import javax.persistence.ManyToOne;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.Transient;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 /**
  *
@@ -75,6 +62,8 @@ public class Curso implements Serializable {
     private Set<Sesion> sesiones;
     @OneToMany(mappedBy = "curso")
     private Set<Contenido> contenidos;
+    @OneToMany(mappedBy = "curso")
+    private Set<AlumnoCurso> alumnos;
     @ManyToMany
     @JoinTable(name = "sg_curso_etiqueta")
     private Set<Etiqueta> etiquetas;
@@ -420,6 +409,20 @@ public class Curso implements Serializable {
      */
     public void setContenidos(Set<Contenido> contenidos) {
         this.contenidos = contenidos;
+    }
+
+    /**
+     * @return the alumnos
+     */
+    public Set<AlumnoCurso> getAlumnos() {
+        return alumnos;
+    }
+
+    /**
+     * @param alumnos the alumnos to set
+     */
+    public void setAlumnos(Set<AlumnoCurso> alumnos) {
+        this.alumnos = alumnos;
     }
 
     /**

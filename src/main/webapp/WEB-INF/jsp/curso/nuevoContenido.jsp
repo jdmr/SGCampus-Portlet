@@ -11,6 +11,7 @@
     
     <form:form name="contenidoForm" commandName="contenido" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
         <form:hidden path="curso.id" />
+        <form:hidden path="tipo" />
         <div class="dialog">
             <table>
                 <tbody>
