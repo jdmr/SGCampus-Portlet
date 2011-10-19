@@ -3,6 +3,7 @@
     <h1><liferay-ui:message key="contenido.nuevo" /></h1>
     <portlet:actionURL var="actionUrl">
         <portlet:param name="action" value="creaContenido"/>
+        <portlet:param name="cursoId" value="${contenido.curso.id}" />
     </portlet:actionURL>
     <portlet:renderURL var="verContenido" >
         <portlet:param name="action" value="contenidoLista" />

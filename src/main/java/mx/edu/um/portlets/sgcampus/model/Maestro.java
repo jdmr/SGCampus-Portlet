@@ -53,6 +53,11 @@ public class Maestro implements Serializable {
         nombreCompleto = maestro.getFullName();
         fechaIngreso = new Date();
     }
+    
+    public Maestro(Long id, String nombreCompleto) {
+        this.id = id;
+        this.nombreCompleto = nombreCompleto;
+    }
 
     /**
      * @return the id

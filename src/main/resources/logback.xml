@@ -31,8 +31,8 @@
   <!--
   <logger name="org.spingframework" level="DEBUG"/>
   <logger name="org.hibernate.sql" level="TRACE"/>
-  <logger name="org.hibernate.type" level="TRACE"/>
   -->
+  <logger name="org.hibernate.type" level="TRACE"/>
   <root level="WARN">
     <appender-ref ref="stdout"/>
     <appender-ref ref="R"/>

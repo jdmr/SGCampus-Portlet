@@ -137,15 +137,25 @@ public class CursoDao {
                 criteria.addOrder(Order.desc("inicia"));
             }
             
-            if (params.containsKey("maestroId")) {
-                criteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
-                countCriteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
-            }
-            
-            if (params.containsKey("alumnoId")) {
-                criteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
-                countCriteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
-            }
+//            if (params.containsKey("maestroId") || params.containsKey("alumnoId")) {
+//                if (params.containsKey("maestroId") && params.containsKey("alumnoId")) {
+//                    criteria.createAlias("maestro", "m");
+//                    criteria.createAlias("alumnos", "a");
+//                    countCriteria.createAlias("maestro","m");
+//                    countCriteria.createAlias("alumnos", "a");
+//                    Disjunction x = Restrictions.disjunction();
+//                    x.add(Restrictions.eq("m.id", params.get("maestroId")));
+//                    x.add(Restrictions.eq("a.alumno.id", params.get("alumnoId")));
+//                    criteria.add(x);
+//                    countCriteria.add(x);
+//                } else if(params.containsKey("maestroId")) {
+//                    criteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
+//                    countCriteria.createCriteria("maestro").add(Restrictions.idEq(params.get("maestroId")));
+//                } else {
+//                    criteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
+//                    countCriteria.createCriteria("alumnos").add(Restrictions.eq("alumno.id", params.get("alumnoId")));
+//                }
+//            }
             
             criteria.setFirstResult(offset);
             criteria.setMaxResults(max);
@@ -498,5 +508,24 @@ public class CursoDao {
         log.debug("Buscando el contenido {}", contenidoId);
         Contenido contenido = hibernateTemplate.get(Contenido.class, contenidoId);
         return contenido;
+    }
+    
+    public Map<String, Object> obtieneMisCursos(Map<String, Object> params) {
+        StringBuilder query = new StringBuilder();
+        query.append("select distinct new Curso(curso.id, curso.nombre, curso.inicia, maestro.id, maestro.nombreCompleto, curso.tipo, curso.estatus) ");
+        query.append("from Curso curso inner join curso.maestro as maestro left outer join curso.alumnos as alumnos ");
+        query.append("where curso.comunidadId in (:comunidades) ");
+        query.append("and (curso.maestro.id = :maestroId or alumnos.alumno.id = :maestroId) ");
+        query.append("order by curso.inicia desc");
+        List<Curso> cursos = hibernateTemplate.findByNamedParam(query.toString(), 
+                new String[]{"comunidades","maestroId"}, 
+                new Object[]{params.get("comunidades"),params.get("maestroId")});
+        
+        log.debug("Cursos: {}", cursos);
+
+        Map<String, Object> resultados = new HashMap<String, Object>();
+        resultados.put("cursos", cursos);
+        resultados.put("cantidad", new Long(cursos.size()));
+        return resultados;
     }
 }

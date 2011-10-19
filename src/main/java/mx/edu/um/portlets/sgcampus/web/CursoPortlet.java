@@ -1159,7 +1159,7 @@ public class CursoPortlet {
     }
 
     @Transactional
-    @RequestMapping(params = "action=creaContenido")
+    @RequestMapping(params = "action=creaVideo")
     public void creaVideo(ActionRequest request, ActionResponse response,
             @ModelAttribute("contenido") Contenido contenido,
             BindingResult result,

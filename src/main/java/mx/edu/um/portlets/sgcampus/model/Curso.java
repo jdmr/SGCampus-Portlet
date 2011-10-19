@@ -88,6 +88,15 @@ public class Curso implements Serializable {
         this.url = url;
         this.tipo = tipo;
     }
+    
+    public Curso(Long id, String nombre, Date inicia, Long maestroId, String maestroNombre, String tipo, String estatus) {
+        this.id = id;
+        this.nombre = nombre;
+        this.inicia = inicia;
+        this.maestro = new Maestro(maestroId, maestroNombre);
+        this.tipo = tipo;
+        this.estatus = estatus;
+    }
 
     /**
      * @return the id

@@ -73,33 +73,36 @@ public class CursosMaestroPortlet {
         params.put("comunidades", comunidades.keySet());
         log.debug("Para las comunidades {}", comunidades.keySet());
 
-        log.debug("Buscando maestro");
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         Group group = GroupLocalServiceUtil.getGroup(themeDisplay.getScopeGroupId());
+        log.debug("Buscando maestro {}",group.getClassPK());
         params.put("maestroId", group.getClassPK());
+        params.put("alumnoId", group.getClassPK());
         //User perfil = UserLocalServiceUtil.getUserById(group.getClassPK());
 
         String nombreMaestro = messageSource.getMessage("yo", null, themeDisplay.getLocale());
-        Map<String, Object> resultados1 = cursoDao.busca(params);
+        Map<String, Object> resultados1 = cursoDao.obtieneMisCursos(params);
         List<Curso> cursos = (List<Curso>) resultados1.get("cursos");
         for (Curso x : cursos) {
-            Maestro maestro = x.getMaestro();
-            maestro.setNombreCompleto(nombreMaestro);
+            if (x.getMaestro().getId() == group.getClassPK()) {
+                Maestro maestro = x.getMaestro();
+                maestro.setNombreCompleto(nombreMaestro);
+            }
         }
 
         Long cantidad = (Long) resultados1.get("cantidad");
 
-        params.remove("maestroId");
-        User alumno = PortalUtil.getUser(request);
-        params.put("alumnoId", alumno.getPrimaryKey());
-        Map<String, Object> resultados2 = cursoDao.busca(params);
-        List<Curso> cursos2 = (List<Curso>) resultados2.get("cursos");
-        cursos.addAll(cursos2);
-        if (cantidad != null && resultados2.get("cantidad") != null) {
-            cantidad += (Long) resultados2.get("cantidad");
-        } else if (resultados2.get("cantidad") != null) {
-            cantidad = (Long) resultados2.get("cantidad");
-        }
+//        params.remove("maestroId");
+//        User alumno = PortalUtil.getUser(request);
+//        params.put("alumnoId", alumno.getPrimaryKey());
+//        Map<String, Object> resultados2 = cursoDao.busca(params);
+//        List<Curso> cursos2 = (List<Curso>) resultados2.get("cursos");
+//        cursos.addAll(cursos2);
+//        if (cantidad != null && resultados2.get("cantidad") != null) {
+//            cantidad += (Long) resultados2.get("cantidad");
+//        } else if (resultados2.get("cantidad") != null) {
+//            cantidad = (Long) resultados2.get("cantidad");
+//        }
 
         for (Curso x : cursos) {
             StringBuilder sb = new StringBuilder();
