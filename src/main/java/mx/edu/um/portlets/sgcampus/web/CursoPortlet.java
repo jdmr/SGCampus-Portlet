@@ -45,6 +45,7 @@ import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
+import org.springframework.web.multipart.MultipartFile;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
 import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
@@ -1164,7 +1165,80 @@ public class CursoPortlet {
             @ModelAttribute("contenido") Contenido contenido,
             BindingResult result,
             Model model, SessionStatus sessionStatus) {
-        log.debug("Creando contenido para el curso {}", contenido.getCurso().getId());
+        log.debug("Creando video para el curso {}", contenido.getCurso().getId());
+        MultipartFile video = contenido.getArchivo();
+        if (video == null) {
+            log.error("El video esta vacio");
+        } else {
+            log.debug("Subio un archivo tipo {}",video.getContentType());
+        }
+        try {
+            curso = cursoDao.refresh(contenido.getCurso());
+            contenido.setCurso(curso);
+            // Creando contenido dentro de liferay
+            ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
+            //serviceContext.setAssetTagNames(tags);
+
+            User user = PortalUtil.getUser(request);
+            ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+            Calendar displayDate;
+            if (themeDisplay != null) {
+                displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
+            } else {
+                displayDate = CalendarFactoryUtil.getCalendar();
+            }
+
+            JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
+                    user.getUserId(), // UserId
+                    curso.getComunidadId(), // GroupId
+                    "", // ArticleId
+                    true, // AutoArticleId
+                    JournalArticleConstants.DEFAULT_VERSION, // Version
+                    contenido.getNombre(), // Titulo
+                    contenido.getDescripcion(), // Descripcion
+                    contenido.getTexto(), // Contenido
+                    "general", // Tipo
+                    "", // Estructura
+                    "", // Template
+                    displayDate.get(Calendar.MONTH), // displayDateMonth,
+                    displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
+                    displayDate.get(Calendar.YEAR), // displayDateYear,
+                    displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
+                    displayDate.get(Calendar.MINUTE), // displayDateMinute,
+                    0, // expirationDateMonth, 
+                    0, // expirationDateDay, 
+                    0, // expirationDateYear, 
+                    0, // expirationDateHour, 
+                    0, // expirationDateMinute, 
+                    true, // neverExpire
+                    0, // reviewDateMonth, 
+                    0, // reviewDateDay, 
+                    0, // reviewDateYear, 
+                    0, // reviewDateHour, 
+                    0, // reviewDateMinute, 
+                    true, // neverReview
+                    true, // indexable
+                    false, // SmallImage
+                    "", // SmallImageUrl
+                    null, // SmallFile
+                    null, // Images
+                    "", // articleURL 
+                    serviceContext // serviceContext
+                    );
+            log.debug("Articulo creado creando contenido");
+            contenido.setContenidoId(article.getId());
+            cursoDao.creaContenido(contenido);
+            
+
+            // Crear video
+            
+            
+            log.debug("Contenido creado regresando a lista de contenidos");
+            response.setRenderParameter("action", "contenidoLista");
+            response.setRenderParameter("cursoId", contenido.getCurso().getId().toString());
+        } catch (Exception e) {
+            throw new RuntimeException("No se pudo crear el contenido", e);
+        }
     }
 
     public Curso getCurso() {

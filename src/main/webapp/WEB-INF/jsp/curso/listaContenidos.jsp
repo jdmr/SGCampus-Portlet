@@ -14,6 +14,8 @@
 
                         <th><liferay-ui:message key="contenido.nombre" /></th>
 
+                        <th><liferay-ui:message key="contenido.descripcion" /></th>
+
                         <th><liferay-ui:message key="contenido.orden" /></th>
 
                     </tr>
@@ -27,6 +29,8 @@
                         <tr class="${(status.count % 2) == 0 ? 'odd' : 'even'}">
 
                             <td><a href="${verContenido}">${contenido.nombre}</a></td>
+                            
+                            <td>${contenido.descripcion}</td>
                             
                             <td>${contenido.orden}</td>
 
