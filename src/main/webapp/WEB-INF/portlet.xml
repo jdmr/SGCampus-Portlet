@@ -15,6 +15,10 @@
             <name>contextConfigLocation</name>
             <value>/WEB-INF/classes/context/portlet/cursos.xml</value>
         </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
+        </init-param>
         <expiration-cache>0</expiration-cache>
         <supports>
             <mime-type>text/html</mime-type>
@@ -50,6 +54,10 @@
         <init-param>
             <name>contextConfigLocation</name>
             <value>/WEB-INF/classes/context/portlet/cursospp.xml</value>
+        </init-param>
+        <init-param>
+            <name>check-auth-token</name>
+            <value>false</value>
         </init-param>
         <expiration-cache>0</expiration-cache>
         <supports>
