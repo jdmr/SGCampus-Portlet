@@ -232,7 +232,7 @@
         });
 
         function <portlet:namespace />initEditor() { 
-            return "<%= UnicodeFormatter.toString(((mx.edu.um.portlets.sgcampus.model.Curso)request.getAttribute("curso")).getDescripcion()) %>"; 
+            return "${contenido}"; 
         }  
 
         function extractCodeFromEditor() { 

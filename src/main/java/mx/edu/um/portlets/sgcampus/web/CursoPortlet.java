@@ -7,6 +7,9 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.*;
+import com.liferay.portal.kernel.xml.Document;
+import com.liferay.portal.kernel.xml.DocumentException;
+import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
@@ -211,6 +214,7 @@ public class CursoPortlet {
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         curso = new Curso();
         model.addAttribute("curso", curso);
+        model.addAttribute("contenido", UnicodeFormatter.toString(curso.getDescripcion()));
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
@@ -239,6 +243,8 @@ public class CursoPortlet {
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
+        model.addAttribute("curso", curso);
+        model.addAttribute("contenido", UnicodeFormatter.toString(curso.getDescripcion()));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (curso.getInicia() != null) {
             String inicia = sdf.format(curso.getInicia());
@@ -299,14 +305,18 @@ public class CursoPortlet {
                 }
 
                 //String descripcion = HtmlUtil.fromInputSafe(curso.getDescripcion());
-                curso.setDescripcion(ParamUtil.getString(request, "descripcion"));
-                String descripcion = curso.getDescripcion();
-                log.debug("Contenido: {}",descripcion);
-                log.debug("Contenido2: {}",HtmlUtil.toInputSafe(descripcion));
-                log.debug("Contenido3: {}",HtmlUtil.fromInputSafe(descripcion));
-                log.debug("Contenido4: {}",HtmlUtil.escape(descripcion));
-                log.debug("Contenido5: {}",HtmlUtil.unescape(descripcion));
-                log.debug("Contenido6: {}",UnicodeFormatter.toString(descripcion));
+                //String descripcion = curso.getDescripcion();
+                String descripcion = ParamUtil.getString(request, "descripcion");
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+                sb.append(descripcion);
+                sb.append("]]></static-content></root>");
+                descripcion = sb.toString();
+                                
+                curso.setDescripcion(descripcion);
+                log.debug("Descripcion: {}", descripcion);
+                
                 JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
                         creador.getUserId(), // UserId
                         curso.getComunidadId(), // GroupId
@@ -411,7 +421,15 @@ public class CursoPortlet {
                 }
 
                 //String descripcion = HtmlUtil.fromInputSafe(curso.getDescripcion());
-                String descripcion = curso.getDescripcion();
+                String descripcion = ParamUtil.getString(request, "descripcion");
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+                sb.append(descripcion);
+                sb.append("]]></static-content></root>");
+                descripcion = sb.toString();
+                                
+                curso.setDescripcion(descripcion);
                 log.debug("Contenido: {}",descripcion);
                 JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
                         user.getUserId(), // UserId
