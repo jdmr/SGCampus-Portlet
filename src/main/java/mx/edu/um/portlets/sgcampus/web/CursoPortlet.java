@@ -686,8 +686,16 @@ public class CursoPortlet {
             try {
                 User creador = PortalUtil.getUser(request);
 
+                String texto = curso.getDescripcion();
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+                sb.append(texto);
+                sb.append("]]></static-content></root>");
+                texto = sb.toString();
+                                
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
+                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), texto);
 
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
@@ -723,8 +731,16 @@ public class CursoPortlet {
             try {
                 User creador = PortalUtil.getUser(request);
 
+                String texto = curso.getDescripcion();
+
+                StringBuilder sb = new StringBuilder();
+                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+                sb.append(texto);
+                sb.append("]]></static-content></root>");
+                texto = sb.toString();
+                                
                 JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), curso.getDescripcion());
+                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), texto);
 
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
@@ -756,6 +772,7 @@ public class CursoPortlet {
                     || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
 
                 cursoDao.elimina(id, creador.getUserId());
+                // TODO Elimina contenido
                 this.curso = null;
                 sessionStatus.setComplete();
             } else {
@@ -1091,6 +1108,14 @@ public class CursoPortlet {
                 displayDate = CalendarFactoryUtil.getCalendar();
             }
 
+            String texto = contenido.getTexto();
+
+            StringBuilder sb = new StringBuilder();
+            sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
+            sb.append(texto);
+            sb.append("]]></static-content></root>");
+            texto = sb.toString();
+
             log.debug("UsuarioId: {}", user.getUserId());
             log.debug("GroupId: {}", curso.getComunidadId());
             log.debug("Nombre: {}", contenido.getNombre());
@@ -1104,7 +1129,7 @@ public class CursoPortlet {
                     JournalArticleConstants.DEFAULT_VERSION, // Version
                     contenido.getNombre(), // Titulo
                     contenido.getDescripcion(), // Descripcion
-                    contenido.getTexto(), // Contenido
+                    texto, // Contenido
                     "general", // Tipo
                     "", // Estructura
                     "", // Template
