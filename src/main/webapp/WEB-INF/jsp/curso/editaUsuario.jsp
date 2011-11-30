@@ -5,10 +5,9 @@
         <portlet:param name="action" value="actualizaUsuario"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
+    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
         <form:hidden path="id" />
         <form:hidden path="version" />
-        <input type="hidden" id="<portlet:namespace />descripcionId" name="<portlet:namespace />descripcionId" value="${curso.descripcionId}" />
         <div class="dialog">
             <table>
                 <tbody>
@@ -25,11 +24,40 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
+                            <label for="objetivo"><liferay-ui:message key="curso.objetivo" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="objetivo" />
+                            <form:errors cssClass="errors" path="objetivo" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <liferay-ui:input-editor />
-                            <input name="<portlet:namespace />descripcion" type="hidden" value="" />
+                            <form:textarea path="descripcion" />
+                            <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="temario"><liferay-ui:message key="curso.temario" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="temario" />
+                            <form:errors cssClass="errors" path="temario" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="requerimientos"><liferay-ui:message key="curso.requerimientos" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="requerimientos" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -135,14 +163,5 @@
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
         });
-
-        function <portlet:namespace />initEditor() { 
-            return "<%= UnicodeFormatter.toString(((mx.edu.um.portlets.sgcampus.model.Curso)request.getAttribute("curso")).getDescripcion()) %>"; 
-        }  
-
-        function extractCodeFromEditor() { 
-            var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />editor.getHTML();  
-            return true;
-        }
     </script>
 </div>

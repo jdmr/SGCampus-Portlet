@@ -27,7 +27,10 @@ public class CursoValidator implements Validator {
     public void validate(Object target, Errors errors) {
         log.debug("Validando curso");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "nombre", "curso.nombre.requerido");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "objetivo", "curso.objetivo.requerido");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "descripcion", "curso.descripcion.requerida");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "temario", "curso.temario.requerido");
+        ValidationUtils.rejectIfEmptyOrWhitespace(errors, "requerimientos", "curso.requerimientos.requeridos");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "comunidadId", "curso.comunidad.requerida");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "telefono", "curso.telefono.requerido");
         ValidationUtils.rejectIfEmptyOrWhitespace(errors, "estado", "curso.estado.requerido");

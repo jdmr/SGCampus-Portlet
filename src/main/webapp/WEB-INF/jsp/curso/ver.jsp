@@ -1,7 +1,11 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
     <div class="dialog">
-        <div>${curso.descripcion}</div>
+        <h1>${curso.nombre}</h1>
+        <h2>${curso.objetivo}</h2>
+        <p>${curso.descripcion}</p>
+        <p>${curso.temario}</p>
+        <p>${curso.requerimientos}</p>
     </div>
     <div class="list">
         <table id="<portlet:namespace />sesiones">

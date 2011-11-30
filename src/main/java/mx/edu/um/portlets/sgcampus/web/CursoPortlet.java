@@ -7,9 +7,6 @@ import com.liferay.portal.kernel.json.JSONArray;
 import com.liferay.portal.kernel.json.JSONFactoryUtil;
 import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.*;
-import com.liferay.portal.kernel.xml.Document;
-import com.liferay.portal.kernel.xml.DocumentException;
-import com.liferay.portal.kernel.xml.SAXReaderUtil;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
 import com.liferay.portal.service.ServiceContext;
@@ -244,7 +241,8 @@ public class CursoPortlet {
         model.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         model.addAttribute("tipos", this.getTipos(themeDisplay));
         model.addAttribute("curso", curso);
-        model.addAttribute("contenido", UnicodeFormatter.toString(curso.getDescripcion()));
+        model.addAttribute("objetivo", UnicodeFormatter.toString(curso.getObjetivo()));
+        model.addAttribute("descripcion", UnicodeFormatter.toString(curso.getDescripcion()));
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (curso.getInicia() != null) {
             String inicia = sdf.format(curso.getInicia());
@@ -303,59 +301,6 @@ public class CursoPortlet {
                 } else {
                     displayDate = CalendarFactoryUtil.getCalendar();
                 }
-
-                //String descripcion = HtmlUtil.fromInputSafe(curso.getDescripcion());
-                //String descripcion = curso.getDescripcion();
-                String descripcion = ParamUtil.getString(request, "descripcion");
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
-                sb.append(descripcion);
-                sb.append("]]></static-content></root>");
-                descripcion = sb.toString();
-                                
-                curso.setDescripcion(descripcion);
-                log.debug("Descripcion: {}", descripcion);
-                
-                JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
-                        creador.getUserId(), // UserId
-                        curso.getComunidadId(), // GroupId
-                        "", // ArticleId
-                        true, // AutoArticleId
-                        JournalArticleConstants.DEFAULT_VERSION, // Version
-                        curso.getNombre(), // Titulo
-                        null, // Descripcion
-                        descripcion, // Contenido
-                        "general", // Tipo
-                        "", // Estructura
-                        "", // Template
-                        displayDate.get(Calendar.MONTH), // displayDateMonth,
-                        displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
-                        displayDate.get(Calendar.YEAR), // displayDateYear,
-                        displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
-                        displayDate.get(Calendar.MINUTE), // displayDateMinute,
-                        0, // expirationDateMonth, 
-                        0, // expirationDateDay, 
-                        0, // expirationDateYear, 
-                        0, // expirationDateHour, 
-                        0, // expirationDateMinute, 
-                        true, // neverExpire
-                        0, // reviewDateMonth, 
-                        0, // reviewDateDay, 
-                        0, // reviewDateYear, 
-                        0, // reviewDateHour, 
-                        0, // reviewDateMinute, 
-                        true, // neverReview
-                        true, // indexable
-                        false, // SmallImage
-                        "", // SmallImageUrl
-                        null, // SmallFile
-                        null, // Images
-                        "", // articleURL 
-                        serviceContext // serviceContext
-                        );
-
-                curso.setDescripcionId(article.getPrimaryKey());
 
                 curso = cursoDao.crea(curso, creador.getUserId());
 
@@ -420,58 +365,51 @@ public class CursoPortlet {
                     displayDate = CalendarFactoryUtil.getCalendar();
                 }
 
-                //String descripcion = HtmlUtil.fromInputSafe(curso.getDescripcion());
-                String descripcion = ParamUtil.getString(request, "descripcion");
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
-                sb.append(descripcion);
-                sb.append("]]></static-content></root>");
-                descripcion = sb.toString();
-                                
-                curso.setDescripcion(descripcion);
-                log.debug("Contenido: {}",descripcion);
-                JournalArticle article = JournalArticleLocalServiceUtil.addArticle(
-                        user.getUserId(), // UserId
-                        curso.getComunidadId(), // GroupId
-                        "", // ArticleId
-                        true, // AutoArticleId
-                        JournalArticleConstants.DEFAULT_VERSION, // Version
-                        curso.getNombre(), // Titulo
-                        null, // Descripcion
-                        descripcion, // Contenido
-                        "general", // Tipo
-                        "", // Estructura
-                        "", // Template
-                        displayDate.get(Calendar.MONTH), // displayDateMonth,
-                        displayDate.get(Calendar.DAY_OF_MONTH), // displayDateDay,
-                        displayDate.get(Calendar.YEAR), // displayDateYear,
-                        displayDate.get(Calendar.HOUR_OF_DAY), // displayDateHour,
-                        displayDate.get(Calendar.MINUTE), // displayDateMinute,
-                        0, // expirationDateMonth, 
-                        0, // expirationDateDay, 
-                        0, // expirationDateYear, 
-                        0, // expirationDateHour, 
-                        0, // expirationDateMinute, 
-                        true, // neverExpire
-                        0, // reviewDateMonth, 
-                        0, // reviewDateDay, 
-                        0, // reviewDateYear, 
-                        0, // reviewDateHour, 
-                        0, // reviewDateMinute, 
-                        true, // neverReview
-                        true, // indexable
-                        false, // SmallImage
-                        "", // SmallImageUrl
-                        null, // SmallFile
-                        null, // Images
-                        "", // articleURL 
-                        serviceContext // serviceContext
-                        );
-
-                curso.setDescripcionId(article.getPrimaryKey());
-
                 curso = cursoDao.crea(curso, user.getUserId());
+
+                log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
+                Sesion nuevaSesion;
+                for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
+                    switch (i) {
+                        case 1:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 2, "18:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 4, "18:00 CST");
+                            break;
+                        case 2:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 2, "20:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 4, "20:00 CST");
+                            break;
+                        case 3:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 3, "18:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 5, "18:00 CST");
+                            break;
+                        case 4:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 3, "20:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 5, "20:00 CST");
+                    }
+                }
+
+
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
                 sessionStatus.setComplete();
@@ -483,6 +421,7 @@ public class CursoPortlet {
                 response.setRenderParameter("action", "nuevoError");
             }
         } else {
+            log.debug("Errors: {} --- {}", result.getFieldErrors(), result.getGlobalErrors());
             log.error("No se pudo crear el curso");
             response.setRenderParameter("action", "nuevoError");
         }
@@ -538,15 +477,10 @@ public class CursoPortlet {
             @RequestParam(value = "cursoId") Long cursoId,
             Model modelo) throws PortalException, SystemException {
 
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+
         AlumnoCurso alumnoCurso = null;
         curso = cursoDao.obtiene(cursoId);
-
-        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-        AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
-        String contenido2 = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-        log.debug("Contenido: {}",contenido2);
-        curso.setDescripcion(contenido2);
 
         modelo.addAttribute("curso", curso);
         User creador = PortalUtil.getUser(request);
@@ -563,10 +497,10 @@ public class CursoPortlet {
         if (!puedeEditar && !curso.getEstatus().equals(Constantes.ACTIVO)) {
             return lista(request, null, null, null, modelo);
         }
-        
+
         if (creador != null) {
             // Si no es el maestro
-            if (creador.getUserId() != curso.getMaestro().getId()) { 
+            if (creador.getUserId() != curso.getMaestro().getId()) {
                 log.debug("Buscando alumno por {}", creador.getUserId());
                 Alumno alumno = cursoDao.obtieneAlumno(creador);
                 if (alumno == null) {
@@ -616,11 +550,6 @@ public class CursoPortlet {
         curso = cursoDao.obtiene(cursoId);
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-        JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-        AssetEntryServiceUtil.incrementViewCounter(JournalArticle.class.getName(), ja.getResourcePrimKey());
-        String contenido2 = JournalArticleLocalServiceUtil.getArticleContent(ja.getGroupId(), ja.getArticleId(), "view", "" + themeDisplay.getLocale(), themeDisplay);
-        curso.setDescripcion(contenido2);
-
         modelo.addAttribute("curso", curso);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", this.getTipos(themeDisplay));
@@ -686,17 +615,6 @@ public class CursoPortlet {
             try {
                 User creador = PortalUtil.getUser(request);
 
-                String texto = curso.getDescripcion();
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
-                sb.append(texto);
-                sb.append("]]></static-content></root>");
-                texto = sb.toString();
-                                
-                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), texto);
-
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -730,17 +648,6 @@ public class CursoPortlet {
         if (!result.hasErrors()) {
             try {
                 User creador = PortalUtil.getUser(request);
-
-                String texto = curso.getDescripcion();
-
-                StringBuilder sb = new StringBuilder();
-                sb.append("<?xml version='1.0' encoding='UTF-8'?><root><static-content><![CDATA[");
-                sb.append(texto);
-                sb.append("]]></static-content></root>");
-                texto = sb.toString();
-                                
-                JournalArticle ja = JournalArticleLocalServiceUtil.getArticle(curso.getDescripcionId());
-                JournalArticleLocalServiceUtil.updateContent(ja.getGroupId(), ja.getArticleId(), ja.getVersion(), texto);
 
                 cursoDao.actualiza(curso, creador.getUserId());
                 response.setRenderParameter("action", "ver");
@@ -1213,7 +1120,7 @@ public class CursoPortlet {
         if (video == null) {
             log.error("El video esta vacio");
         } else {
-            log.debug("Subio un archivo tipo {}",video.getContentType());
+            log.debug("Subio un archivo tipo {}", video.getContentType());
         }
         try {
             curso = cursoDao.refresh(contenido.getCurso());
@@ -1271,11 +1178,11 @@ public class CursoPortlet {
             log.debug("Articulo creado creando contenido");
             contenido.setContenidoId(article.getId());
             cursoDao.creaContenido(contenido);
-            
+
 
             // Crear video
-            
-            
+
+
             log.debug("Contenido creado regresando a lista de contenidos");
             response.setRenderParameter("action", "contenidoLista");
             response.setRenderParameter("cursoId", contenido.getCurso().getId().toString());
@@ -1332,5 +1239,17 @@ public class CursoPortlet {
 
     public void setContenido(Contenido contenido) {
         this.contenido = contenido;
+    }
+
+    private void creaSesion(Sesion sesion, Integer dia, String hora) {
+        sesion.setDia(dia);
+        try {
+            SimpleDateFormat sdf = new SimpleDateFormat("HH:mm Z");
+            sesion.setHoraInicial(sdf.parse(hora));
+        } catch (ParseException ex) {
+            log.error("No se pudo leer la hora inicial", ex);
+        }
+        sesion.setDuracion(120);
+        cursoDao.creaSesion(sesion);
     }
 }

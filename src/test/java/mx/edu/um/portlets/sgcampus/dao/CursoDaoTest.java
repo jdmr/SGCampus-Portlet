@@ -63,7 +63,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, 1L, nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -72,7 +72,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, new Long(i), nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -86,6 +86,8 @@ public class CursoDaoTest {
         Assert.assertNotNull(resultado);
         List<Curso> cursos = (List<Curso>) resultado.get("cursos");
         Long cantidad = (Long) resultado.get("cantidad");
+        log.debug("CURSOS: {}",cursos);
+        log.debug("CANTIDAD: {}",cantidad);
         Assert.assertNotNull(cursos);
         Assert.assertNotNull(cantidad);
         Assert.assertTrue(cantidad >= 20);
@@ -114,7 +116,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, new Long(i), nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -123,7 +125,7 @@ public class CursoDaoTest {
             sb.append("TEST");
             sb.append(i);
             String nombre = sb.toString();
-            Curso curso = new Curso(nombre, nombre, new Long(i+20), nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+            Curso curso = new Curso(nombre, nombre, nombre, 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
             cursoDao.crea(curso, 1L);
         }
 
@@ -138,6 +140,8 @@ public class CursoDaoTest {
         List<Curso> cursos = (List<Curso>) resultado.get("cursos");
         Long cantidad = (Long) resultado.get("cantidad");
         log.debug("RESULTADOS: {}", resultado);
+        log.debug("CURSOS: {}",cursos);
+        log.debug("CANTIDAD: {}",cantidad);
         Assert.assertNotNull(cursos);
         Assert.assertNotNull(cantidad);
         Assert.assertTrue(cantidad == 11);
@@ -159,11 +163,11 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         cursoDao.crea(curso, 1L);
 
         // prueba
-        Curso curso2 = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso2 = new Curso("TEST-1", "TEST-1", "TEST-1", 2L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso2, 1L);
         Assert.assertNotNull(curso2);
         Assert.assertNotNull(curso2.getId());
@@ -184,7 +188,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         // prueba
@@ -214,7 +218,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         // prueba
@@ -239,7 +243,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
         log.debug("inicializado");
 
@@ -283,7 +287,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
         log.debug("inicializado");
 
@@ -327,7 +331,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
@@ -376,7 +380,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
@@ -450,7 +454,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         curso = cursoDao.crea(curso, 1L);
 
         Alumno alumno = new Alumno();
@@ -506,7 +510,7 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
         etiquetas.add(new Etiqueta("TEST1", 1L));
         etiquetas.add(new Etiqueta("TEST2", 1L));
@@ -533,8 +537,8 @@ public class CursoDaoTest {
         maestro.setTelefono("8260000000");
         maestro.setFechaIngreso(new Date());
         maestro = cursoDao.registraMaestro(maestro);
-        Curso curso = new Curso("TEST-1", "TEST-1", 1L, "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
-        Curso curso2 = new Curso("TEST-2", "TEST-2", 2L, "TEST-2", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso = new Curso("TEST-1", "TEST-1", "TEST-1", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
+        Curso curso2 = new Curso("TEST-2", "TEST-2", "TEST-2", 1L, "TEST", maestro, date.toDate(), date2.toDate(), "http://www.yahoo.com", "PATROCINADO");
         Set<Etiqueta> etiquetas = new HashSet<Etiqueta>();
         etiquetas.add(new Etiqueta("TEST", 1L));
         etiquetas.add(new Etiqueta("PRUEBA", 1L));

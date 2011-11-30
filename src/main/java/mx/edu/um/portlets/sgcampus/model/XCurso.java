@@ -27,8 +27,6 @@ public class XCurso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(name = "descripcion_id", nullable = false)
-    private Long descripcionId;
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
@@ -120,20 +118,6 @@ public class XCurso implements Serializable {
      */
     public void setNombre(String nombre) {
         this.nombre = nombre;
-    }
-
-    /**
-     * @return the descripcionId
-     */
-    public Long getDescripcionId() {
-        return descripcionId;
-    }
-
-    /**
-     * @param descripcionId the descripcionId to set
-     */
-    public void setDescripcionId(Long descripcionId) {
-        this.descripcionId = descripcionId;
     }
 
     /**

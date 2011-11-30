@@ -24,10 +24,14 @@ public class Curso implements Serializable {
     private String codigo;
     @Column(length = 128, nullable = false)
     private String nombre;
-    @Column(name = "descripcion_id", nullable = false)
-    private Long descripcionId;
-    @Transient
+    @Column(length = 1000)
+    private String objetivo = "";
+    @Column(length = 4000)
     private String descripcion = "";
+    @Column(length = 4000)
+    private String temario = "";
+    @Column(length = 1000)
+    private String requerimientos = "";
     @Column(name = "comunidad_id", nullable = false)
     private Long comunidadId;
     @Column(name = "comunidad_nombre", length = 128)
@@ -75,10 +79,9 @@ public class Curso implements Serializable {
     public Curso() {
     }
 
-    public Curso(String codigo, String nombre, Long descripcionId, String descripcion, Long comunidadId, String comunidadNombre, Maestro maestro, Date inicia, Date termina, String url, String tipo) {
+    public Curso(String codigo, String nombre, String descripcion, Long comunidadId, String comunidadNombre, Maestro maestro, Date inicia, Date termina, String url, String tipo) {
         this.codigo = codigo;
         this.nombre = nombre;
-        this.descripcionId = descripcionId;
         this.descripcion = descripcion;
         this.comunidadId = comunidadId;
         this.comunidadNombre = comunidadNombre;
@@ -155,17 +158,17 @@ public class Curso implements Serializable {
     }
 
     /**
-     * @return the descripcionId
+     * @return the objetivo
      */
-    public Long getDescripcionId() {
-        return descripcionId;
+    public String getObjetivo() {
+        return objetivo;
     }
 
     /**
-     * @param descripcionId the descripcionId to set
+     * @param objetivo the objetivo to set
      */
-    public void setDescripcionId(Long descripcionId) {
-        this.descripcionId = descripcionId;
+    public void setObjetivo(String objetivo) {
+        this.objetivo = objetivo;
     }
 
     /**
@@ -180,6 +183,34 @@ public class Curso implements Serializable {
      */
     public void setDescripcion(String descripcion) {
         this.descripcion = descripcion;
+    }
+
+    /**
+     * @return the temario
+     */
+    public String getTemario() {
+        return temario;
+    }
+
+    /**
+     * @param temario the temario to set
+     */
+    public void setTemario(String temario) {
+        this.temario = temario;
+    }
+
+    /**
+     * @return the requerimientos
+     */
+    public String getRequerimientos() {
+        return requerimientos;
+    }
+
+    /**
+     * @param requerimientos the requerimientos to set
+     */
+    public void setRequerimientos(String requerimientos) {
+        this.requerimientos = requerimientos;
     }
 
     /**
@@ -463,8 +494,6 @@ public class Curso implements Serializable {
     }
 
     /**
-     * Asigna URL para llevar a página que contiene portlet para ver el curso
-     * 
      * @return the verCurso
      */
     public String getVerCurso() {
@@ -472,8 +501,6 @@ public class Curso implements Serializable {
     }
 
     /**
-     * Obtiene URL para llevar a página que contiene portlet para ver el curso
-     * 
      * @param verCurso the verCurso to set
      */
     public void setVerCurso(String verCurso) {

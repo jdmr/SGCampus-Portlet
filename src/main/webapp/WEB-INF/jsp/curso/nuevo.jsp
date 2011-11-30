@@ -5,7 +5,7 @@
         <portlet:param name="action" value="crea"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
+    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
         <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${curso.maestro.id}" />
         <div class="dialog">
             <table>
@@ -33,17 +33,41 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
+                            <label for="objetivo"><liferay-ui:message key="curso.objetivo" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="objetivo" />
+                            <form:errors cssClass="errors" path="objetivo" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
                             <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <liferay-ui:input-editor name='<%= renderResponse.getNamespace() + "structure_el_TextAreaField_content" %>' 
-                                                     editorImpl="editor.wysiwyg.portal-web.docroot.html.portlet.journal.edit_article_content.jsp" 
-                                                     toolbarSet="liferay-article" 
-                                                     width="100%" 
-                                                     />
-                            <input name="<portlet:namespace />descripcion" type="hidden" value="" />
+                            <form:textarea path="descripcion" />
                             <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
-                            <!--input type="button" onclick="javascript:verContenido();" value="Ver Contenido" /-->
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="temario"><liferay-ui:message key="curso.temario" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="temario" />
+                            <form:errors cssClass="errors" path="temario" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="requerimientos"><liferay-ui:message key="curso.requerimientos" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:textarea path="requerimientos" />
+                            <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
                         </td>
                     </tr>
 
@@ -230,20 +254,5 @@
             
             $("input#codigo").focus();
         });
-
-        function <portlet:namespace />initEditor() { 
-            return "${contenido}"; 
-        }  
-
-        function extractCodeFromEditor() { 
-            var x = document.cursoForm.<portlet:namespace />descripcion.value = window.<portlet:namespace />structure_el_TextAreaField_content.getHTML();  
-            return true;
-        }
-        
-        function verContenido() {
-            alert("HTML: "+window.<portlet:namespace />structure_el_TextAreaField_content.getHTML());
-            alert("HTML2:"+ window.<portlet:namespace />structure_el_TextAreaField_content.getHTML(true));
-            alert("XHTML:"+window.<portlet:namespace />structure_el_TextAreaField_content.getXHTML());
-        }
     </script>
 </div>
