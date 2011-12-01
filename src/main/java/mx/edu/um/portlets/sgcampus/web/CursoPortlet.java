@@ -290,19 +290,49 @@ public class CursoPortlet {
                 }
                 curso.setMaestro(maestro);
 
-                // Creando contenido dentro de liferay
-                ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
-                log.debug("TAGS: {}", tags);
-                serviceContext.setAssetTagNames(tags);
-
-                Calendar displayDate;
-                if (themeDisplay != null) {
-                    displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
-                } else {
-                    displayDate = CalendarFactoryUtil.getCalendar();
-                }
-
                 curso = cursoDao.crea(curso, creador.getUserId());
+
+                log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
+                Sesion nuevaSesion;
+                for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
+                    switch (i) {
+                        case 1:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 2, "18:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 4, "18:00 CST");
+                            break;
+                        case 2:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 2, "20:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 4, "20:00 CST");
+                            break;
+                        case 3:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 3, "18:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 5, "18:00 CST");
+                            break;
+                        case 4:
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 3, "20:00 CST");
+
+                            nuevaSesion = new Sesion();
+                            nuevaSesion.setCurso(curso);
+                            creaSesion(nuevaSesion, 5, "20:00 CST");
+                    }
+                }
 
                 response.setRenderParameter("action", "ver");
                 response.setRenderParameter("cursoId", curso.getId().toString());
@@ -357,13 +387,6 @@ public class CursoPortlet {
                 // Creando contenido dentro de liferay
                 ServiceContext serviceContext = ServiceContextFactory.getInstance(JournalArticle.class.getName(), request);
                 serviceContext.setAssetTagNames(tags);
-
-                Calendar displayDate;
-                if (themeDisplay != null) {
-                    displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
-                } else {
-                    displayDate = CalendarFactoryUtil.getCalendar();
-                }
 
                 curso = cursoDao.crea(curso, user.getUserId());
 

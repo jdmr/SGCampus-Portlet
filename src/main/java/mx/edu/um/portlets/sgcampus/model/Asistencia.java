@@ -19,6 +19,8 @@ public class Asistencia implements Serializable {
     private Integer version;
     @ManyToOne
     private AlumnoCurso alumnoCurso;
+    @ManyToOne
+    private AlumnoWebinar alumnoWebinar;
     @Temporal(javax.persistence.TemporalType.TIMESTAMP)
     @Column(nullable = false)
     private Date fecha;
@@ -28,6 +30,11 @@ public class Asistencia implements Serializable {
 
     public Asistencia(AlumnoCurso alumnoCurso, Date fecha) {
         this.alumnoCurso = alumnoCurso;
+        this.fecha = fecha;
+    }
+
+    public Asistencia(AlumnoWebinar alumnoWebinar, Date fecha) {
+        this.alumnoWebinar = alumnoWebinar;
         this.fecha = fecha;
     }
 
@@ -74,6 +81,20 @@ public class Asistencia implements Serializable {
     }
 
     /**
+     * @return the alumnoWebinar
+     */
+    public AlumnoWebinar getAlumnoWebinar() {
+        return alumnoWebinar;
+    }
+
+    /**
+     * @param alumnoWebinar the alumnoWebinar to set
+     */
+    public void setAlumnoWebinar(AlumnoWebinar alumnoWebinar) {
+        this.alumnoWebinar = alumnoWebinar;
+    }
+
+    /**
      * @return the fecha
      */
     public Date getFecha() {
@@ -111,6 +132,7 @@ public class Asistencia implements Serializable {
 
     @Override
     public String toString() {
-        return "Asistencia{" + "alumnoCurso=" + alumnoCurso + ", fecha=" + fecha + '}';
+        return "Asistencia{" + "id=" + id + ", alumnoCurso=" + alumnoCurso + ", alumnoWebinar=" + alumnoWebinar + ", fecha=" + fecha + '}';
     }
+
 }

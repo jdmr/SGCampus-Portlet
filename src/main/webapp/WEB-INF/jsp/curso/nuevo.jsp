@@ -67,7 +67,19 @@
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="requerimientos" />
-                            <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
+                            <form:errors cssClass="errors" path="requerimientos" cssStyle="color:red;" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
+                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="curso.sesiones" /></label>
+                        </td>
+                        <td valign="top" class="value" style="text-align: left;">
+                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> Lun y Mie 18:00 a 20:00 hrs<br/>
+                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> Lun y Mie 20:00 a 22:00 hrs<br/>
+                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="3" style="width:10px;" /> Mar y Jue 18:00 a 20:00 hrs<br/>
+                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="4" style="width:10px;" /> Mar y Jue 20:00 a 22:00 hrs<br/>
                         </td>
                     </tr>
 

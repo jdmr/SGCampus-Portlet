@@ -42,7 +42,6 @@ public class CursoDaoTest {
     public CursoDaoTest() {
     }
 
-    @Test
     public void debieraObtenerListaDeCursos() {
         // Inicializacion
         StringBuilder sb;
@@ -94,7 +93,6 @@ public class CursoDaoTest {
         Assert.assertTrue(cursos.size() == 10);
     }
 
-    @Test
     public void debieraObtenerListaFiltradaDeCursos() {
         // Inicializacion
         StringBuilder sb;

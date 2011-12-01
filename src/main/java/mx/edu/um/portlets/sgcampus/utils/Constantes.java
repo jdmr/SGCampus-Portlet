@@ -20,4 +20,5 @@ public class Constantes {
     public static final String PATROCINADO = "PATROCINADO";
     public static final String PAGADO = "PAGADO";
     public static final String ACTIVO = "ACTIVO";
+    public static final String WEBINAR = "WEBINAR";
 }
