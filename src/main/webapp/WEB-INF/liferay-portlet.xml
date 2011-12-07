@@ -23,6 +23,15 @@
         <header-portlet-css>/css/main.css</header-portlet-css>
         <header-portlet-javascript>/js/main.js</header-portlet-javascript>
     </portlet>
+    <portlet>
+        <portlet-name>Webinars</portlet-name>
+        <instanceable>false</instanceable>
+        <header-portlet-css>/css/main.css</header-portlet-css>
+        <header-portlet-css>/css/custom-theme/jquery-ui-1.8.10.custom.css</header-portlet-css>
+        <header-portlet-javascript>/js/jquery-1.6.2.min.js</header-portlet-javascript>
+        <header-portlet-javascript>/js/jquery-ui-1.8.10.custom.min.js</header-portlet-javascript>
+        <header-portlet-javascript>/js/main.js</header-portlet-javascript>
+    </portlet>
     <role-mapper>
         <role-name>administrator</role-name>
         <role-link>Administrator</role-link>

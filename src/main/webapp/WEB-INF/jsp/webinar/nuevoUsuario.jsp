@@ -2,24 +2,13 @@
 <div class="Curso">
     <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
-        <portlet:param name="action" value="crea"/>
+        <portlet:param name="action" value="creaUsuario"/>
     </portlet:actionURL>
 
     <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
-        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${curso.maestro.id}" />
         <div class="dialog">
             <table>
                 <tbody>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="codigo"><liferay-ui:message key="curso.codigo" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:input path="codigo" maxlength="32"/>
-                            <form:errors cssClass="errors" path="codigo" cssStyle="color:red;" />
-                        </td>
-                    </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
@@ -85,32 +74,6 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />maestroNombre"><liferay-ui:message key="curso.maestro" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <div id="<portlet:namespace />maestroDiv">
-                                <c:if test="${curso.maestro != null}">
-                                    <table>
-                                        <thead>
-                                            <tr>
-                                                <th><liferay-ui:message key="nombre" /></th>
-                                            </tr>
-                                        </thead>
-                                        <tbody>
-                                            <tr>
-                                                <td>${curso.maestro.nombreCompleto}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </c:if>
-                            </div>
-                            <input type="text" name="maestroNombre" id="<portlet:namespace />maestroNombre" value="" />
-                            <form:errors cssClass="errors" path="maestro" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
                             <label for="<portlet:namespace />inicia"><liferay-ui:message key="curso.inicia" /></label>
                         </td>
                         <td valign="top" class="value">
@@ -126,51 +89,6 @@
                         <td valign="top" class="value">
                             <input type="text" name="termina" id="<portlet:namespace />termina" value="${termina}" />
                             <form:errors cssClass="errors" path="termina" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />url"><liferay-ui:message key="curso.url" /></label>
-                        </td>
-                        <td valign="top" class="value">
-                            <form:input id="<portlet:namespace />url" path="url" maxlength="254"/>
-                            <form:errors cssClass="errors" path="url" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td colspan="2" style="padding:0;">
-                            <table style="border:0;">
-                                <tbody>
-                                    <tr class="prop">
-                                        <td valign="top" class="name">
-                                            <label for="tipo"><liferay-ui:message key="curso.tipo" /></label>
-                                        </td>
-                                        <td valign="top" class="value">
-                                            <form:select path="tipo" items="${tipos}" />
-                                            <form:errors cssClass="errors" path="tipo" />
-                                        </td>
-                                    </tr>
-                                </tbody>
-                            </table>
-                            <div id="tipoDiv"
-                                 <c:if test="${curso.tipo == 'PATROCINADO'}">style="display:none;"</c:if>
-                                 >
-                                <table style="border:0;">
-                                    <tbody>
-                                        <tr class="prop">
-                                            <td valign="top" class="name">
-                                                <label for="precio"><liferay-ui:message key="curso.precio" /></label>
-                                            </td>
-                                            <td valign="top" class="value">
-                                                <form:input path="precio" />
-                                                <form:errors cssClass="errors" path="precio" />
-                                            </td>
-                                        </tr>
-                                    </tbody>
-                                </table>
-                            </div>
                         </td>
                     </tr>
 
@@ -245,15 +163,7 @@
             });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
-            $("select#tipo").change(function() {
-                if($(this).val() == 'PATROCINADO') {
-                    $("div#tipoDiv").slideUp();
-                } else {
-                    $("div#tipoDiv").slideDown();
-                }
-            });
-            
-            $("input#codigo").focus();
+            $("input#nombre").focus();
         });
     </script>
 </div>

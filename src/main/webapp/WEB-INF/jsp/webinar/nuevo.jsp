@@ -1,19 +1,19 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
-    <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
+    <h1><liferay-ui:message key="webinar.nuevo.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
         <portlet:param name="action" value="crea"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
-        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${curso.maestro.id}" />
+    <form:form name="webinarForm" commandName="webinar" method="post" action="${actionUrl}" >
+        <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${webinar.maestro.id}" />
         <div class="dialog">
             <table>
                 <tbody>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="codigo"><liferay-ui:message key="curso.codigo" /></label>
+                            <label for="codigo"><liferay-ui:message key="webinar.codigo" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:input path="codigo" maxlength="32"/>
@@ -23,7 +23,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="nombre"><liferay-ui:message key="curso.nombre" /></label>
+                            <label for="nombre"><liferay-ui:message key="webinar.nombre" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:input path="nombre" maxlength="128"/>
@@ -33,7 +33,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="objetivo"><liferay-ui:message key="curso.objetivo" /></label>
+                            <label for="objetivo"><liferay-ui:message key="webinar.objetivo" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="objetivo" />
@@ -43,7 +43,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
+                            <label for="descripcion"><liferay-ui:message key="webinar.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="descripcion" />
@@ -53,7 +53,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="temario"><liferay-ui:message key="curso.temario" /></label>
+                            <label for="temario"><liferay-ui:message key="webinar.temario" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="temario" />
@@ -63,7 +63,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="requerimientos"><liferay-ui:message key="curso.requerimientos" /></label>
+                            <label for="requerimientos"><liferay-ui:message key="webinar.requerimientos" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="requerimientos" />
@@ -73,7 +73,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="curso.sesiones" /></label>
+                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="webinar.sesiones" /></label>
                         </td>
                         <td valign="top" class="value" style="text-align: left;">
                             <input type="checkbox" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> Lun y Mie 18:00 a 20:00 hrs<br/>
@@ -85,11 +85,11 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />maestroNombre"><liferay-ui:message key="curso.maestro" /></label>
+                            <label for="<portlet:namespace />maestroNombre"><liferay-ui:message key="webinar.maestro" /></label>
                         </td>
                         <td valign="top" class="value">
                             <div id="<portlet:namespace />maestroDiv">
-                                <c:if test="${curso.maestro != null}">
+                                <c:if test="${webinar.maestro != null}">
                                     <table>
                                         <thead>
                                             <tr>
@@ -98,7 +98,7 @@
                                         </thead>
                                         <tbody>
                                             <tr>
-                                                <td>${curso.maestro.nombreCompleto}</td>
+                                                <td>${webinar.maestro.nombreCompleto}</td>
                                             </tr>
                                         </tbody>
                                     </table>
@@ -111,7 +111,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />inicia"><liferay-ui:message key="curso.inicia" /></label>
+                            <label for="<portlet:namespace />inicia"><liferay-ui:message key="webinar.inicia" /></label>
                         </td>
                         <td valign="top" class="value">
                             <input type="text" name="inicia" id="<portlet:namespace />inicia" value="${inicia}" />
@@ -121,7 +121,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />termina"><liferay-ui:message key="curso.termina" /></label>
+                            <label for="<portlet:namespace />termina"><liferay-ui:message key="webinar.termina" /></label>
                         </td>
                         <td valign="top" class="value">
                             <input type="text" name="termina" id="<portlet:namespace />termina" value="${termina}" />
@@ -131,7 +131,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />url"><liferay-ui:message key="curso.url" /></label>
+                            <label for="<portlet:namespace />url"><liferay-ui:message key="webinar.url" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:input id="<portlet:namespace />url" path="url" maxlength="254"/>
@@ -145,7 +145,7 @@
                                 <tbody>
                                     <tr class="prop">
                                         <td valign="top" class="name">
-                                            <label for="tipo"><liferay-ui:message key="curso.tipo" /></label>
+                                            <label for="tipo"><liferay-ui:message key="webinar.tipo" /></label>
                                         </td>
                                         <td valign="top" class="value">
                                             <form:select path="tipo" items="${tipos}" />
@@ -161,7 +161,7 @@
                                     <tbody>
                                         <tr class="prop">
                                             <td valign="top" class="name">
-                                                <label for="precio"><liferay-ui:message key="curso.precio" /></label>
+                                                <label for="precio"><liferay-ui:message key="webinar.precio" /></label>
                                             </td>
                                             <td valign="top" class="value">
                                                 <form:input path="precio" />
@@ -176,7 +176,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="comunidadId"><liferay-ui:message key="curso.comunidad" /></label>
+                            <label for="comunidadId"><liferay-ui:message key="webinar.comunidad" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:select path="comunidadId" items="${comunidades}" />
@@ -192,30 +192,30 @@
                 <tbody>
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />telefono"><liferay-ui:message key="curso.telefono" /></label>
+                            <label for="<portlet:namespace />telefono"><liferay-ui:message key="webinar.telefono" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="telefono" id="<portlet:namespace />telefono" value="${curso.telefono}" />
+                            <input type="text" name="telefono" id="<portlet:namespace />telefono" value="${webinar.telefono}" />
                             <form:errors cssClass="errors" path="telefono" cssStyle="color:red;" />
                         </td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />estado"><liferay-ui:message key="curso.estado" /></label>
+                            <label for="<portlet:namespace />estado"><liferay-ui:message key="webinar.estado" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="estado" id="<portlet:namespace />estado" value="${curso.estado}" />
+                            <input type="text" name="estado" id="<portlet:namespace />estado" value="${webinar.estado}" />
                             <form:errors cssClass="errors" path="estado" cssStyle="color:red;" />
                         </td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />pais"><liferay-ui:message key="curso.pais" /></label>
+                            <label for="<portlet:namespace />pais"><liferay-ui:message key="webinar.pais" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="pais" id="<portlet:namespace />pais" value="${curso.pais}" />
+                            <input type="text" name="pais" id="<portlet:namespace />pais" value="${webinar.pais}" />
                             <form:errors cssClass="errors" path="pais" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -225,8 +225,8 @@
         </div>
 
         <div class="nav">
-            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.crea' />"/></span>
-            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.cancela" /></a></span>
+            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='webinar.crea' />"/></span>
+            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="webinar.cancela" /></a></span>
         </div>
     </form:form>
     <script type="text/javascript">

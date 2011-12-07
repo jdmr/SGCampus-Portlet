@@ -6,5 +6,6 @@
         <portlet id="Cursos" />
         <portlet id="CursosPP" />
         <portlet id="CursosMaestro" />
+        <portlet id="Webinars" />
     </category>
 </display>

@@ -1,16 +1,19 @@
 package mx.edu.um.portlets.sgcampus.web;
 
+import com.liferay.portal.kernel.dao.orm.QueryUtil;
 import com.liferay.portal.kernel.exception.PortalException;
 import com.liferay.portal.kernel.exception.SystemException;
+import com.liferay.portal.kernel.json.JSONArray;
+import com.liferay.portal.kernel.json.JSONFactoryUtil;
+import com.liferay.portal.kernel.json.JSONObject;
 import com.liferay.portal.kernel.util.*;
 import com.liferay.portal.model.User;
 import com.liferay.portal.service.GroupLocalServiceUtil;
-import com.liferay.portal.service.ServiceContext;
-import com.liferay.portal.service.ServiceContextFactory;
 import com.liferay.portal.service.UserLocalServiceUtil;
 import com.liferay.portal.theme.ThemeDisplay;
 import com.liferay.portal.util.PortalUtil;
-import com.liferay.portlet.journal.model.JournalArticle;
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import javax.portlet.*;
@@ -34,6 +37,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.support.SessionStatus;
 import org.springframework.web.portlet.bind.PortletRequestDataBinder;
+import org.springframework.web.portlet.bind.annotation.ResourceMapping;
 
 /**
  * Administrador de webinars
@@ -345,271 +349,247 @@ public class WebinarPortlet {
         return tipos;
     }
 
-//    @ResourceMapping(value = "buscaMaestro")
-//    public void buscaMaestro(@RequestParam("term") String maestroNombre, ResourceRequest request, ResourceResponse response) throws IOException, SystemException {
-//        log.debug("Buscando maestros que contengan {}", maestroNombre);
-//        JSONArray results = JSONFactoryUtil.createJSONArray();
-//
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//        List<User> usuarios = UserLocalServiceUtil.search(themeDisplay.getCompanyId(), maestroNombre, true, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator) null);
-//        for (User usuario : usuarios) {
-//            JSONObject listEntry = JSONFactoryUtil.createJSONObject();
-//
-//            listEntry.put("id", usuario.getPrimaryKey());
-//            listEntry.put("value", usuario.getFullName() + " | " + usuario.getScreenName() + " | " + usuario.getEmailAddress());
-//            listEntry.put("nombre", usuario.getFullName());
-//
-//            results.put(listEntry);
-//        }
-//
-//        PrintWriter writer = response.getWriter();
-//        writer.println(results.toString());
-//    }
-//
-//    @ResourceMapping(value = "asignaMaestro")
-//    public void asignaMaestro(@RequestParam("id") Long maestroId, ResourceRequest request, ResourceResponse response) throws IOException, SystemException, PortalException {
-//        log.debug("Asignando maestro {}", maestroId);
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//        StringBuilder sb = new StringBuilder();
-//        User user = UserLocalServiceUtil.getUser(maestroId);
-//        sb.append("<table><thead><tr>");
-//        sb.append("<th>");
-//        sb.append(messageSource.getMessage("nombre", null, themeDisplay.getLocale()));
-//        sb.append("</th><th>").append(messageSource.getMessage("usuario", null, themeDisplay.getLocale())).append("</th>");
-//        sb.append("</th><th>").append(messageSource.getMessage("correo", null, themeDisplay.getLocale())).append("</th>");
-//        sb.append("</tr></thead>");
-//        sb.append("<tbody><tr><td>");
-//        sb.append(user.getFullName());
-//        sb.append("</td><td>");
-//        sb.append(user.getScreenName());
-//        sb.append("</td><td>");
-//        sb.append(user.getEmailAddress());
-//        sb.append("</td></tbody></table>");
-//
-//        PrintWriter writer = response.getWriter();
-//        writer.println(sb.toString());
-//    }
-//
-//    @RequestMapping(params = "action=ver")
-//    public String ver(RenderRequest request,
-//            @RequestParam(value = "cursoId") Long cursoId,
-//            Model modelo) throws PortalException, SystemException {
-//
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//
-//        AlumnoCurso alumnoCurso = null;
-//        curso = cursoDao.obtiene(cursoId);
-//
-//        modelo.addAttribute("curso", curso);
-//        User creador = PortalUtil.getUser(request);
-//        boolean puedeEditar = false;
-//        if (request.isUserInRole("Administrator")
-//                || request.isUserInRole("cursos-admin")
-//                || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//            puedeEditar = true;
-//            modelo.addAttribute("puedeEditar", puedeEditar);
-//        }
-//
-//        // Si no es el administrador / creador del curso y este no esta
-//        // activo no mostrar detalle.
-//        if (!puedeEditar && !curso.getEstatus().equals(Constantes.ACTIVO)) {
-//            return lista(request, null, null, null, modelo);
-//        }
-//
-//        if (creador != null) {
-//            // Si no es el maestro
-//            if (creador.getUserId() != curso.getMaestro().getId()) {
-//                log.debug("Buscando alumno por {}", creador.getUserId());
-//                Alumno alumno = cursoDao.obtieneAlumno(creador);
-//                if (alumno == null) {
-//                    log.debug("Creando alumno");
-//                    alumno = new Alumno(creador);
-//                    log.debug("con el id {}", alumno.getId());
-//                    alumno = cursoDao.creaAlumno(alumno);
-//                }
-//                alumnoCurso = cursoDao.obtieneAlumno(alumno, curso);
-//                if (alumnoCurso != null) {
-//                    modelo.addAttribute("alumnoCurso", alumnoCurso);
-//
-//                    modelo.addAttribute("estatus", messageSource.getMessage(alumnoCurso.getEstatus(), null, themeDisplay.getLocale()));
-//                    // Validar su estatus
-//                    if (alumnoCurso.getEstatus().equals(Constantes.INSCRITO)) {
-//                        // Validar si puede entrar
-//                        Calendar cal = Calendar.getInstance(themeDisplay.getTimeZone());
-//                        boolean existeSesionActiva = cursoDao.existeSesionActiva(cursoId, cal);
-//                        if (existeSesionActiva) {
-//                            modelo.addAttribute("existeSesionActiva", true);
-//                        }
-//                    }
-//                } else {
-//                    modelo.addAttribute("puedeInscribirse", true);
-//                }
-//            }
-//        } else {
-//            modelo.addAttribute("noPuedeInscribirse", true);
-//        }
-//
-//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm z");
-//        sdf.setTimeZone(themeDisplay.getTimeZone());
-//        List<Sesion> sesiones = cursoDao.obtieneSesiones(curso);
-//        for (Sesion x : sesiones) {
-//            x.setSdf(sdf);
-//        }
-//        modelo.addAttribute("sesiones", sesiones);
-//
-//        return "curso/ver";
-//    }
-//
-//    @RequestMapping(params = "action=edita")
-//    public String edita(RenderRequest request,
-//            @RequestParam(value = "cursoId") Long cursoId,
-//            Model modelo) throws PortalException, SystemException {
-//
-//        curso = cursoDao.obtiene(cursoId);
-//
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//        modelo.addAttribute("curso", curso);
-//        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-//        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//        if (curso.getInicia() != null) {
-//            String inicia = sdf.format(curso.getInicia());
-//            modelo.addAttribute("inicia", inicia);
-//        }
-//        if (curso.getTermina() != null) {
-//            modelo.addAttribute("termina", sdf.format(curso.getTermina()));
-//        }
-//        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
-//            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
-//            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
-//            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
-//            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
-//            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
-//            return "curso/edita";
-//        } else {
-//            return "curso/editaUsuario";
-//        }
-//    }
-//
-//    @RequestMapping(params = "action=editaError")
-//    public String editaError(RenderRequest request,
-//            @RequestParam(value = "cursoId") Long cursoId,
-//            Model modelo) throws PortalException, SystemException {
-//
-//        modelo.addAttribute("curso", curso);
-//        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
-//        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-//        if (curso.getInicia() != null) {
-//            String inicia = sdf.format(curso.getInicia());
-//            modelo.addAttribute("inicia", inicia);
-//        }
-//        if (curso.getTermina() != null) {
-//            modelo.addAttribute("termina", sdf.format(curso.getTermina()));
-//        }
-//        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
-//            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
-//            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
-//            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
-//            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
-//            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
-//            return "curso/edita";
-//        } else {
-//            return "curso/editaUsuario";
-//        }
-//    }
-//
-//    @Transactional
-//    @RequestMapping(params = "action=actualiza")
-//    public void actualiza(ActionRequest request, ActionResponse response,
-//            @ModelAttribute("curso") Curso curso, BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Guardando el curso");
-//        curso.setMaestro(cursoDao.refreshMaestro(curso.getMaestro()));
-//        this.curso = curso;
-//        cursoValidator.validate(curso, result);
-//        if (!result.hasErrors()) {
-//            try {
-//                User creador = PortalUtil.getUser(request);
-//
-//                cursoDao.actualiza(curso, creador.getUserId());
-//                response.setRenderParameter("action", "ver");
-//                response.setRenderParameter("cursoId", curso.getId().toString());
-//                sessionStatus.setComplete();
-//            } catch (Exception e) {
-//                log.error("No se pudo actualizar el curso", e);
-//                response.setRenderParameter("action", "editaError");
-//                response.setRenderParameter("cursoId", curso.getId().toString());
-//            }
-//        } else {
-//            log.error("No se pudo actualizar el curso");
-//            response.setRenderParameter("action", "editaError");
-//            response.setRenderParameter("cursoId", curso.getId().toString());
-//        }
-//    }
-//
-//    @Transactional
-//    @RequestMapping(params = "action=actualizaUsuario")
-//    public void actualizaUsuario(ActionRequest request, ActionResponse response,
-//            @ModelAttribute("curso") Curso curso, BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Guardando el curso");
-//        this.curso = curso;
-//        Curso viejo = cursoDao.obtiene(curso.getId());
-//        curso.setCodigo(viejo.getCodigo());
-//        curso.setMaestro(viejo.getMaestro());
-//        curso.setTipo(viejo.getTipo());
-//        curso.setUrl(viejo.getUrl());
-//        curso.setEstatus(viejo.getEstatus());
-//        cursoValidator.validate(curso, result);
-//        if (!result.hasErrors()) {
-//            try {
-//                User creador = PortalUtil.getUser(request);
-//
-//                cursoDao.actualiza(curso, creador.getUserId());
-//                response.setRenderParameter("action", "ver");
-//                response.setRenderParameter("cursoId", curso.getId().toString());
-//                sessionStatus.setComplete();
-//            } catch (Exception e) {
-//                log.error("No se pudo actualizar el curso", e);
-//                response.setRenderParameter("action", "editaError");
-//                response.setRenderParameter("cursoId", curso.getId().toString());
-//            }
-//        } else {
-//            log.error("No se pudo actualizar el curso");
-//            response.setRenderParameter("action", "editaError");
-//            response.setRenderParameter("cursoId", curso.getId().toString());
-//        }
-//    }
-//
-//    @RequestMapping(params = "action=elimina")
-//    public void elimina(ActionRequest request, ActionResponse response,
-//            @ModelAttribute("curso") Curso curso, BindingResult result,
-//            Model model, SessionStatus sessionStatus, @RequestParam("cursoId") Long id) {
-//        log.debug("Eliminando el curso {}", id);
-//        try {
-//            curso = cursoDao.obtiene(id);
-//            this.curso = curso;
-//            User creador = PortalUtil.getUser(request);
-//            if (request.isUserInRole("Administrator")
-//                    || request.isUserInRole("cursos-admin")
-//                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//
-//                cursoDao.elimina(id, creador.getUserId());
-//                // TODO Elimina contenido
-//                this.curso = null;
-//                sessionStatus.setComplete();
-//            } else {
-//                throw new RuntimeException("No tiene permisos para eliminar este curso");
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo eliminar el curso " + id, e);
-//            response.setRenderParameter("action", "ver");
-//            response.setRenderParameter("cursoId", id.toString());
-//        }
-//    }
-//
+    @ResourceMapping(value = "buscaMaestro")
+    public void buscaMaestro(@RequestParam("term") String maestroNombre, ResourceRequest request, ResourceResponse response) throws IOException, SystemException {
+        log.debug("Buscando maestros que contengan {}", maestroNombre);
+        JSONArray results = JSONFactoryUtil.createJSONArray();
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        List<User> usuarios = UserLocalServiceUtil.search(themeDisplay.getCompanyId(), maestroNombre, true, null, QueryUtil.ALL_POS, QueryUtil.ALL_POS, (OrderByComparator) null);
+        for (User usuario : usuarios) {
+            JSONObject listEntry = JSONFactoryUtil.createJSONObject();
+
+            listEntry.put("id", usuario.getPrimaryKey());
+            listEntry.put("value", usuario.getFullName() + " | " + usuario.getScreenName() + " | " + usuario.getEmailAddress());
+            listEntry.put("nombre", usuario.getFullName());
+
+            results.put(listEntry);
+        }
+
+        PrintWriter writer = response.getWriter();
+        writer.println(results.toString());
+    }
+
+    @ResourceMapping(value = "asignaMaestro")
+    public void asignaMaestro(@RequestParam("id") Long maestroId, ResourceRequest request, ResourceResponse response) throws IOException, SystemException, PortalException {
+        log.debug("Asignando maestro {}", maestroId);
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        StringBuilder sb = new StringBuilder();
+        User user = UserLocalServiceUtil.getUser(maestroId);
+        sb.append("<table><thead><tr>");
+        sb.append("<th>");
+        sb.append(messageSource.getMessage("nombre", null, themeDisplay.getLocale()));
+        sb.append("</th><th>").append(messageSource.getMessage("usuario", null, themeDisplay.getLocale())).append("</th>");
+        sb.append("</th><th>").append(messageSource.getMessage("correo", null, themeDisplay.getLocale())).append("</th>");
+        sb.append("</tr></thead>");
+        sb.append("<tbody><tr><td>");
+        sb.append(user.getFullName());
+        sb.append("</td><td>");
+        sb.append(user.getScreenName());
+        sb.append("</td><td>");
+        sb.append(user.getEmailAddress());
+        sb.append("</td></tbody></table>");
+
+        PrintWriter writer = response.getWriter();
+        writer.println(sb.toString());
+    }
+
+    @RequestMapping(params = "action=ver")
+    public String ver(RenderRequest request,
+            @RequestParam Long webinarId,
+            Model modelo) throws PortalException, SystemException {
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+
+        AlumnoWebinar alumnoWebinar = null;
+        webinar = webinarDao.obtiene(webinarId);
+
+        modelo.addAttribute("webinar", webinar);
+        User creador = PortalUtil.getUser(request);
+        boolean puedeEditar = false;
+        if (request.isUserInRole("Administrator")
+                || request.isUserInRole("cursos-admin")
+                || (creador != null && creador.getUserId() == webinar.getMaestro().getId())) {
+            puedeEditar = true;
+            modelo.addAttribute("puedeEditar", puedeEditar);
+        }
+
+        // Si no es el administrador / creador del curso y este no esta
+        // activo no mostrar detalle.
+        if (!puedeEditar && !webinar.getEstatus().equals(Constantes.ACTIVO)) {
+            return lista(request, null, null, null, modelo);
+        }
+
+        if (creador != null) {
+            // Si no es el maestro
+            if (creador.getUserId() != webinar.getMaestro().getId()) {
+                log.debug("Buscando alumno por {}", creador.getUserId());
+                Alumno alumno = webinarDao.obtieneAlumno(creador);
+                if (alumno == null) {
+                    log.debug("Creando alumno");
+                    alumno = new Alumno(creador);
+                    log.debug("con el id {}", alumno.getId());
+                    alumno = webinarDao.creaAlumno(alumno);
+                }
+                alumnoWebinar = webinarDao.obtieneAlumno(alumno, webinar);
+                if (alumnoWebinar != null) {
+                    modelo.addAttribute("alumnoWebinar", alumnoWebinar);
+
+                    modelo.addAttribute("estatus", messageSource.getMessage(alumnoWebinar.getEstatus(), null, themeDisplay.getLocale()));
+                    // Validar su estatus
+                    if (alumnoWebinar.getEstatus().equals(Constantes.INSCRITO)) {
+                        // Validar si puede entrar
+                        Calendar cal = Calendar.getInstance(themeDisplay.getTimeZone());
+                        boolean existeSesionActiva = webinarDao.existeSesionActiva(webinarId, cal);
+                        if (existeSesionActiva) {
+                            modelo.addAttribute("existeSesionActiva", true);
+                        }
+                    }
+                } else {
+                    modelo.addAttribute("puedeInscribirse", true);
+                }
+            }
+        } else {
+            modelo.addAttribute("noPuedeInscribirse", true);
+        }
+
+        return "webinar/ver";
+    }
+
+    @RequestMapping(params = "action=edita")
+    public String edita(RenderRequest request,
+            @RequestParam Long webinarId,
+            Model modelo) throws PortalException, SystemException {
+
+        webinar = webinarDao.obtiene(webinarId);
+
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        modelo.addAttribute("webinar", webinar);
+        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (webinar.getInicia() != null) {
+            String inicia = sdf.format(webinar.getInicia());
+            modelo.addAttribute("inicia", inicia);
+        }
+        if (webinar.getTermina() != null) {
+            modelo.addAttribute("termina", sdf.format(webinar.getTermina()));
+        }
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
+            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
+            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
+            return "webinar/edita";
+        } else {
+            return "webinar/editaUsuario";
+        }
+    }
+
+    @RequestMapping(params = "action=editaError")
+    public String editaError(RenderRequest request,
+            @RequestParam Long webinarId,
+            Model modelo) throws PortalException, SystemException {
+
+        modelo.addAttribute("webinar", webinar);
+        modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
+        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
+        modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (webinar.getInicia() != null) {
+            String inicia = sdf.format(webinar.getInicia());
+            modelo.addAttribute("inicia", inicia);
+        }
+        if (webinar.getTermina() != null) {
+            modelo.addAttribute("termina", sdf.format(webinar.getTermina()));
+        }
+        if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
+            Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
+            tiposDeEstatus.put("ACTIVO", messageSource.getMessage("ACTIVO", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("PENDIENTE", messageSource.getMessage("PENDIENTE", null, themeDisplay.getLocale()));
+            tiposDeEstatus.put("RECHAZADO", messageSource.getMessage("RECHAZADO", null, themeDisplay.getLocale()));
+            modelo.addAttribute("tiposDeEstatus", tiposDeEstatus);
+            return "webinar/edita";
+        } else {
+            return "webinar/editaUsuario";
+        }
+    }
+
+    @RequestMapping(params = "action=actualiza")
+    public void actualiza(ActionRequest request, ActionResponse response,
+            @ModelAttribute("webinar") Webinar webinar, BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Guardando el webinar");
+        webinar.setMaestro(webinarDao.refreshMaestro(webinar.getMaestro()));
+        this.webinar = webinar;
+        try {
+            User creador = PortalUtil.getUser(request);
+
+            webinarDao.actualiza(webinar, creador.getUserId());
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("webinarId", webinar.getId().toString());
+            sessionStatus.setComplete();
+        } catch (Exception e) {
+            log.error("No se pudo actualizar el webinar", e);
+            response.setRenderParameter("action", "editaError");
+            response.setRenderParameter("webinarId", webinar.getId().toString());
+        }
+    }
+
+    @RequestMapping(params = "action=actualizaUsuario")
+    public void actualizaUsuario(ActionRequest request, ActionResponse response,
+            @ModelAttribute("webinar") Webinar webinar, BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Guardando el webinar");
+        this.webinar = webinar;
+        Webinar viejo = webinarDao.obtiene(webinar.getId());
+        webinar.setCodigo(viejo.getCodigo());
+        webinar.setMaestro(viejo.getMaestro());
+        webinar.setTipo(viejo.getTipo());
+        webinar.setUrl(viejo.getUrl());
+        webinar.setEstatus(viejo.getEstatus());
+        try {
+            User creador = PortalUtil.getUser(request);
+
+            webinarDao.actualiza(webinar, creador.getUserId());
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("webinarId", webinar.getId().toString());
+            sessionStatus.setComplete();
+        } catch (Exception e) {
+            log.error("No se pudo actualizar el webinar", e);
+            response.setRenderParameter("action", "editaError");
+            response.setRenderParameter("webinarId", webinar.getId().toString());
+        }
+    }
+
+    @RequestMapping(params = "action=elimina")
+    public void elimina(ActionRequest request, ActionResponse response,
+            @ModelAttribute("webinar") Webinar webinar, BindingResult result,
+            Model model, SessionStatus sessionStatus, @RequestParam Long webinarId) {
+        log.debug("Eliminando el webinar {}", webinarId);
+        try {
+            webinar = webinarDao.obtiene(webinarId);
+            this.webinar = webinar;
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == webinar.getMaestro().getId())) {
+
+                webinarDao.elimina(webinarId, creador.getUserId());
+                // TODO Elimina contenido
+                this.webinar = null;
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para eliminar este curso");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo eliminar el webinar " + webinarId, e);
+            response.setRenderParameter("action", "ver");
+            response.setRenderParameter("webinarId", webinarId.toString());
+        }
+    }
+
 //    @RequestMapping(params = "action=nuevaSesion")
 //    public String nuevaSesion(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
 //        log.debug("Nueva Sesion");

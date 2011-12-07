@@ -1,11 +1,13 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
-    <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
+    <h1><liferay-ui:message key="curso.edita.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
-        <portlet:param name="action" value="crea"/>
+        <portlet:param name="action" value="actualiza"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
+    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" onSubmit="extractCodeFromEditor()" >
+        <form:hidden path="id" />
+        <form:hidden path="version" />
         <input type="hidden" id="<portlet:namespace />maestroId" name="<portlet:namespace />maestro.id" value="${curso.maestro.id}" />
         <div class="dialog">
             <table>
@@ -67,19 +69,7 @@
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="requerimientos" />
-                            <form:errors cssClass="errors" path="requerimientos" cssStyle="color:red;" />
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="curso.sesiones" /></label>
-                        </td>
-                        <td valign="top" class="value" style="text-align: left;">
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> Lun y Mie 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> Lun y Mie 20:00 a 22:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="3" style="width:10px;" /> Mar y Jue 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="4" style="width:10px;" /> Mar y Jue 20:00 a 22:00 hrs<br/>
+                            <form:errors cssClass="errors" path="descripcion" cssStyle="color:red;" />
                         </td>
                     </tr>
 
@@ -176,6 +166,16 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
+                            <label for="<portlet:namespace />estatus"><liferay-ui:message key="curso.estatus" /></label>
+                        </td>
+                        <td valign="top" class="value">
+                            <form:select path="estatus" items="${tiposDeEstatus}" />
+                            <form:errors cssClass="errors" path="estatus" />
+                        </td>
+                    </tr>
+
+                    <tr class="prop">
+                        <td valign="top" class="name">
                             <label for="comunidadId"><liferay-ui:message key="curso.comunidad" /></label>
                         </td>
                         <td valign="top" class="value">
@@ -225,8 +225,18 @@
         </div>
 
         <div class="nav">
-            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.crea' />"/></span>
-            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.cancela" /></a></span>
+            <portlet:renderURL var="verCurso" >
+                <portlet:param name="action" value="ver" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:renderURL>
+            <portlet:actionURL var="eliminaCurso" >
+                <portlet:param name="action" value="elimina" />
+                <portlet:param name="cursoId" value="${curso.id}" />
+            </portlet:actionURL>
+
+            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.actualiza' />"/></span>
+            <span class="menuButton"><a class="delete" href="${eliminaCurso}"  onclick="return confirm('<%= LanguageUtil.format(pageContext, "curso.elimina.mensaje",request.getAttribute("curso"),false) %>');"><liferay-ui:message key="curso.elimina" /></a></span>
+            <span class="menuButton"><a class="list" href="${verCurso}"><liferay-ui:message key="curso.cancela" /></a></span>
         </div>
     </form:form>
     <script type="text/javascript">
@@ -246,14 +256,13 @@
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
             $("select#tipo").change(function() {
+                alert("TIPO: "+$(this).val())
                 if($(this).val() == 'PATROCINADO') {
                     $("div#tipoDiv").slideUp();
                 } else {
                     $("div#tipoDiv").slideDown();
                 }
             });
-            
-            $("input#codigo").focus();
         });
     </script>
 </div>
