@@ -73,18 +73,6 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="webinar.sesiones" /></label>
-                        </td>
-                        <td valign="top" class="value" style="text-align: left;">
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> Lun y Mie 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> Lun y Mie 20:00 a 22:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="3" style="width:10px;" /> Mar y Jue 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="4" style="width:10px;" /> Mar y Jue 20:00 a 22:00 hrs<br/>
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
                             <label for="<portlet:namespace />maestroNombre"><liferay-ui:message key="webinar.maestro" /></label>
                         </td>
                         <td valign="top" class="value">
@@ -121,14 +109,14 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />termina"><liferay-ui:message key="webinar.termina" /></label>
+                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="webinar.sesiones" /></label>
                         </td>
-                        <td valign="top" class="value">
-                            <input type="text" name="termina" id="<portlet:namespace />termina" value="${termina}" />
-                            <form:errors cssClass="errors" path="termina" cssStyle="color:red;" />
+                        <td valign="top" class="value" style="text-align: left;">
+                            <input type="radio" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> 18:00 a 20:00 hrs<br/>
+                            <input type="radio" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> 20:00 a 22:00 hrs<br/>
                         </td>
                     </tr>
-
+                    
                     <tr class="prop">
                         <td valign="top" class="name">
                             <label for="<portlet:namespace />url"><liferay-ui:message key="webinar.url" /></label>

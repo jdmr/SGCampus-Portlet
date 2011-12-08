@@ -263,11 +263,20 @@ public class WebinarPortlet {
             }
             webinar.setMaestro(maestro);
 
-            Calendar displayDate;
-            if (themeDisplay != null) {
-                displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
-            } else {
-                displayDate = CalendarFactoryUtil.getCalendar();
+            log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm Z");
+            for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
+                switch (i) {
+                    case 1:
+                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 18:00 CST"));
+                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
+                        break;
+                    case 2:
+                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
+                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 22:00 CST"));
+                        break;
+                }
             }
 
             webinar = webinarDao.crea(webinar, creador.getUserId());
@@ -280,6 +289,9 @@ public class WebinarPortlet {
             StringBuilder sb = new StringBuilder(webinar.getDescripcion());
             sb.insert(0, messageSource.getMessage("webinar.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
             webinar.setDescripcion(sb.toString());
+            response.setRenderParameter("action", "nuevoError");
+        } catch (Exception e) {
+            log.error("No se pudo crear el webinar", e);
             response.setRenderParameter("action", "nuevoError");
         }
     }
@@ -306,29 +318,23 @@ public class WebinarPortlet {
 
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         try {
-            Calendar displayDate;
-            if (themeDisplay != null) {
-                displayDate = CalendarFactoryUtil.getCalendar(themeDisplay.getTimeZone(), themeDisplay.getLocale());
-            } else {
-                displayDate = CalendarFactoryUtil.getCalendar();
-            }
-
-            webinar = webinarDao.crea(webinar, user.getUserId());
-
             log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
-            Sesion nuevaSesion;
+            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
+            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm Z");
             for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
                 switch (i) {
                     case 1:
+                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 18:00 CST"));
+                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
                         break;
                     case 2:
+                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
+                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 22:00 CST"));
                         break;
-                    case 3:
-                        break;
-                    case 4:
                 }
             }
 
+            webinar = webinarDao.crea(webinar, user.getUserId());
 
             response.setRenderParameter("action", "ver");
             response.setRenderParameter("webinarId", webinar.getId().toString());
@@ -338,6 +344,9 @@ public class WebinarPortlet {
             StringBuilder sb = new StringBuilder(webinar.getDescripcion());
             sb.insert(0, messageSource.getMessage("webinar.descripcion.demasiado.grande", null, themeDisplay.getLocale()));
             webinar.setDescripcion(sb.toString());
+            response.setRenderParameter("action", "nuevoError");
+        } catch (Exception e) {
+            log.error("No se pudo crear el webinar", e);
             response.setRenderParameter("action", "nuevoError");
         }
     }
@@ -414,7 +423,7 @@ public class WebinarPortlet {
             modelo.addAttribute("puedeEditar", puedeEditar);
         }
 
-        // Si no es el administrador / creador del curso y este no esta
+        // Si no es el administrador / creador del webinar y este no esta
         // activo no mostrar detalle.
         if (!puedeEditar && !webinar.getEstatus().equals(Constantes.ACTIVO)) {
             return lista(request, null, null, null, modelo);
@@ -590,282 +599,199 @@ public class WebinarPortlet {
         }
     }
 
-//    @RequestMapping(params = "action=nuevaSesion")
-//    public String nuevaSesion(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
-//        log.debug("Nueva Sesion");
-//        curso = cursoDao.obtiene(id);
-//
-//        sesion = new Sesion();
-//        sesion.setCurso(curso);
-//
-//        model.addAttribute("sesion", sesion);
-//        model.addAttribute("dias", getDias(request));
-//
-//        return "curso/nuevaSesion";
-//    }
-//
-//    @RequestMapping(params = "action=creaSesion")
-//    public void creaSesion(ActionRequest request, ActionResponse response,
-//            @RequestParam String horaInicial,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) throws PortalException, SystemException {
-//        log.debug("Creando la sesion");
-//
-//        log.debug("Sesion {} {} {}", new Object[]{sesion.getDia(), sesion.getCurso().getId(), horaInicial});
-//
-//        if (sesion.getCurso().getId() != null && sesion.getCurso().getId() > 0) {
-//            sesion.setCurso(cursoDao.obtiene(sesion.getCurso().getId()));
-//        }
-//
-//        ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
-//        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-//        sdf.setTimeZone(themeDisplay.getTimeZone());
-//        try {
-//            sesion.setHoraInicial(sdf.parse(horaInicial));
-//        } catch (ParseException ex) {
-//            log.error("No se pudo leer la hora inicial", ex);
-//            response.setRenderParameter("action", "nuevaSesion");
-//        }
-//
-//        try {
-//            cursoDao.creaSesion(sesion);
-//            sessionStatus.setComplete();
-//            response.setRenderParameter("action", "ver");
-//            response.setRenderParameter("cursoId", curso.getId().toString());
-//        } catch (Exception e) {
-//            log.error("No se pudo crear la sesion", e);
-//            response.setRenderParameter("action", "ver");
-//            response.setRenderParameter("cursoId", curso.getId().toString());
-//        }
-//
-//    }
-//
-//    @RequestMapping(params = "action=eliminaSesion")
-//    public void eliminaSesion(ActionRequest request, ActionResponse response,
-//            @RequestParam Long sesionId,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Eliminando sesion {}", sesionId);
-//
-//        try {
-//            curso = cursoDao.obtiene(cursoId);
-//            User creador = PortalUtil.getUser(request);
-//            if (request.isUserInRole("Administrator")
-//                    || request.isUserInRole("cursos-admin")
-//                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//
-//                cursoDao.eliminaSesion(sesionId);
-//                sessionStatus.setComplete();
-//            } else {
-//                throw new RuntimeException("No tiene permisos para eliminar esta sesion");
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo eliminar la sesion " + sesionId, e);
-//        }
-//        response.setRenderParameter("action", "ver");
-//        response.setRenderParameter("cursoId", cursoId.toString());
-//    }
-//
-//    @RequestMapping(params = "action=inscribirse")
-//    public String inscribirse(RenderRequest request, @RequestParam Long cursoId, Model model) {
-//        log.debug("Solicitar inscripcion a curso {}", cursoId);
-//        try {
-//            User usuario = PortalUtil.getUser(request);
-//            if (usuario != null) {
-//                curso = cursoDao.obtiene(cursoId);
-//                if (curso.getTipo().equals(Constantes.PATROCINADO)) {
-//                    Alumno alumno = cursoDao.obtieneAlumno(usuario);
-//                    AlumnoCurso alumnoCurso = new AlumnoCurso();
-//                    alumnoCurso.setAlumno(alumno);
-//                    alumnoCurso.setCurso(curso);
-//                    alumnoCurso.setCreadorId(usuario.getUserId());
-//                    alumnoCurso.setCreadorNombre(usuario.getFullName());
-//                    cursoDao.preInscribeAlumno(alumnoCurso);
-//                    return "curso/preinscripcion";
-//                } else {
-//                    return ver(request, cursoId, model);
-//                }
-//            } else {
-//                return "curso/noInscribir";
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo solicitar la inscripcion al curso " + cursoId, e);
-//        }
-//        return "curso/nopreincripcion";
-//    }
-//
-//    @RequestMapping(params = "action=alumnosPorCurso")
-//    public String alumnosPorCurso(RenderRequest request, @RequestParam("cursoId") Long id, Model model) {
-//        log.debug("Alumnos por Curso {}", id);
-//        curso = cursoDao.obtiene(id);
-//        List<AlumnoCurso> alumnos = cursoDao.obtieneAlumnos(curso);
-//
-//        model.addAttribute("curso", curso);
-//        model.addAttribute("alumnos", alumnos);
-//
-//        return "curso/alumnos";
-//    }
-//
-//    @RequestMapping(params = "action=inscribe")
-//    public void inscribe(ActionRequest request, ActionResponse response,
-//            @RequestParam Long alumnoCursoId,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Inscribiendo a {}", alumnoCursoId);
-//
-//        AlumnoCurso alumnoCurso = null;
-//        try {
-//            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
-//            User creador = PortalUtil.getUser(request);
-//            if (request.isUserInRole("Administrator")
-//                    || request.isUserInRole("cursos-admin")
-//                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//
-//                cursoDao.inscribeAlumno(alumnoCurso);
-//                sessionStatus.setComplete();
-//            } else {
-//                throw new RuntimeException("No tiene permisos para inscribir este alumno");
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo inscribir al alumno " + alumnoCursoId, e);
-//        }
-//        response.setRenderParameter("action", "alumnosPorCurso");
-//        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
-//    }
-//
-//    @RequestMapping(params = "action=pendiente")
-//    public void pendiente(ActionRequest request, ActionResponse response,
-//            @RequestParam Long alumnoCursoId,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Poniendo en pendiente a {}", alumnoCursoId);
-//
-//        AlumnoCurso alumnoCurso = null;
-//        try {
-//            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
-//            User creador = PortalUtil.getUser(request);
-//            if (request.isUserInRole("Administrator")
-//                    || request.isUserInRole("cursos-admin")
-//                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//
-//                cursoDao.preInscribeAlumno(alumnoCurso);
-//                sessionStatus.setComplete();
-//            } else {
-//                throw new RuntimeException("No tiene permisos para pre-inscribir a este alumno");
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo pre-inscribir al alumno " + alumnoCursoId, e);
-//        }
-//        response.setRenderParameter("action", "alumnosPorCurso");
-//        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
-//    }
-//
-//    @RequestMapping(params = "action=rechaza")
-//    public void rechaza(ActionRequest request, ActionResponse response,
-//            @RequestParam Long alumnoCursoId,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Rechazando a {}", alumnoCursoId);
-//
-//        AlumnoCurso alumnoCurso = null;
-//        try {
-//            alumnoCurso = cursoDao.obtieneAlumnoCurso(alumnoCursoId);
-//            User creador = PortalUtil.getUser(request);
-//            if (request.isUserInRole("Administrator")
-//                    || request.isUserInRole("cursos-admin")
-//                    || (creador != null && creador.getUserId() == curso.getMaestro().getId())) {
-//
-//                cursoDao.rechazaAlumno(alumnoCurso);
-//                sessionStatus.setComplete();
-//            } else {
-//                throw new RuntimeException("No tiene permisos para rechazar a este alumno");
-//            }
-//        } catch (Exception e) {
-//            log.error("No se pudo rechazar al alumno " + alumnoCursoId, e);
-//        }
-//        response.setRenderParameter("action", "alumnosPorCurso");
-//        response.setRenderParameter("cursoId", alumnoCurso.getCurso().getId().toString());
-//    }
-//
-//    @RequestMapping(params = "action=entrar")
-//    public void entrar(ActionRequest request, ActionResponse response,
-//            @RequestParam Long alumnoCursoId,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("Entrar a curso {}", cursoId);
-//        try {
-//            User usuario = PortalUtil.getUser(request);
-//            if (usuario != null) {
-//                cursoDao.guardaAsistencia(alumnoCursoId);
-//                response.sendRedirect(curso.getUrl());
-//            } else {
-//                log.error("No pudo entrar el alumno al curso {}", cursoId);
-//            }
-//        } catch (Exception e) {
-//            log.error("No pudo entrar el alumno al curso " + cursoId, e);
-//        }
-//    }
-//
-//    @RequestMapping(params = "action=pagado")
-//    public void pagado(ActionRequest request, ActionResponse response,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("El alumno pago el curso {}", cursoId);
-//        try {
-//            User usuario = PortalUtil.getUser(request);
-//            if (usuario != null) {
-//                curso = cursoDao.obtiene(cursoId);
-//                log.debug("Curso {}", curso);
-//                Alumno alumno = cursoDao.obtieneAlumno(usuario);
-//                log.debug("Alumno {}", alumno);
-//                AlumnoCurso alumnoCurso = new AlumnoCurso();
-//                alumnoCurso.setAlumno(alumno);
-//                alumnoCurso.setCurso(curso);
-//                alumnoCurso.setCreadorId(usuario.getUserId());
-//                alumnoCurso.setCreadorNombre(usuario.getFullName());
-//                alumnoCurso = cursoDao.preInscribeAlumno(alumnoCurso);
-//                cursoDao.inscribeAlumno(alumnoCurso);
-//
-//                response.setRenderParameter("action", "ver");
-//                response.setRenderParameter("cursoId", curso.getId().toString());
-//            } else {
-//                log.error("No pudo entrar el alumno al curso {}", cursoId);
-//            }
-//        } catch (Exception e) {
-//            log.error("No pudo entrar el alumno al curso " + cursoId, e);
-//        }
-//    }
-//
-//    @RequestMapping(params = "action=noPagado")
-//    public void noPagado(ActionRequest request, ActionResponse response,
-//            @RequestParam Long cursoId,
-//            @ModelAttribute("sesion") Sesion sesion,
-//            BindingResult result,
-//            Model model, SessionStatus sessionStatus) {
-//        log.debug("El alumno no pago el curso {}", cursoId);
-//        response.setRenderParameter("action", "noPago");
-//    }
-//
-//    @RequestMapping(params = "action=noPago")
-//    public String noPago(RenderRequest request, Model model) {
-//        log.debug("Mostrando pagina de NO PAGO");
-//
-//        return "curso/noPago";
-//    }
-//
+    @RequestMapping(params = "action=inscribirse")
+    public String inscribirse(RenderRequest request, @RequestParam Long webinarId, Model model) {
+        log.debug("Solicitar inscripcion a webinar {}", webinarId);
+        try {
+            User usuario = PortalUtil.getUser(request);
+            if (usuario != null) {
+                webinar = webinarDao.obtiene(webinarId);
+                if (webinar.getTipo().equals(Constantes.PATROCINADO)) {
+                    Alumno alumno = webinarDao.obtieneAlumno(usuario);
+                    AlumnoWebinar alumnoWebinar = new AlumnoWebinar();
+                    alumnoWebinar.setAlumno(alumno);
+                    alumnoWebinar.setWebinar(webinar);
+                    alumnoWebinar.setCreadorId(usuario.getUserId());
+                    alumnoWebinar.setCreadorNombre(usuario.getFullName());
+                    webinarDao.preInscribeAlumno(alumnoWebinar);
+                    return "webinar/preinscripcion";
+                } else {
+                    return ver(request, webinarId, model);
+                }
+            } else {
+                return "webinar/noInscribir";
+            }
+        } catch (Exception e) {
+            log.error("No se pudo solicitar la inscripcion al webinar " + webinarId, e);
+        }
+        return "webinar/nopreincripcion";
+    }
+
+    @RequestMapping(params = "action=alumnosPorWebinar")
+    public String alumnosPorWebinar(RenderRequest request, @RequestParam Long webinarId, Model model) {
+        log.debug("Alumnos por Webinar {}", webinarId);
+        webinar = webinarDao.obtiene(webinarId);
+        List<AlumnoWebinar> alumnos = webinarDao.obtieneAlumnos(webinar);
+
+        model.addAttribute("webinar", webinar);
+        model.addAttribute("alumnos", alumnos);
+
+        return "webinar/alumnos";
+    }
+
+    @RequestMapping(params = "action=inscribe")
+    public void inscribe(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoWebinarId,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Inscribiendo a {}", alumnoWebinarId);
+
+        AlumnoWebinar alumnoWebinar = null;
+        try {
+            alumnoWebinar = webinarDao.obtieneAlumnoWebinar(alumnoWebinarId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == webinar.getMaestro().getId())) {
+
+                webinarDao.inscribeAlumno(alumnoWebinar);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para inscribir este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo inscribir al alumno " + alumnoWebinarId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorWebinar");
+        response.setRenderParameter("webinarId", alumnoWebinar.getWebinar().getId().toString());
+    }
+
+    @RequestMapping(params = "action=pendiente")
+    public void pendiente(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoWebinarId,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Poniendo en pendiente a {}", alumnoWebinarId);
+
+        AlumnoWebinar alumnoWebinar = null;
+        try {
+            alumnoWebinar = webinarDao.obtieneAlumnoWebinar(alumnoWebinarId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == webinar.getMaestro().getId())) {
+
+                webinarDao.preInscribeAlumno(alumnoWebinar);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para pre-inscribir a este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo pre-inscribir al alumno " + alumnoWebinarId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorWebinar");
+        response.setRenderParameter("webinarId", alumnoWebinar.getWebinar().getId().toString());
+    }
+
+    @RequestMapping(params = "action=rechaza")
+    public void rechaza(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoWebinarId,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Rechazando a {}", alumnoWebinarId);
+
+        AlumnoWebinar alumnoWebinar = null;
+        try {
+            alumnoWebinar = webinarDao.obtieneAlumnoWebinar(alumnoWebinarId);
+            User creador = PortalUtil.getUser(request);
+            if (request.isUserInRole("Administrator")
+                    || request.isUserInRole("cursos-admin")
+                    || (creador != null && creador.getUserId() == webinar.getMaestro().getId())) {
+
+                webinarDao.rechazaAlumno(alumnoWebinar);
+                sessionStatus.setComplete();
+            } else {
+                throw new RuntimeException("No tiene permisos para rechazar a este alumno");
+            }
+        } catch (Exception e) {
+            log.error("No se pudo rechazar al alumno " + alumnoWebinarId, e);
+        }
+        response.setRenderParameter("action", "alumnosPorWebinar");
+        response.setRenderParameter("webinarId", alumnoWebinar.getWebinar().getId().toString());
+    }
+
+    @RequestMapping(params = "action=entrar")
+    public void entrar(ActionRequest request, ActionResponse response,
+            @RequestParam Long alumnoWebinarId,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("Entrar a webinar {}", webinar);
+        try {
+            User usuario = PortalUtil.getUser(request);
+            if (usuario != null) {
+                webinarDao.guardaAsistencia(alumnoWebinarId);
+                response.sendRedirect(webinar.getUrl());
+            } else {
+                log.error("No pudo entrar el alumno al webinar {}", webinar);
+            }
+        } catch (Exception e) {
+            log.error("No pudo entrar el alumno al webinar {}", webinar, e);
+        }
+    }
+
+    @RequestMapping(params = "action=pagado")
+    public void pagado(ActionRequest request, ActionResponse response,
+            @RequestParam Long webinarId,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("El alumno pago el webinar {}", webinarId);
+        try {
+            User usuario = PortalUtil.getUser(request);
+            if (usuario != null) {
+                webinar = webinarDao.obtiene(webinarId);
+                this.webinar = webinar;
+                log.debug("Webinar {}", webinar);
+                Alumno alumno = webinarDao.obtieneAlumno(usuario);
+                log.debug("Alumno {}", alumno);
+                AlumnoWebinar alumnoWebinar = new AlumnoWebinar();
+                alumnoWebinar.setAlumno(alumno);
+                alumnoWebinar.setWebinar(webinar);
+                alumnoWebinar.setCreadorId(usuario.getUserId());
+                alumnoWebinar.setCreadorNombre(usuario.getFullName());
+                alumnoWebinar = webinarDao.preInscribeAlumno(alumnoWebinar);
+                webinarDao.inscribeAlumno(alumnoWebinar);
+
+                response.setRenderParameter("action", "ver");
+                response.setRenderParameter("webinarId", webinar.getId().toString());
+            } else {
+                log.error("No pudo entrar el alumno al webinar {}", webinarId);
+            }
+        } catch (Exception e) {
+            log.error("No pudo entrar el alumno al webinar {} ", webinarId, e);
+        }
+    }
+
+    @RequestMapping(params = "action=noPagado")
+    public void noPagado(ActionRequest request, ActionResponse response,
+            @ModelAttribute("webinar") Webinar webinar,
+            BindingResult result,
+            Model model, SessionStatus sessionStatus) {
+        log.debug("El alumno no pago el webinar {}", webinar);
+        response.setRenderParameter("action", "noPago");
+    }
+
+    @RequestMapping(params = "action=noPago")
+    public String noPago(RenderRequest request, Model model) {
+        log.debug("Mostrando pagina de NO PAGO");
+
+        return "webinar/noPago";
+    }
+
 //    @RequestMapping(params = "action=contenidoLista")
 //    public String contenidoLista(RenderRequest request, @RequestParam Long cursoId, Model model) {
 //        log.debug("Lista de contenidos del curso {}", cursoId);

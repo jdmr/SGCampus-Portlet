@@ -1,18 +1,18 @@
 <%@ include file="/WEB-INF/jsp/include.jsp" %>
 <div class="Curso">
-    <h1><liferay-ui:message key="curso.nuevo.titulo" /></h1>
+    <h1><liferay-ui:message key="webinar.nuevo.titulo" /></h1>
     <portlet:actionURL var="actionUrl">
         <portlet:param name="action" value="creaUsuario"/>
     </portlet:actionURL>
 
-    <form:form name="cursoForm" commandName="curso" method="post" action="${actionUrl}" >
+    <form:form name="webinarForm" commandName="webinar" method="post" action="${actionUrl}" >
         <div class="dialog">
             <table>
                 <tbody>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="nombre"><liferay-ui:message key="curso.nombre" /></label>
+                            <label for="nombre"><liferay-ui:message key="webinar.nombre" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:input path="nombre" maxlength="128"/>
@@ -22,7 +22,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="objetivo"><liferay-ui:message key="curso.objetivo" /></label>
+                            <label for="objetivo"><liferay-ui:message key="webinar.objetivo" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="objetivo" />
@@ -32,7 +32,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="descripcion"><liferay-ui:message key="curso.descripcion" /></label>
+                            <label for="descripcion"><liferay-ui:message key="webinar.descripcion" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="descripcion" />
@@ -42,7 +42,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="temario"><liferay-ui:message key="curso.temario" /></label>
+                            <label for="temario"><liferay-ui:message key="webinar.temario" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="temario" />
@@ -52,7 +52,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="requerimientos"><liferay-ui:message key="curso.requerimientos" /></label>
+                            <label for="requerimientos"><liferay-ui:message key="webinar.requerimientos" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:textarea path="requerimientos" />
@@ -62,19 +62,7 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="curso.sesiones" /></label>
-                        </td>
-                        <td valign="top" class="value" style="text-align: left;">
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> Lun y Mie 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> Lun y Mie 20:00 a 22:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="3" style="width:10px;" /> Mar y Jue 18:00 a 20:00 hrs<br/>
-                            <input type="checkbox" name="<portlet:namespace />sesionesIds" value="4" style="width:10px;" /> Mar y Jue 20:00 a 22:00 hrs<br/>
-                        </td>
-                    </tr>
-
-                    <tr class="prop">
-                        <td valign="top" class="name">
-                            <label for="<portlet:namespace />inicia"><liferay-ui:message key="curso.inicia" /></label>
+                            <label for="<portlet:namespace />inicia"><liferay-ui:message key="webinar.inicia" /></label>
                         </td>
                         <td valign="top" class="value">
                             <input type="text" name="inicia" id="<portlet:namespace />inicia" value="${inicia}" />
@@ -84,17 +72,17 @@
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />termina"><liferay-ui:message key="curso.termina" /></label>
+                            <label for="<portlet:namespace />sesionesIds"><liferay-ui:message key="webinar.sesiones" /></label>
                         </td>
-                        <td valign="top" class="value">
-                            <input type="text" name="termina" id="<portlet:namespace />termina" value="${termina}" />
-                            <form:errors cssClass="errors" path="termina" cssStyle="color:red;" />
+                        <td valign="top" class="value" style="text-align: left;">
+                            <input type="radio" name="<portlet:namespace />sesionesIds" value="1" style="width:10px;" /> 18:00 a 20:00 hrs<br/>
+                            <input type="radio" name="<portlet:namespace />sesionesIds" value="2" style="width:10px;" /> 20:00 a 22:00 hrs<br/>
                         </td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="comunidadId"><liferay-ui:message key="curso.comunidad" /></label>
+                            <label for="comunidadId"><liferay-ui:message key="webinar.comunidad" /></label>
                         </td>
                         <td valign="top" class="value">
                             <form:select path="comunidadId" items="${comunidades}" />
@@ -110,30 +98,30 @@
                 <tbody>
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />telefono"><liferay-ui:message key="curso.telefono" /></label>
+                            <label for="<portlet:namespace />telefono"><liferay-ui:message key="webinar.telefono" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="telefono" id="<portlet:namespace />telefono" value="${curso.telefono}" />
+                            <input type="text" name="telefono" id="<portlet:namespace />telefono" value="${webinar.telefono}" />
                             <form:errors cssClass="errors" path="telefono" cssStyle="color:red;" />
                         </td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />estado"><liferay-ui:message key="curso.estado" /></label>
+                            <label for="<portlet:namespace />estado"><liferay-ui:message key="webinar.estado" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="estado" id="<portlet:namespace />estado" value="${curso.estado}" />
+                            <input type="text" name="estado" id="<portlet:namespace />estado" value="${webinar.estado}" />
                             <form:errors cssClass="errors" path="estado" cssStyle="color:red;" />
                         </td>
                     </tr>
 
                     <tr class="prop">
                         <td valign="top" class="name">
-                            <label for="<portlet:namespace />pais"><liferay-ui:message key="curso.pais" /></label>
+                            <label for="<portlet:namespace />pais"><liferay-ui:message key="webinar.pais" /></label>
                         </td>
                         <td valign="top" class="value">
-                            <input type="text" name="pais" id="<portlet:namespace />pais" value="${curso.pais}" />
+                            <input type="text" name="pais" id="<portlet:namespace />pais" value="${webinar.pais}" />
                             <form:errors cssClass="errors" path="pais" cssStyle="color:red;" />
                         </td>
                     </tr>
@@ -143,24 +131,12 @@
         </div>
 
         <div class="nav">
-            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='curso.crea' />"/></span>
-            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="curso.cancela" /></a></span>
+            <span class="menuButton"><input type="submit" name="<portlet:namespace />_crea" class="save" value="<liferay-ui:message key='webinar.crea' />"/></span>
+            <span class="menuButton"><a class="cancel" href="<portlet:renderURL portletMode="view"/>"><liferay-ui:message key="webinar.cancela" /></a></span>
         </div>
     </form:form>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("input#<portlet:namespace />maestroNombre")
-            .autocomplete({
-                source: "<portlet:resourceURL id='buscaMaestro'/>",
-                select: function(event, ui) {
-                    $("input#<portlet:namespace />maestroId").val(ui.item.id);
-                    $("#<portlet:namespace />maestroDiv").load('<portlet:resourceURL id="asignaMaestro" />',{id:ui.item.id},function() {
-                        $("input#<portlet:namespace />maestroNombre").val(ui.item.nombre);
-                        $("input#<portlet:namespace />inicia").focus();
-                    });
-                    return false;
-                }
-            });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#nombre").focus();

@@ -149,18 +149,6 @@
     </form:form>
     <script type="text/javascript">
         $(document).ready(function() {
-            $("input#<portlet:namespace />maestroNombre")
-            .autocomplete({
-                source: "<portlet:resourceURL id='buscaMaestro'/>",
-                select: function(event, ui) {
-                    $("input#<portlet:namespace />maestroId").val(ui.item.id);
-                    $("#<portlet:namespace />maestroDiv").load('<portlet:resourceURL id="asignaMaestro" />',{id:ui.item.id},function() {
-                        $("input#<portlet:namespace />maestroNombre").val(ui.item.nombre);
-                        $("input#<portlet:namespace />inicia").focus();
-                    });
-                    return false;
-                }
-            });
             $("input#<portlet:namespace />inicia").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#<portlet:namespace />termina").datepicker({dateFormat: 'dd/mm/yy'});
             $("input#nombre").focus();
