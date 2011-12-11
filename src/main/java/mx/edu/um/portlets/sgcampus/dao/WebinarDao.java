@@ -4,11 +4,11 @@ import com.liferay.portal.model.User;
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import mx.edu.um.portlets.sgcampus.model.*;
 import mx.edu.um.portlets.sgcampus.utils.Constantes;
 import org.hibernate.Criteria;
-import org.hibernate.Query;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.criterion.*;
@@ -42,16 +42,11 @@ public class WebinarDao {
     public Webinar crea(Webinar webinar, Long creadorId) {
         log.info("Creando el webinar {}", webinar);
 
-        // La fecha de inicio debe ser antes de la de termino
-        if (webinar.getInicia() != null && webinar.getTermina() != null && webinar.getInicia().after(webinar.getTermina())) {
-            throw new RuntimeException("La fecha inicial debe ser antes de la que termina");
-        }
-
         // Asignando codigo si no tiene uno
         if (webinar.getCodigo() == null) {
             log.debug("Asignando codigo");
             List<Folio> folios = hibernateTemplate.findByNamedParam("select folio from Folio folio where folio.nombre = :nombre and folio.comunidadId = :comunidadId", new String[]{"nombre", "comunidadId"}, new Object[]{Constantes.WEBINAR, webinar.getComunidadId()});
-            Folio folio = null;
+            Folio folio;
             if (folios != null && folios.size() > 0) {
                 folio = folios.get(0);
             } else {
@@ -90,7 +85,7 @@ public class WebinarDao {
                 criteria.add(propiedades);
                 countCriteria.add(propiedades);
             }
-            
+
             if (!params.containsKey("estatus")) {
                 criteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
                 countCriteria.add(Restrictions.disjunction().add(Restrictions.eq("estatus", "ACTIVO")).add(Restrictions.eq("estatus", "PENDIENTE")));
@@ -125,7 +120,7 @@ public class WebinarDao {
             } else {
                 criteria.addOrder(Order.desc("inicia"));
             }
-                        
+
             criteria.setFirstResult(offset);
             criteria.setMaxResults(max);
             webinars = criteria.list();
@@ -269,32 +264,26 @@ public class WebinarDao {
     }
 
     public Boolean existeSesionActiva(Long webinarId, Calendar calendario) {
-        Integer dia = calendario.get(Calendar.DAY_OF_WEEK);
-        Date hoy = calendario.getTime();
-        log.debug("existeSesionActiva: {} {} {}", new Object[]{webinarId, dia, hoy});
         boolean resultado = false;
-        Session session = hibernateTemplate.getSessionFactory().openSession();
-        Query query = session.createQuery("select sesion from Sesion sesion where sesion.webinar.id = :webinarId and sesion.dia = :dia and :hoy between sesion.webinar.inicia and sesion.webinar.termina");
-        query.setParameter("webinarId", webinarId);
-        query.setParameter("dia", dia);
-        query.setParameter("hoy", hoy);
-        Sesion sesion = (Sesion) query.uniqueResult();
-        if (sesion != null) {
+
+        Webinar webinar = hibernateTemplate.get(Webinar.class, webinarId);
+        Date hoy = new Date();
+        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+        if (sdf.format(hoy).equals(sdf.format(webinar.getInicia()))) {
             Calendar cal = Calendar.getInstance(calendario.getTimeZone());
-            cal.setTime(sesion.getHoraInicial());
+            cal.setTime(webinar.getHora());
             calendario.set(Calendar.HOUR, cal.get(Calendar.HOUR));
             calendario.set(Calendar.MINUTE, cal.get(Calendar.MINUTE));
             Date inicia = calendario.getTime();
-            log.debug("Encontre una sesion activa que inicia a las {}", inicia);
+            log.debug("Encontre webinar activo que inicia a las {}", inicia);
             long diff = (hoy.getTime() - inicia.getTime()) / (60 * 1000);
-            log.debug("TEST {} vs {}", new Date(hoy.getTime()), new Date(inicia.getTime()));
-            log.debug("Con una diferencia de {} es menor que {}", diff, sesion.getDuracion());
-            if (diff < sesion.getDuracion() && diff > -30) {
+            log.debug("TEST {} vs {} vs {}", new Object[] {new Date(hoy.getTime()), new Date(inicia.getTime())});
+            log.debug("Con una diferencia de {} es menor que {}", diff, webinar.getDuracion());
+            if (diff < webinar.getDuracion() && diff > -30) {
                 resultado = true;
             }
-        } else {
-            log.debug("No encontre una sesion activa");
         }
+
         return resultado;
     }
 
@@ -321,7 +310,7 @@ public class WebinarDao {
         return alumnoWebinar;
     }
 
-    public void guardaAsistencia(Long alumnoWebinarId) {
+    public Webinar guardaAsistencia(Long alumnoWebinarId) {
         log.debug("Buscando alumnoWebinar {}", alumnoWebinarId);
         AlumnoWebinar alumnoWebinar = hibernateTemplate.get(AlumnoWebinar.class, alumnoWebinarId);
         log.debug("Guardando asistencia de alumno {} al webinar {}", alumnoWebinar.getAlumno().getId(), alumnoWebinar.getWebinar().getId());
@@ -330,6 +319,7 @@ public class WebinarDao {
             log.debug("Guardando la asistencia");
             Long id = (Long) hibernateTemplate.save(asistencia);
             log.debug("Se ha guardado la asistencia {}", id);
+            return alumnoWebinar.getWebinar();
         } else {
             throw new RuntimeException("No se pudo guardar la asistencia de " + alumnoWebinar.getAlumno().getId() + " al webinar " + alumnoWebinar.getWebinar().getId());
         }
@@ -357,10 +347,10 @@ public class WebinarDao {
         query.append("where webinar.comunidadId in (:comunidades) ");
         query.append("and (webinar.maestro.id = :maestroId or alumnos.alumno.id = :maestroId) ");
         query.append("order by webinar.inicia desc");
-        List<Webinar> webinars = hibernateTemplate.findByNamedParam(query.toString(), 
-                new String[]{"comunidades","maestroId"}, 
-                new Object[]{params.get("comunidades"),params.get("maestroId")});
-        
+        List<Webinar> webinars = hibernateTemplate.findByNamedParam(query.toString(),
+                new String[]{"comunidades", "maestroId"},
+                new Object[]{params.get("comunidades"), params.get("maestroId")});
+
         log.debug("Webinars: {}", webinars);
 
         Map<String, Object> resultados = new HashMap<String, Object>();

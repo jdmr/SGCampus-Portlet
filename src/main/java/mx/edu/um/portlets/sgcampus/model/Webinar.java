@@ -38,8 +38,9 @@ public class Webinar implements Serializable {
     private Maestro maestro;
     @Temporal(javax.persistence.TemporalType.DATE)
     private Date inicia;
-    @Temporal(javax.persistence.TemporalType.DATE)
-    private Date termina;
+    @Temporal(javax.persistence.TemporalType.TIME)
+    private Date hora;
+    private Integer duracion;
     @Column(length = 254)
     private String url;
     @Column(scale = 2, precision = 8)
@@ -243,17 +244,31 @@ public class Webinar implements Serializable {
     }
 
     /**
-     * @return the termina
+     * @return the hora
      */
-    public Date getTermina() {
-        return termina;
+    public Date getHora() {
+        return hora;
     }
 
     /**
-     * @param termina the termina to set
+     * @param hora the hora to set
      */
-    public void setTermina(Date termina) {
-        this.termina = termina;
+    public void setHora(Date hora) {
+        this.hora = hora;
+    }
+
+    /**
+     * @return the duracion
+     */
+    public Integer getDuracion() {
+        return duracion;
+    }
+
+    /**
+     * @param duracion the duracion to set
+     */
+    public void setDuracion(Integer duracion) {
+        this.duracion = duracion;
     }
 
     /**
@@ -394,6 +409,20 @@ public class Webinar implements Serializable {
      */
     public void setPrecio(BigDecimal precio) {
         this.precio = precio;
+    }
+
+    /**
+     * @return the alumnos
+     */
+    public Set<AlumnoWebinar> getAlumnos() {
+        return alumnos;
+    }
+
+    /**
+     * @param alumnos the alumnos to set
+     */
+    public void setAlumnos(Set<AlumnoWebinar> alumnos) {
+        this.alumnos = alumnos;
     }
 
     @Override

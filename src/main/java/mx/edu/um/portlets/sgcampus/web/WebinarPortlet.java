@@ -202,9 +202,6 @@ public class WebinarPortlet {
         if (webinar.getInicia() != null) {
             model.addAttribute("inicia", sdf.format(webinar.getInicia()));
         }
-        if (webinar.getTermina() != null) {
-            model.addAttribute("termina", sdf.format(webinar.getTermina()));
-        }
 
         User user = PortalUtil.getUser(request);
         if (user != null) {
@@ -232,10 +229,7 @@ public class WebinarPortlet {
             String inicia = sdf.format(webinar.getInicia());
             model.addAttribute("inicia", inicia);
         }
-        if (webinar.getTermina() != null) {
-            model.addAttribute("termina", sdf.format(webinar.getTermina()));
-        }
-
+        
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
             return "webinar/nuevo";
         } else {
@@ -264,17 +258,16 @@ public class WebinarPortlet {
             webinar.setMaestro(maestro);
 
             log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm Z");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm Z");
             for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
                 switch (i) {
                     case 1:
-                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 18:00 CST"));
-                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
+                        webinar.setHora(sdf1.parse("18:00 CST"));
+                        webinar.setDuracion(120);
                         break;
                     case 2:
-                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
-                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 22:00 CST"));
+                        webinar.setHora(sdf1.parse("20:00 CST"));
+                        webinar.setDuracion(120);
                         break;
                 }
             }
@@ -319,17 +312,16 @@ public class WebinarPortlet {
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         try {
             log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
-            SimpleDateFormat sdf1 = new SimpleDateFormat("dd/MM/yyyy");
-            SimpleDateFormat sdf2 = new SimpleDateFormat("dd/MM/yyyy HH:mm Z");
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm Z");
             for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
                 switch (i) {
                     case 1:
-                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 18:00 CST"));
-                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
+                        webinar.setHora(sdf1.parse("18:00 CST"));
+                        webinar.setDuracion(120);
                         break;
                     case 2:
-                        webinar.setInicia(sdf2.parse(sdf1.format(webinar.getInicia())+" 20:00 CST"));
-                        webinar.setTermina(sdf2.parse(sdf1.format(webinar.getInicia())+" 22:00 CST"));
+                        webinar.setHora(sdf1.parse("20:00 CST"));
+                        webinar.setDuracion(120);
                         break;
                 }
             }
@@ -412,6 +404,15 @@ public class WebinarPortlet {
 
         AlumnoWebinar alumnoWebinar = null;
         webinar = webinarDao.obtiene(webinarId);
+        
+        StringBuilder sb = new StringBuilder();
+        SimpleDateFormat sdf1 = new SimpleDateFormat("EEE dd/MM/yyyy");
+        SimpleDateFormat sdf2 = new SimpleDateFormat("HH:mm Z");
+        sdf2.setTimeZone(themeDisplay.getTimeZone());
+        sb.append(sdf1.format(webinar.getInicia()));
+        sb.append(" ");
+        sb.append(sdf2.format(webinar.getHora()));
+        modelo.addAttribute("fechaCompleta",sb.toString());
 
         modelo.addAttribute("webinar", webinar);
         User creador = PortalUtil.getUser(request);
@@ -476,13 +477,17 @@ public class WebinarPortlet {
         modelo.addAttribute("webinar", webinar);
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("America/Mexico_City"));
+        cal.setTime(webinar.getHora());
+        int hora = cal.get(Calendar.HOUR_OF_DAY);
+        log.debug("HORA: {}",hora);
+        modelo.addAttribute("hora",hora);
+        
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (webinar.getInicia() != null) {
             String inicia = sdf.format(webinar.getInicia());
             modelo.addAttribute("inicia", inicia);
-        }
-        if (webinar.getTermina() != null) {
-            modelo.addAttribute("termina", sdf.format(webinar.getTermina()));
         }
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
             Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
@@ -505,13 +510,17 @@ public class WebinarPortlet {
         modelo.addAttribute("comunidades", ComunidadUtil.obtieneComunidades(request));
         ThemeDisplay themeDisplay = (ThemeDisplay) request.getAttribute(WebKeys.THEME_DISPLAY);
         modelo.addAttribute("tipos", this.getTipos(themeDisplay));
+        
+        Calendar cal = Calendar.getInstance(TimeZone.getTimeZone("America/Mexico_City"));
+        cal.setTime(webinar.getHora());
+        int hora = cal.get(Calendar.HOUR_OF_DAY);
+        log.debug("HORA: {}",hora);
+        modelo.addAttribute("hora",hora);
+        
         SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
         if (webinar.getInicia() != null) {
             String inicia = sdf.format(webinar.getInicia());
             modelo.addAttribute("inicia", inicia);
-        }
-        if (webinar.getTermina() != null) {
-            modelo.addAttribute("termina", sdf.format(webinar.getTermina()));
         }
         if (request.isUserInRole("Administrator") || request.isUserInRole("cursos-admin")) {
             Map<String, String> tiposDeEstatus = new LinkedHashMap<String, String>();
@@ -535,6 +544,21 @@ public class WebinarPortlet {
         try {
             User creador = PortalUtil.getUser(request);
 
+            log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm Z");
+            for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
+                switch (i) {
+                    case 1:
+                        webinar.setHora(sdf1.parse("18:00 CST"));
+                        webinar.setDuracion(120);
+                        break;
+                    case 2:
+                        webinar.setHora(sdf1.parse("20:00 CST"));
+                        webinar.setDuracion(120);
+                        break;
+                }
+            }
+            
             webinarDao.actualiza(webinar, creador.getUserId());
             response.setRenderParameter("action", "ver");
             response.setRenderParameter("webinarId", webinar.getId().toString());
@@ -561,6 +585,21 @@ public class WebinarPortlet {
         try {
             User creador = PortalUtil.getUser(request);
 
+            log.debug("Sesiones: {}", ParamUtil.getIntegerValues(request, "sesionesIds"));
+            SimpleDateFormat sdf1 = new SimpleDateFormat("HH:mm Z");
+            for (int i : ParamUtil.getIntegerValues(request, "sesionesIds")) {
+                switch (i) {
+                    case 1:
+                        webinar.setHora(sdf1.parse("18:00 CST"));
+                        webinar.setDuracion(120);
+                        break;
+                    case 2:
+                        webinar.setHora(sdf1.parse("20:00 CST"));
+                        webinar.setDuracion(120);
+                        break;
+                }
+            }
+            
             webinarDao.actualiza(webinar, creador.getUserId());
             response.setRenderParameter("action", "ver");
             response.setRenderParameter("webinarId", webinar.getId().toString());
@@ -634,6 +673,7 @@ public class WebinarPortlet {
         List<AlumnoWebinar> alumnos = webinarDao.obtieneAlumnos(webinar);
 
         model.addAttribute("webinar", webinar);
+        model.addAttribute("webinarNombre", webinar.getNombre());
         model.addAttribute("alumnos", alumnos);
 
         return "webinar/alumnos";
@@ -733,7 +773,7 @@ public class WebinarPortlet {
         try {
             User usuario = PortalUtil.getUser(request);
             if (usuario != null) {
-                webinarDao.guardaAsistencia(alumnoWebinarId);
+                webinar = webinarDao.guardaAsistencia(alumnoWebinarId);
                 response.sendRedirect(webinar.getUrl());
             } else {
                 log.error("No pudo entrar el alumno al webinar {}", webinar);

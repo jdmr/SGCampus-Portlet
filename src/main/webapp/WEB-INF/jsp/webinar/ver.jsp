@@ -2,10 +2,16 @@
 <div class="Curso">
     <div class="dialog">
         <h1>${webinar.nombre}</h1>
-        <h2>${webinar.objetivo}</h2>
+        <h2>Descripción</h2>
         <p>${webinar.descripcion}</p>
+        <h2>Objetivos</h2>
+        <p>${webinar.objetivo}</p>
+        <h2>Temario</h2>
         <p>${webinar.temario}</p>
+        <h2>Requerimientos</h2>
         <p>${webinar.requerimientos}</p>
+        <h2>Fecha</h2>
+        <p>${fechaCompleta}</p>
     </div>
     <c:if test="${estatus != null}">
         <div class="dialog">
